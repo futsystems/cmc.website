@@ -1,0 +1,29 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+from django.db import models
+
+
+class Consul(models.Model):
+    """
+    consul node
+    """
+    name = models.CharField('Consul Name', max_length=50, default='Consul')
+    host = models.CharField('host', max_length=50, default='test.marvelsystem.net')
+    port = models.IntegerField('Port', default=8500)
+    description = models.CharField('Description', max_length=1000, default='', blank=True)
+
+    class Meta:
+        app_label = 'config'
+
+    def __unicode__(self):
+        return u'Consul-%s' % self.name
+
+    def to_dict(self):
+        dict = {
+            'Host': self.host,
+            'Port': self.port,
+            'Type': 'Consul',
+        }
+        return dict
+
