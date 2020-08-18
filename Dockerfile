@@ -4,6 +4,7 @@ FROM marvelsystem/ubuntu1804:python
 RUN mkdir /app
 RUN mkdir /app/bin
 RUN mkdir /app/config
+RUN mkdir /app/logs
 
 # change current work directory
 WORKDIR /app/bin
