@@ -4,7 +4,7 @@ mysql-python
 Django==1.8.19
 django-flat-theme
 django-flat-responsive
-django-multiselectfield
+#django-multiselectfield
 #requests
 
 #redis

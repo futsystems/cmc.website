@@ -24,3 +24,7 @@ urlpatterns = [
     url(r'^config/', include(config_urls)),
     url(r'^admin/', include(admin.site.urls)),
 ]
+
+
+urlpatterns += static(settings.STATIC_URL, document_root = settings.STATIC_ROOT)
+urlpatterns += staticfiles_urlpatterns()

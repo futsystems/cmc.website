@@ -52,7 +52,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
 )
 
-ROOT_URLCONF = 'ms_platform.urls'
+ROOT_URLCONF = 'cmc.urls'
 
 TEMPLATES = [
     {
@@ -70,7 +70,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'ms_platform.wsgi.application'
+WSGI_APPLICATION = 'cmc.wsgi.application'
 
 
 # Database
@@ -102,5 +102,98 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
-
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
+
+
+# A sample logging configuration. The only tangible logging
+# performed by this configuration is to send an email to
+# the site admins on every HTTP 500 error when DEBUG=False.
+# See http://docs.djangoproject.com/en/dev/topics/logging for
+# more details on how to customize your logging configuration.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(levelname)s]- %(message)s'
+        },
+        'tiny': {
+            'format': '[%(name)s:%(lineno)d %(funcName)s] [%(levelname)s]- %(message)s'
+        },
+    },
+
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'default': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join('../logs', 'app.log'),
+            'maxBytes': 1024 * 1024 * 100,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'standard',
+        },
+        'tinyconsole': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'tiny'
+        },
+
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard'
+        },
+        'test': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard'
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins','default'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+
+
+
+        'app_config': {
+            'handlers': ['tinyconsole','default'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+
+        'api': {
+            'handlers': ['tinyconsole', 'default'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+
+        'config': {
+            'handlers': ['tinyconsole','default'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+
+        'pushkit': {
+            'handlers': ['tinyconsole','default'],
+            'level': 'DEBUG',
+            'propagate': False
+
+        },
+    }
+}
+
+

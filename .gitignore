@@ -11,6 +11,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+*/static/*
 venv/
 env/
 lbforum/
@@ -23,7 +24,6 @@ eggs/
 parts/
 sdist/
 var/
-static/switch/
 .idea
 .settings
 *.egg-info/

@@ -1,0 +1,7 @@
+FROM ubuntu:18.04
+
+RUN sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list
+RUN apt-get clean
+
+RUN apt-get update
+RUN apt-get install -y -qq python python-dev python-pip libmysqld-dev
