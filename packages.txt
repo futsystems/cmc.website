@@ -23,3 +23,7 @@ gevent
 #django-celery==3.2.2
 
 #skpy
+
+#rabbitmq
+pika-1.1.0
+

@@ -18,14 +18,61 @@ import logging,traceback
 logger = logging.getLogger(__name__)
 
 import models
-
+from eventbus import rabbitmq_bus
+from eventbus import CMCGatewayConfigUpdate
 
 
 
 
 
 class ApiGatewayAdmin(admin.ModelAdmin):
-    list_display = ('name', 'gw_type', 'base_url', 'env','is_default')
+    list_display = ('name', 'gw_type', 'base_url', 'env', 'is_default', 'config_action')
+
+    def config_action(self, obj):
+        """
+
+        """
+        return format_html(
+            '<a class="button" href="{}">Update</a>&nbsp;'
+            '<a class="button" href="{}">Demo</a>&nbsp;',
+            reverse('admin:config-update', args=[obj.pk]),
+            reverse('admin:config-demo', args=[obj.pk]),
+        )
+
+    config_action.allow_tags = True
+    config_action.short_description = "Action"
+
+    def get_urls(self):
+        # use get_urls for easy adding of views to the admin
+        urls = super(ApiGatewayAdmin, self).get_urls()
+        my_urls = [
+            url(
+                r'^(?P<gw_id>.+)/update/$',
+                self.admin_site.admin_view(self.update_config),
+                name='config-update',
+            ),
+
+            url(
+                r'^(?P<gw_id>.+)/action/$',
+                self.admin_site.admin_view(self.demo),
+                name='config-demo',
+            ),
+        ]
+
+        return my_urls + urls
+
+    def update_config(self, request, gw_id):
+        gw = models.ApiGateway.objects.get(id= gw_id)
+        ev = CMCGatewayConfigUpdate(gw.gw_type, gw.env)
+        rabbitmq_bus.send_message(ev)
+        messages.info(request, "Send Config Update Success")
+        previous_url = request.META.get('HTTP_REFERER')
+        return HttpResponseRedirect(previous_url)
+
+    def demo(self, request, gw_id):
+        messages.info(request, "demo operation:%s" % gw_id)
+        previous_url = request.META.get('HTTP_REFERER')
+        return HttpResponseRedirect(previous_url)
 
 class ConsulAdmin(admin.ModelAdmin):
     list_display = ('name', 'host')

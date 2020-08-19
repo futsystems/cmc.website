@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'config',
+    'eventbus',
 )
 
 MIDDLEWARE_CLASSES = (
