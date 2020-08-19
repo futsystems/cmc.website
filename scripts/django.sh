@@ -31,5 +31,6 @@ exec gunicorn ${DJANGO_WSGI_MODULE}:application \
   #-k gevent \
   --user=$USER --group=$GROUP \
   --log-level=debug \
-  --bind=unix:$SOCKFILE \
+  #--bind=unix:$SOCKFILE \
+  --bind=0.0.0.0:80 \
   --log-file=$LOGFILE
