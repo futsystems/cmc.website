@@ -1,5 +1,9 @@
 #mysql
 mysql-python
+
+#flask
+flask
+
 #django
 Django==1.10.4
 django-flat-theme
