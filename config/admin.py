@@ -18,7 +18,7 @@ import logging,traceback
 logger = logging.getLogger(__name__)
 
 import models
-from eventbus import rabbitmq_bus
+from eventbus import EventBublisher
 from eventbus import CMCGatewayConfigUpdate
 
 
@@ -64,7 +64,7 @@ class ApiGatewayAdmin(admin.ModelAdmin):
     def update_config(self, request, gw_id):
         gw = models.ApiGateway.objects.get(id= gw_id)
         ev = CMCGatewayConfigUpdate(gw.gw_type, gw.env)
-        rabbitmq_bus.send_message(ev)
+        EventBublisher().send_message(ev)
         messages.info(request, "Send Config Update Success")
         previous_url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(previous_url)

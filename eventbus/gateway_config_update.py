@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from .message import IntegrationEvent
+from message import IntegrationEvent
 
 
 class CMCGatewayConfigUpdate(IntegrationEvent):

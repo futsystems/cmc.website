@@ -13,10 +13,10 @@ TIMEOUT=30
 echo "Starting $NAME"
 
 # Activate the virtual environment
-#cd $DJANGODIR
-#source /opt/cmc.website/venv/bin/activate
-#export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
-#export PYTHONPATH=$DJANGODIR:$PYTHONPATH
+cd $DJANGODIR
+source /opt/cmc.website/venv/bin/activate
+export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+export PYTHONPATH=$DJANGODIR:$PYTHONPATH
 
 # Create the run directory if it doesn't exist
 RUNDIR=$(dirname $SOCKFILE)

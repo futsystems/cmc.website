@@ -2,5 +2,5 @@
 
 from .gateway_config_update import CMCGatewayConfigUpdate
 
-from .event_publisher import rabbitmq_bus
+from .event_publisher import EventBublisher
 
