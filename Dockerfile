@@ -1,4 +1,4 @@
-FROM marvelsystem/ubuntu1804:python
+FROM registry.cn-hangzhou.aliyuncs.com/marvelsystem/django:1.10.4
 
 # make directory
 RUN mkdir /app

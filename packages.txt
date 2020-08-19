@@ -1,7 +1,7 @@
 #mysql
 mysql-python
 #django
-Django==1.8.19
+#Django==1.8.19
 django-flat-theme
 django-flat-responsive
 #django-multiselectfield

@@ -5,3 +5,7 @@ RUN apt-get clean
 
 RUN apt-get update
 RUN apt-get install -y -qq python python-dev python-pip libmysqld-dev
+
+ENV DJANGO_VERSION 1.10.4
+
+RUN pip install django=="$DJANGO_VERSION"
