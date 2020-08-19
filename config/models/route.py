@@ -82,7 +82,7 @@ class Route(models.Model):
             dict['ServiceName'] = '%sAPI' % self.service.name
             dict['LoadBalancerOptions'] = {'Type':self.load_balancer}
         else:
-            dict['DownstreamHostAndPorts'] = {'Host': self.downstream_host, "Port": self.downstream_port}
+            dict['DownstreamHostAndPorts'] = [{'Host': self.downstream_host, "Port": self.downstream_port}]
 
         if self.authentication_scheme != 'NoAuth':
             auth_dict = {'AuthenticationProviderKey': self.authentication_scheme}
