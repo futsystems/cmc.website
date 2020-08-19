@@ -13,7 +13,7 @@ class CMCGatewayConfigUpdate(IntegrationEvent):
         super(CMCGatewayConfigUpdate, self).__init__()
         self._gw_type = gw_type
         self._gw_env = gw_env
-        self._event_name = 'CMCGatewayConfigUpdate'
+        self._event_name = 'CMCGatewayConfigUpdateIntegrationEvent'
 
     @property
     def body(self):
