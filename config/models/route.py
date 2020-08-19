@@ -53,11 +53,22 @@ class Route(models.Model):
         return u'Route-%s' % self.name
 
     @property
-    def route_target_server(self):
+    def route_target(self):
         if self.service is not None:
             return '%sAPI' % self.service.name
         else:
             return  '%s:%s' % (self.downstream_host, self.downstream_port)
+
+    @property
+    def http_handel_options_title(self):
+        if self.http_handler_options is None:
+            return 'default'
+        else:
+            return  self.http_handler_options
+
+    @property
+    def is_consul(self):
+        return self.service is not None
 
     def get_upstream_header_transform(self):
         dict = {}

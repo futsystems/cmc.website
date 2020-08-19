@@ -18,7 +18,7 @@ class HttpHandlerOption(models.Model):
         app_label = 'config'
 
     def __unicode__(self):
-        return u'HttpHandlerOption-%s' % self.name
+        return self.name
 
     def to_dict(self):
         dict = {
