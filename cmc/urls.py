@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
-from config import  urls as config_urls
+from config import urls as config_urls
 
 urlpatterns = [
     url(r'^config/', include(config_urls)),
