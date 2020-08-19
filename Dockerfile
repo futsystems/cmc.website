@@ -15,9 +15,6 @@ ADD . /app/bin
 # install package
 RUN pip install -r /app/bin/packages.txt -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
 
-# copy config file
-COPY ./ms_platform_config.cfg /app/config
-
 # make start.sh executable
 RUN chmod +x start.sh
 
