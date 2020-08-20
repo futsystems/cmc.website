@@ -23,11 +23,32 @@ from eventbus import EventBublisher
 from eventbus import CMCGatewayConfigUpdate
 
 
+class ApiGatewayConfigAdmin(admin.ModelAdmin):
+    list_display = ('version', 'gateway', 'date_created')
+    list_filter = ('gateway',)
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None:
+            return []
+        return ['config', 'gateway']
 
+class ApiGatewayAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.ApiGateway
+        exclude = []
 
+    def __init__(self,*args,**kwargs):
+        forms.ModelForm.__init__(self, *args, **kwargs)
+        self.fields['default_config'].queryset = models.ApiGatewayConfig.objects.filter(gateway=self.instance)
 
 class ApiGatewayAdmin(admin.ModelAdmin):
-    list_display = ('name', 'gw_type', 'base_url', 'env', 'is_default', 'config_action')
+    list_display = ('name', 'gw_type', 'env', 'base_url', 'default_config_title', 'config_action')
+    form = ApiGatewayAdminForm
+    #readonly_fields = ('gw_type','env')
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None:
+            return []
+        return ['gw_type', 'env']
 
     def config_action(self, obj):
         """
@@ -35,9 +56,11 @@ class ApiGatewayAdmin(admin.ModelAdmin):
         """
         return format_html(
             '<a class="button" href="{}">Update</a>&nbsp;'
-            '<a class="button" href="{}">Download</a>&nbsp;',
+            '<a class="button" href="{}">Download</a>&nbsp;'
+            '<a class="button" href="{}">ConfigSnapshot</a>&nbsp;',
             reverse('admin:config-update', args=[obj.pk]),
             reverse('admin:config-download', args=[obj.pk]),
+            reverse('admin:config-snapshot', args=[obj.pk]),
         )
 
     config_action.allow_tags = True
@@ -58,6 +81,11 @@ class ApiGatewayAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.download_config),
                 name='config-download',
             ),
+            url(
+                r'^(?P<gw_id>.+)/snapshot/$',
+                self.admin_site.admin_view(self.snapshot_config),
+                name='config-snapshot',
+            ),
         ]
 
         return my_urls + urls
@@ -77,6 +105,16 @@ class ApiGatewayAdmin(admin.ModelAdmin):
         response = HttpResponse(json.dumps(gw.get_ocelot_config(),indent=4), content_type='application/txt')
         response['Content-Disposition'] = 'attachment; filename=ocelot_%s.config' % gw.name
         return response
+
+    def snapshot_config(self, request, gw_id):
+        messages.info(request, "demo operation:%s" % gw_id)
+        gw = models.ApiGateway.objects.get(id=gw_id)
+        models.ApiGatewayConfig.objects.create(gateway=gw, config=json.dumps(gw.get_ocelot_config()))
+        #response = HttpResponse(json.dumps(gw.get_ocelot_config(),indent=4), content_type='application/txt')
+        #response['Content-Disposition'] = 'attachment; filename=ocelot_%s.config' % gw.name
+        messages.info(request, "Config Snapshot Success")
+        previous_url = request.META.get('HTTP_REFERER')
+        return HttpResponseRedirect(previous_url)
 
 class ConsulAdmin(admin.ModelAdmin):
     list_display = ('name', 'host')
@@ -165,3 +203,5 @@ admin.site.register(models.HttpHandlerOption, HttpHandlerOptionAdmin)
 admin.site.register(models.RateLimitOption, RateLimitOptionAdmin)
 admin.site.register(models.HttpMethod, HttpMethodAdmin)
 admin.site.register(models.HeaderTransform, HeadTransformAdmin)
+
+admin.site.register(models.ApiGatewayConfig, ApiGatewayConfigAdmin)
