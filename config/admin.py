@@ -80,10 +80,14 @@ class ConsulAdmin(admin.ModelAdmin):
 
 class ServiceAdmin(admin.ModelAdmin):
     list_display = ('name',)
+    ordering = ('name',)
+    search_fields = ['name']
 
 class RouteAdmin(admin.ModelAdmin):
     list_display = ('name', 'upstream_path_template', 'downstream_path_template', 'priority', 'route_target', 'authentication_scheme', 'http_handel_options_title')
     list_filter = ('service', 'authentication_scheme')
+    ordering = ('name',)
+    search_fields = ['name', 'upstream_path_template']
     fieldsets = (
         (None, {
             "fields": [
