@@ -41,7 +41,7 @@ def config_gateway(request):
 
 def service_list(request):
     try:
-        services = Service.objects.all()
+        services = Service.objects.all().order_by('name')
         return json_response(Success([item.name for item in services]))
     except Exception:
         return json_response(Error("get service list error"))
