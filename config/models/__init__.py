@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from api_gateway import  ApiGateway
+from api_gateway import ApiGateway
 from consul import Consul
 from service import Service
 from route import Route

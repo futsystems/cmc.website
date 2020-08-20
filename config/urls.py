@@ -10,4 +10,5 @@ import views
 
 urlpatterns = [
     url(r'^gateway/$', views.config_gateway, name='config_gateway'),
+    url(r'^service/list/$', views.service_list, name='config_services_list'),
 ]
