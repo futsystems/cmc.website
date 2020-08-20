@@ -27,6 +27,7 @@ AUTH_SCHEME = (
 )
 
 LOADBALANCER_SCHEME = (
-    ('NoBalancer', 'NoBalancer'),
+    ('NoLoadBalancer', 'NoLoadBalancer'),
     ('LeastConnection', 'LeastConnection'),
+    ('RoundRobin', 'RoundRobin'),
 )

@@ -39,6 +39,7 @@ def config_gateway(request):
             return json_response(Error("get gateway config list error"))
 
 
+
 def service_list(request):
     try:
         services = Service.objects.all().order_by('name')

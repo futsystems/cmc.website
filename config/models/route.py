@@ -37,12 +37,12 @@ class Route(models.Model):
     downstream_host = models.CharField('DownstreamHost', max_length=255, default=None, blank=True, null=True)
     downstream_port = models.CharField('DownstreamPort', max_length=255, default=None, blank=True, null=True)
 
-    authentication_scheme = models.CharField('AuthenticationProviderKey',max_length=9, choices=AUTH_SCHEME, default='NoAuth')
+    authentication_scheme = models.CharField('Auth Schema',max_length=9, choices=AUTH_SCHEME, default='NoAuth')
     authorization_scopes = models.CharField('AllowedScopes', max_length=255, blank=True, default='')
 
 
-    rate_limite_options = models.ForeignKey(RateLimitOption, verbose_name='RateLimitOption', on_delete=models.SET_NULL, default=None, blank=True, null=True)
-    http_handler_options= models.ForeignKey(HttpHandlerOption, verbose_name='HttpHandlerOption', on_delete=models.SET_NULL, default=None, blank=True, null=True)
+    rate_limite_options = models.ForeignKey(RateLimitOption, verbose_name='RateLimit', on_delete=models.SET_NULL, default=None, blank=True, null=True)
+    http_handler_options= models.ForeignKey(HttpHandlerOption, verbose_name='HttpHandler', on_delete=models.SET_NULL, default=None, blank=True, null=True)
 
     description = models.CharField('Description', max_length=1000, default='', blank=True)
 
@@ -52,19 +52,31 @@ class Route(models.Model):
     def __unicode__(self):
         return u'Route-%s' % self.name
 
+
     @property
     def route_target(self):
         if self.service is not None:
-            return '%sAPI' % self.service.name
+            return '%sAPI' % (self.service.name)
         else:
             return  '%s:%s' % (self.downstream_host, self.downstream_port)
 
-    @property
-    def http_handel_options_title(self):
+    def short_load_balancer(self):
+        if self.load_balancer == 'NoLoadBalancer':
+            return 'No'
+        elif self.load_balancer == 'LeastConnection':
+            return 'Least'
+        elif self.load_balancer == 'RoundRobin':
+            return 'Round'
+
+    short_load_balancer.short_description = "BALANCER"
+
+    def http_handler_options_title(self):
         if self.http_handler_options is None:
             return 'default'
         else:
             return  self.http_handler_options
+
+    http_handler_options_title.short_description = "HttpHandler"
 
     @property
     def is_consul(self):

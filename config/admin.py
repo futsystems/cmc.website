@@ -7,14 +7,15 @@ from django.contrib import admin
 
 from django.conf.urls import url
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseNotFound, Http404 ,HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseNotFound, Http404 ,HttpResponseRedirect, JsonResponse
 from django.template.response import TemplateResponse
 from django.contrib import admin,messages
 from django.db import connection
 from django.utils.html import format_html
 from django import forms
+from django.shortcuts import render_to_response
 
-import logging,traceback
+import logging,traceback,json
 logger = logging.getLogger(__name__)
 
 import models
@@ -34,9 +35,9 @@ class ApiGatewayAdmin(admin.ModelAdmin):
         """
         return format_html(
             '<a class="button" href="{}">Update</a>&nbsp;'
-            '<a class="button" href="{}">Demo</a>&nbsp;',
+            '<a class="button" href="{}">Download</a>&nbsp;',
             reverse('admin:config-update', args=[obj.pk]),
-            reverse('admin:config-demo', args=[obj.pk]),
+            reverse('admin:config-download', args=[obj.pk]),
         )
 
     config_action.allow_tags = True
@@ -54,8 +55,8 @@ class ApiGatewayAdmin(admin.ModelAdmin):
 
             url(
                 r'^(?P<gw_id>.+)/action/$',
-                self.admin_site.admin_view(self.demo),
-                name='config-demo',
+                self.admin_site.admin_view(self.download_config),
+                name='config-download',
             ),
         ]
 
@@ -69,10 +70,13 @@ class ApiGatewayAdmin(admin.ModelAdmin):
         previous_url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(previous_url)
 
-    def demo(self, request, gw_id):
+    def download_config(self, request, gw_id):
         messages.info(request, "demo operation:%s" % gw_id)
-        previous_url = request.META.get('HTTP_REFERER')
-        return HttpResponseRedirect(previous_url)
+        gw = models.ApiGateway.objects.get(id=gw_id)
+
+        response = HttpResponse(json.dumps(gw.get_ocelot_config(),indent=4), content_type='application/txt')
+        response['Content-Disposition'] = 'attachment; filename=ocelot_%s.config' % gw.name
+        return response
 
 class ConsulAdmin(admin.ModelAdmin):
     list_display = ('name', 'host')
@@ -84,10 +88,11 @@ class ServiceAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
 class RouteAdmin(admin.ModelAdmin):
-    list_display = ('name', 'upstream_path_template', 'downstream_path_template', 'priority', 'route_target', 'authentication_scheme', 'http_handel_options_title')
+    list_display = ('name', 'upstream_path_template', 'downstream_path_template', 'priority', 'route_target', 'short_load_balancer',  'authentication_scheme', 'http_handler_options_title')
     list_filter = ('service', 'authentication_scheme')
     ordering = ('name',)
     search_fields = ['name', 'upstream_path_template']
+
     fieldsets = (
         (None, {
             "fields": [

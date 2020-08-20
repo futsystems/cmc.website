@@ -18,6 +18,7 @@ class ApiGateway(models.Model):
     description = models.CharField('Description', max_length=1000, default='', blank=True)
 
     class Meta:
+        unique_together = ('gw_type', 'env',)
         app_label = 'config'
 
     def __unicode__(self):
@@ -32,7 +33,7 @@ class ApiGateway(models.Model):
             global_cfg['ServiceDiscoveryProvider'] = self.service_provider.to_dict()
 
         config = {
-            'Routes': [item.to_dict() for item in self.routes.all()],
+            'Routes': [item.to_dict() for item in self.routes.all().order_by('name')],
             'GlobalConfiguration': global_cfg
         }
 
