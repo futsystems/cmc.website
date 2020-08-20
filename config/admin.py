@@ -87,7 +87,7 @@ class RouteAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             "fields": [
-                "name", "api_gateway", "description",
+                "name", "priority", "api_gateway", "description",
             ]
         }),
         ("Upstream", {
