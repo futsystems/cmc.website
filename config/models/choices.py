@@ -39,7 +39,11 @@ MYSQL_CHARSET= (
 
 
 LOG_LEVEL_NET_CORE= (
+    ('None', 'None'),
+    ('Critical', 'Critical'),
     ('Error', 'Error'),
-    ('Debug', 'Debug'),
+    ('Warning', 'Warning'),
     ('Information', 'Information'),
+    ('Debug', 'Debug'),
+    ('Trace', 'Trace'),
 )
