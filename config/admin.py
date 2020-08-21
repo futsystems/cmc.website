@@ -26,12 +26,45 @@ import hashlib
 
 
 class ApiGatewayConfigAdmin(admin.ModelAdmin):
-    list_display = ('version', 'gateway', 'md5', 'date_created')
+    list_display = ('version', 'gateway', 'md5', 'date_created','config_action')
     list_filter = ('gateway',)
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
             return []
         return ['config', 'gateway', 'md5', 'version']
+
+    def config_action(self, obj):
+        """
+
+        """
+        return format_html(
+            '<a class="button" href="{}">Download</a>&nbsp;',
+            reverse('admin:config-download', args=[obj.pk]),
+        )
+
+    config_action.allow_tags = True
+    config_action.short_description = "Action"
+
+    def get_urls(self):
+        # use get_urls for easy adding of views to the admin
+        urls = super(ApiGatewayConfigAdmin, self).get_urls()
+        my_urls = [
+            url(
+                r'^(?P<gw_config_id>.+)/download/$',
+                self.admin_site.admin_view(self.download_config),
+                name='config-download',
+            ),
+        ]
+
+        return my_urls + urls
+
+
+    def download_config(self, request, gw_config_id):
+        gw_config = models.ApiGatewayConfig.objects.get(id=gw_config_id)
+        response = HttpResponse(json.dumps(json.loads(gw_config.config), indent=4), content_type='application/txt')
+        response['Content-Disposition'] = 'attachment; filename=ocelot_%s_%s.config' % (gw_config.gateway.name, gw_config.version)
+        return response
+
 
 class ApiGatewayAdminForm(forms.ModelForm):
     class Meta:
@@ -58,10 +91,10 @@ class ApiGatewayAdmin(admin.ModelAdmin):
         """
         return format_html(
             '<a class="button" href="{}">Update</a>&nbsp;'
-            '<a class="button" href="{}">Download</a>&nbsp;'
+            '<a class="button" href="{}">Download Draft</a>&nbsp;'
             '<a class="button" href="{}">ConfigSnapshot</a>&nbsp;',
             reverse('admin:config-update', args=[obj.pk]),
-            reverse('admin:config-download', args=[obj.pk]),
+            reverse('admin:config-download-draft', args=[obj.pk]),
             reverse('admin:config-snapshot', args=[obj.pk]),
         )
 
@@ -79,9 +112,9 @@ class ApiGatewayAdmin(admin.ModelAdmin):
             ),
 
             url(
-                r'^(?P<gw_id>.+)/action/$',
-                self.admin_site.admin_view(self.download_config),
-                name='config-download',
+                r'^(?P<gw_id>.+)/download/draft/$',
+                self.admin_site.admin_view(self.download_draft),
+                name='config-download-draft',
             ),
             url(
                 r'^(?P<gw_id>.+)/snapshot/$',
@@ -100,18 +133,16 @@ class ApiGatewayAdmin(admin.ModelAdmin):
         previous_url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(previous_url)
 
-    def download_config(self, request, gw_id):
-        messages.info(request, "demo operation:%s" % gw_id)
+    def download_draft(self, request, gw_id):
         gw = models.ApiGateway.objects.get(id=gw_id)
-
-        response = HttpResponse(json.dumps(gw.get_ocelot_config(), indent=4), content_type='application/txt')
+        response = HttpResponse(json.dumps(gw.generate_ocelot_config(), indent=4), content_type='application/txt')
         response['Content-Disposition'] = 'attachment; filename=ocelot_%s.config' % gw.name
         return response
 
     def snapshot_config(self, request, gw_id):
 
         gw = models.ApiGateway.objects.get(id=gw_id)
-        config = json.dumps(gw.get_ocelot_config(), indent=4)
+        config = json.dumps(gw.generate_ocelot_config(), indent=4)
         m = hashlib.md5()
         m.update(config)
         md5 = m.hexdigest()
@@ -131,8 +162,8 @@ class ApiGatewayAdmin(admin.ModelAdmin):
             previous_url = request.META.get('HTTP_REFERER')
             return HttpResponseRedirect(previous_url)
 
-        models.ApiGatewayConfig.objects.create(gateway=gw, config=config, md5=md5, version=next_version)
-        messages.info(request, "Config Snapshot Success")
+        config_snapshot = models.ApiGatewayConfig.objects.create(gateway=gw, config=config, md5=md5, version=next_version)
+        messages.info(request, "Config Snapshot:%s-%s Success" % (config_snapshot.gateway.gateway_schema, config_snapshot.version))
         previous_url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(previous_url)
 

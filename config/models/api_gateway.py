@@ -32,16 +32,23 @@ class ApiGateway(models.Model):
         self.__original_default_config = self.default_config
 
     def save(self, force_insert=False, force_update=False, *args, **kwargs):
+        fire_event = False
         if self.default_config != self.__original_default_config:
-            ev = CMCGatewayConfigUpdate(self.gw_type, self.env)
-            EventBublisher().send_message(ev)
-
+            fire_event = True
         super(ApiGateway, self).save(force_insert, force_update, *args, **kwargs)
         self.__original_default_config = self.default_config
+
+        if fire_event:
+            ev = CMCGatewayConfigUpdate(self.gw_type, self.env)
+            EventBublisher().send_message(ev)
 
     class Meta:
         unique_together = ('gw_type', 'env',)
         app_label = 'config'
+
+    @property
+    def gateway_schema(self):
+        return u'%s-%s' % (self.gw_type.lower(), self.env.lower())
 
     def __unicode__(self):
         return u'%s-%s / %s' % (self.gw_type.lower(), self.env.lower(), self.name)
@@ -55,21 +62,24 @@ class ApiGateway(models.Model):
 
     default_config_title.short_description = "Default Config"
 
+    def generate_ocelot_config(self):
+        global_cfg = {
+            'BaseUrl':self.base_url,
+        }
+
+        if self.service_provider != None:
+            global_cfg['ServiceDiscoveryProvider'] = self.service_provider.to_dict()
+
+        config = {
+            'Routes': [item.to_dict() for item in self.routes.all().order_by('name')],
+            'GlobalConfiguration': global_cfg
+        }
+
+        return config
+
     def get_ocelot_config(self):
+
         if self.default_config is None:
-            global_cfg = {
-                'BaseUrl':self.base_url,
-            }
-
-            if self.service_provider != None:
-                global_cfg['ServiceDiscoveryProvider'] = self.service_provider.to_dict()
-
-            config = {
-                'Routes': [item.to_dict() for item in self.routes.all().order_by('name')],
-                'GlobalConfiguration': global_cfg
-            }
-
-            return config
+            return  self.generate_ocelot_config()
         else:
-            print 'use config in db'
             return json.loads(self.default_config.config)
