@@ -259,7 +259,7 @@ class ServiceAdmin(admin.ModelAdmin):
 
             ("Log&Report", {
                 "fields": [
-                    "elastic_apm"
+                    "elastic_apm", "log_level"
                 ]
             }),
 

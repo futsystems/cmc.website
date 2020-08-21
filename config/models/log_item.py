@@ -27,4 +27,14 @@ class LogItemGroup(models.Model):
         app_label = 'config'
 
     def __unicode__(self):
-        return u'log group-%s' % self.name
+        return u'log-%s' % self.name
+
+    def to_dict(self):
+        level_data = {}
+        for item in self.items.all():
+            level_data[item.prefix] = item.level
+
+        dict = {
+            'LogLevel': level_data
+        }
+        return dict

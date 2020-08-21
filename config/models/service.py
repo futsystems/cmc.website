@@ -4,7 +4,7 @@ from db_connection import MySqlConnection
 from elastic_apm import ElastAPM
 from event_bus import EventBus
 from consul import Consul
-
+from log_item import LogItemGroup
 
 class Service(models.Model):
     """
@@ -34,6 +34,9 @@ class Service(models.Model):
 
     support_api = models.BooleanField('HTTP Support', default=True)
 
+    log_level = models.ForeignKey(LogItemGroup, verbose_name='LogLevel', on_delete=models.SET_NULL,default=None,
+                                  blank=True, null=True)
+
     #used in for
     #section_name = models.CharField('Section Name', max_length=50, default=None, blank=True, null=True)
     description = models.CharField('Description', max_length=1000, default='', blank=True)
@@ -48,6 +51,9 @@ class Service(models.Model):
 
     def get_config(self):
         dict={}
+
+        if self.log_level is not None:
+            dict['Logging'] = self.log_level.to_dict()
 
         if self.event_bus is not None:
             dict['EventBus'] = self.event_bus.to_dict()
