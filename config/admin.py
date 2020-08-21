@@ -168,7 +168,31 @@ class ApiGatewayAdmin(admin.ModelAdmin):
         return HttpResponseRedirect(previous_url)
 
 class ConsulAdmin(admin.ModelAdmin):
-    list_display = ('name', 'host')
+    list_display = ('name', 'env', 'host')
+
+    fieldsets = (
+        (None, {
+            "fields": [
+                "name", "env",
+            ]
+        }),
+        ("Config", {
+            "fields": [
+                "host", "port"
+            ]
+        }),
+
+        ("Other", {
+
+            "fields": [
+                "description"
+            ]
+        })
+    )
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None:
+            return ['']
+        return ['env']
 
 
 class ServiceAdminForm(forms.ModelForm):
@@ -178,15 +202,117 @@ class ServiceAdminForm(forms.ModelForm):
 
     def __init__(self,*args,**kwargs):
         forms.ModelForm.__init__(self, *args, **kwargs)
-        self.fields['used_services'].queryset = models.Service.objects.filter(env=self.instance.env)
+        if self.instance.id > 0:
+            self.fields['used_services'].queryset = models.Service.objects.filter(env=self.instance.env).exclude(id=self.instance.id)
+            self.fields['service_provider'].queryset = models.Consul.objects.filter(env=self.instance.env)
+            self.fields['mysql_connections'].queryset = models.MySqlConnection.objects.filter(env=self.instance.env)
+            self.fields['elastic_apm'].queryset = models.ElastAPM.objects.filter(env=self.instance.env)
+            self.fields['event_bus'].queryset = models.EventBus.objects.filter(env=self.instance.env)
 
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'env', 'service_provider', 'mysql_connections', 'elast_apm', 'event_bus')
+    list_display = ('name', 'env', 'service_provider', 'event_bus','elastic_apm')
     ordering = ('name',)
     search_fields = ['name']
-    filter_horizontal = ('used_services',)
+    filter_horizontal = ('used_services', 'mysql_connections')
     list_filter = ('env',)
     form = ServiceAdminForm
+
+    fieldsets = (
+        (None, {
+            "fields": [
+                "name", "env"
+            ]
+        }),
+        ("Services", {
+            "fields": [
+                "service_provider", "used_services"
+            ]
+        }),
+
+        ("Database", {
+            "fields": [
+                "mysql_connections"
+            ]
+        }),
+
+        ("Event", {
+            "fields": [
+                "event_bus"
+            ]
+        }),
+
+        ("Log&Report", {
+            "fields": [
+                "elastic_apm"
+            ]
+        }),
+
+        ("Other", {
+
+            "fields": [
+                "description"
+            ]
+        })
+    )
+
+    def get_fieldsets(self, request, obj=None):
+        if obj is None:
+            return ((None, {
+                    "fields": [
+                        "name", "env"
+                    ]
+                }),
+
+                ("Other", {
+
+                    "fields": [
+                        "description"
+                    ]
+                })
+            )
+
+        return (
+            (None, {
+                "fields": [
+                    "name", "env"
+                ]
+            }),
+            ("Services", {
+                "fields": [
+                    "service_provider", "used_services"
+                ]
+            }),
+
+            ("Database", {
+                "fields": [
+                    "mysql_connections"
+                ]
+            }),
+
+            ("Event", {
+                "fields": [
+                    "event_bus"
+                ]
+            }),
+
+            ("Log&Report", {
+                "fields": [
+                    "elastic_apm"
+                ]
+            }),
+
+            ("Other", {
+
+                "fields": [
+                    "description"
+                ]
+            })
+        )
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None:
+            return ['service_provider', 'used_services', 'mysql_connections', 'event_bus', 'elastic_apm']
+        return ['env']
 
 class RouteAdmin(admin.ModelAdmin):
     list_display = ('name', 'upstream_path_template', 'downstream_path_template', 'priority', 'route_target', 'short_load_balancer',  'authentication_scheme', 'http_handler_options_title')
@@ -260,12 +386,83 @@ class MySqlConnnectionAdmin(admin.ModelAdmin):
     list_display = ('name', 'env', 'host', 'database', 'user', 'charset', 'is_tracer')
     ordering = ('name',)
     search_fields = ['name']
+    fieldsets = (
+        (None, {
+            "fields": [
+                "name", "env", "is_tracer"
+            ]
+        }),
+        ("Config", {
+            "fields": [
+                "host", "port", "user", "password", "database", "charset"
+            ]
+        }),
+
+        ("Other", {
+
+            "fields": [
+                "description"
+            ]
+        })
+    )
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None:
+            return ['']
+        return ['env']
+
 
 class EventBusAdmin(admin.ModelAdmin):
     list_display = ('host', 'env', 'user_name', 'retry_count')
+    fieldsets = (
+        (None, {
+            "fields": [
+                "default_subscription_client_name", "env",
+            ]
+        }),
+        ("Config", {
+            "fields": [
+                "host", "user_name", "password", "retry_count"
+            ]
+        }),
+
+        ("Other", {
+
+            "fields": [
+                "description"
+            ]
+        })
+    )
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None:
+            return ['']
+        return ['env']
 
 class ElasticAPMAdmin(admin.ModelAdmin):
     list_display = ('service_urls', 'env', 'log_level')
+
+    fieldsets = (
+        (None, {
+            "fields": [
+                "default_service_name", "env",
+            ]
+        }),
+        ("Config", {
+            "fields": [
+                "service_urls", "log_level"
+            ]
+        }),
+
+        ("Other", {
+
+            "fields": [
+                "description"
+            ]
+        })
+    )
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None:
+            return ['']
+        return ['env']
 
 admin.site.register(models.ApiGateway, ApiGatewayAdmin)
 admin.site.register(models.Consul, ConsulAdmin)

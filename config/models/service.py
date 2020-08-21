@@ -19,12 +19,12 @@ class Service(models.Model):
     service_provider = models.ForeignKey(Consul, verbose_name='Consul', on_delete=models.SET_NULL, default=None,
                                          blank=True, null=True)
 
-    mysql_connections = models.ForeignKey(MySqlConnection, verbose_name='DB Connnections', on_delete=models.SET_NULL, default=None,
-                                         blank=True, null=True)
+    mysql_connections = models.ManyToManyField(MySqlConnection, verbose_name='DB', default=None,
+                                       blank=True, null=True)
 
-    elast_apm = models.ForeignKey(ElastAPM, verbose_name='ElastAPM', on_delete=models.SET_NULL,
-                                          default=None,
-                                          blank=True, null=True)
+    elastic_apm = models.ForeignKey(ElastAPM, verbose_name='ElasticAPM', on_delete=models.SET_NULL,
+                                  default=None,
+                                  blank=True, null=True)
     event_bus = models.ForeignKey(EventBus, verbose_name='EventBus', on_delete=models.SET_NULL,
                                           default=None,
                                           blank=True, null=True)

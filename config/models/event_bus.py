@@ -9,7 +9,8 @@ class EventBus(models.Model):
     """
     eventbus apm config
     """
-    default_subscription_client_name=models.CharField('ClientName', max_length=50, default='SubscriptionClientName')
+    default_subscription_client_name=models.CharField('ClientName', max_length=50, default='SubscriptionClientName',
+                                                      help_text="will be replaced by service name")
     env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
     retry_count = models.IntegerField('Retry Count', default=5)
     host = models.CharField('Host', max_length=50, default='test.marvelsystem.net')
@@ -22,7 +23,7 @@ class EventBus(models.Model):
         app_label = 'config'
 
     def __unicode__(self):
-        return u'EventBus-%s' % self.host
+        return u'eventbus-%s %s' % (self.host, self.env)
 
     def to_dict(self):
         dict = {

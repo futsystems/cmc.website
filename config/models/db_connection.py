@@ -24,7 +24,7 @@ class MySqlConnection(models.Model):
         app_label = 'config'
 
     def __unicode__(self):
-        return u'Consul-%s' % self.name
+        return u'db-%s %s' % (self.name, self.env)
 
     def to_dict(self):
         dict = {

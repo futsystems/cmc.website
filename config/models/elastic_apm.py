@@ -9,7 +9,8 @@ class ElastAPM(models.Model):
     """
     elastic apm config
     """
-    default_service_name = models.CharField('Default Service Name', max_length=50, default='DefualtService')
+    default_service_name = models.CharField('Default Service Name', max_length=50, default='DefualtService',
+                                            help_text="will be replaced by service name")
     env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
     service_urls = models.CharField('Host', max_length=50, default='http://apm.marvelsystem.net:8200')
     log_level = models.CharField(verbose_name='LogLevel', max_length=20, choices=LOG_LEVEL_NET_CORE, default='Debug')
@@ -19,7 +20,7 @@ class ElastAPM(models.Model):
         app_label = 'config'
 
     def __unicode__(self):
-        return u'ElastAPM-%s' % self.service_urls
+        return u'apm-%s-%s' % (self.service_urls, self.env)
 
     def to_dict(self):
         dict = {
