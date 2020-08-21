@@ -4,6 +4,9 @@ from .consul import Consul
 
 from .choices import ENV_STAGE, GATEWAY_TYPE
 
+import json
+from eventbus import EventBublisher
+from eventbus import CMCGatewayConfigUpdate
 
 class ApiGateway(models.Model):
     """
@@ -21,6 +24,21 @@ class ApiGateway(models.Model):
     date_created = models.DateTimeField('created time', auto_now=True, blank=True, null=True)
     default_config = models.ForeignKey('ApiGatewayConfig', verbose_name='Default Config', on_delete=models.SET_NULL, default=None,
                                          blank=True, null=True)
+
+    __original_default_config = None
+
+    def __init__(self, *args, **kwargs):
+        super(ApiGateway, self).__init__(*args, **kwargs)
+        self.__original_default_config = self.default_config
+
+    def save(self, force_insert=False, force_update=False, *args, **kwargs):
+        if self.default_config != self.__original_default_config:
+            ev = CMCGatewayConfigUpdate(self.gw_type, self.env)
+            EventBublisher().send_message(ev)
+
+        super(ApiGateway, self).save(force_insert, force_update, *args, **kwargs)
+        self.__original_default_config = self.default_config
+
     class Meta:
         unique_together = ('gw_type', 'env',)
         app_label = 'config'
@@ -38,16 +56,20 @@ class ApiGateway(models.Model):
     default_config_title.short_description = "Default Config"
 
     def get_ocelot_config(self):
-        global_cfg = {
-            'BaseUrl':self.base_url,
-        }
+        if self.default_config is None:
+            global_cfg = {
+                'BaseUrl':self.base_url,
+            }
 
-        if self.service_provider != None:
-            global_cfg['ServiceDiscoveryProvider'] = self.service_provider.to_dict()
+            if self.service_provider != None:
+                global_cfg['ServiceDiscoveryProvider'] = self.service_provider.to_dict()
 
-        config = {
-            'Routes': [item.to_dict() for item in self.routes.all().order_by('name')],
-            'GlobalConfiguration': global_cfg
-        }
+            config = {
+                'Routes': [item.to_dict() for item in self.routes.all().order_by('name')],
+                'GlobalConfiguration': global_cfg
+            }
 
-        return config
+            return config
+        else:
+            print 'use config in db'
+            return json.loads(self.default_config.config)

@@ -14,6 +14,7 @@ from django.db import connection
 from django.utils.html import format_html
 from django import forms
 from django.shortcuts import render_to_response
+from django.db.models import Max
 
 import logging,traceback,json
 logger = logging.getLogger(__name__)
@@ -21,15 +22,16 @@ logger = logging.getLogger(__name__)
 import models
 from eventbus import EventBublisher
 from eventbus import CMCGatewayConfigUpdate
+import hashlib
 
 
 class ApiGatewayConfigAdmin(admin.ModelAdmin):
-    list_display = ('version', 'gateway', 'date_created')
+    list_display = ('version', 'gateway', 'md5', 'date_created')
     list_filter = ('gateway',)
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
             return []
-        return ['config', 'gateway']
+        return ['config', 'gateway', 'md5', 'version']
 
 class ApiGatewayAdminForm(forms.ModelForm):
     class Meta:
@@ -102,16 +104,34 @@ class ApiGatewayAdmin(admin.ModelAdmin):
         messages.info(request, "demo operation:%s" % gw_id)
         gw = models.ApiGateway.objects.get(id=gw_id)
 
-        response = HttpResponse(json.dumps(gw.get_ocelot_config(),indent=4), content_type='application/txt')
+        response = HttpResponse(json.dumps(gw.get_ocelot_config(), indent=4), content_type='application/txt')
         response['Content-Disposition'] = 'attachment; filename=ocelot_%s.config' % gw.name
         return response
 
     def snapshot_config(self, request, gw_id):
-        messages.info(request, "demo operation:%s" % gw_id)
+
         gw = models.ApiGateway.objects.get(id=gw_id)
-        models.ApiGatewayConfig.objects.create(gateway=gw, config=json.dumps(gw.get_ocelot_config()))
-        #response = HttpResponse(json.dumps(gw.get_ocelot_config(),indent=4), content_type='application/txt')
-        #response['Content-Disposition'] = 'attachment; filename=ocelot_%s.config' % gw.name
+        config = json.dumps(gw.get_ocelot_config(), indent=4)
+        m = hashlib.md5()
+        m.update(config)
+        md5 = m.hexdigest()
+
+        args = models.ApiGatewayConfig.objects.filter(gateway=gw)
+        max_version = args.aggregate(Max('version'))
+        max_version_val = max_version['version__max']
+        if max_version_val is  None:
+            next_version = '1.0'
+        else:
+            next_version = str((float(max_version['version__max']) * 10 + 1 )/10)
+
+        # check if config is exist
+        if models.ApiGatewayConfig.objects.filter(md5=md5).count() > 0:
+            same_config = models.ApiGatewayConfig.objects.filter(md5=md5).first()
+            messages.info(request, "Config same with version:%s" % same_config.version)
+            previous_url = request.META.get('HTTP_REFERER')
+            return HttpResponseRedirect(previous_url)
+
+        models.ApiGatewayConfig.objects.create(gateway=gw, config=config, md5=md5, version=next_version)
         messages.info(request, "Config Snapshot Success")
         previous_url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(previous_url)
