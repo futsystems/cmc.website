@@ -257,7 +257,7 @@ class HeadTransformAdmin(admin.ModelAdmin):
     list_display = ('name', 'header_key', 'header_value')
 
 class MySqlConnnectionAdmin(admin.ModelAdmin):
-    list_display = ('name', 'env', 'host', 'user', 'charset', 'is_tracer')
+    list_display = ('name', 'env', 'host', 'database', 'user', 'charset', 'is_tracer')
     ordering = ('name',)
     search_fields = ['name']
 
