@@ -31,3 +31,15 @@ LOADBALANCER_SCHEME = (
     ('LeastConnection', 'LeastConnection'),
     ('RoundRobin', 'RoundRobin'),
 )
+
+MYSQL_CHARSET= (
+    ('utf8mb4', 'utf8mb4'),
+    ('utf8', 'utf8'),
+)
+
+
+LOG_LEVEL_NET_CORE= (
+    ('Error', 'Error'),
+    ('Debug', 'Debug'),
+    ('Information', 'Information'),
+)

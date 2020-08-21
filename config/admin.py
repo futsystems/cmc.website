@@ -171,17 +171,29 @@ class ConsulAdmin(admin.ModelAdmin):
     list_display = ('name', 'host')
 
 
+class ServiceAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.ApiGateway
+        exclude = []
+
+    def __init__(self,*args,**kwargs):
+        forms.ModelForm.__init__(self, *args, **kwargs)
+        self.fields['used_services'].queryset = models.Service.objects.filter(env=self.instance.env)
+
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name', 'env', 'service_provider', 'mysql_connections', 'elast_apm', 'event_bus')
     ordering = ('name',)
     search_fields = ['name']
+    filter_horizontal = ('used_services',)
+    list_filter = ('env',)
+    form = ServiceAdminForm
 
 class RouteAdmin(admin.ModelAdmin):
     list_display = ('name', 'upstream_path_template', 'downstream_path_template', 'priority', 'route_target', 'short_load_balancer',  'authentication_scheme', 'http_handler_options_title')
     list_filter = ('service', 'authentication_scheme')
     ordering = ('name',)
     search_fields = ['name', 'upstream_path_template']
-
+    filter_horizontal = ('upstream_http_method', 'upstream_header_transform')
     fieldsets = (
         (None, {
             "fields": [
@@ -244,6 +256,17 @@ class HttpMethodAdmin(admin.ModelAdmin):
 class HeadTransformAdmin(admin.ModelAdmin):
     list_display = ('name', 'header_key', 'header_value')
 
+class MySqlConnnectionAdmin(admin.ModelAdmin):
+    list_display = ('name', 'env', 'host', 'user', 'charset', 'is_tracer')
+    ordering = ('name',)
+    search_fields = ['name']
+
+class EventBusAdmin(admin.ModelAdmin):
+    list_display = ('host', 'env', 'user_name', 'retry_count')
+
+class ElasticAPMAdmin(admin.ModelAdmin):
+    list_display = ('service_urls', 'env', 'log_level')
+
 admin.site.register(models.ApiGateway, ApiGatewayAdmin)
 admin.site.register(models.Consul, ConsulAdmin)
 admin.site.register(models.Service, ServiceAdmin)
@@ -256,3 +279,6 @@ admin.site.register(models.HttpMethod, HttpMethodAdmin)
 admin.site.register(models.HeaderTransform, HeadTransformAdmin)
 
 admin.site.register(models.ApiGatewayConfig, ApiGatewayConfigAdmin)
+admin.site.register(models.MySqlConnection, MySqlConnnectionAdmin)
+admin.site.register(models.EventBus, EventBusAdmin)
+admin.site.register(models.ElastAPM, ElasticAPMAdmin)
