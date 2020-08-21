@@ -217,44 +217,6 @@ class ServiceAdmin(admin.ModelAdmin):
     list_filter = ('env',)
     form = ServiceAdminForm
 
-    fieldsets = (
-        (None, {
-            "fields": [
-                "name", "env"
-            ]
-        }),
-        ("Services", {
-            "fields": [
-                "service_provider", "used_services"
-            ]
-        }),
-
-        ("Database", {
-            "fields": [
-                "mysql_connections"
-            ]
-        }),
-
-        ("Event", {
-            "fields": [
-                "event_bus"
-            ]
-        }),
-
-        ("Log&Report", {
-            "fields": [
-                "elastic_apm"
-            ]
-        }),
-
-        ("Other", {
-
-            "fields": [
-                "description"
-            ]
-        })
-    )
-
     def get_fieldsets(self, request, obj=None):
         if obj is None:
             return ((None, {
@@ -279,7 +241,7 @@ class ServiceAdmin(admin.ModelAdmin):
             }),
             ("Services", {
                 "fields": [
-                    "service_provider", "used_services"
+                    "service_provider", "used_services", "support_rpc", "support_api"
                 ]
             }),
 
@@ -464,6 +426,13 @@ class ElasticAPMAdmin(admin.ModelAdmin):
             return ['']
         return ['env']
 
+class LogItemAdmin(admin.ModelAdmin):
+    list_display = ('prefix', 'level')
+
+class LogItemGroupAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    filter_horizontal = ('items',)
+
 admin.site.register(models.ApiGateway, ApiGatewayAdmin)
 admin.site.register(models.Consul, ConsulAdmin)
 admin.site.register(models.Service, ServiceAdmin)
@@ -479,3 +448,6 @@ admin.site.register(models.ApiGatewayConfig, ApiGatewayConfigAdmin)
 admin.site.register(models.MySqlConnection, MySqlConnnectionAdmin)
 admin.site.register(models.EventBus, EventBusAdmin)
 admin.site.register(models.ElastAPM, ElasticAPMAdmin)
+
+admin.site.register(models.LogItem, LogItemAdmin)
+admin.site.register(models.LogItemGroup, LogItemGroupAdmin)

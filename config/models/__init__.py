@@ -17,3 +17,5 @@ from gw_config import ApiGatewayConfig
 from db_connection import MySqlConnection
 from event_bus import EventBus
 from elastic_apm import ElastAPM
+from log_item import LogItem
+from log_item import LogItemGroup
