@@ -12,21 +12,24 @@ import json
 
 logger = logging.getLogger(__name__)
 
-opts = salt.config.master_config('/etc/salt/master')
-wheel = salt.wheel.WheelClient(opts)
-local = salt.client.LocalClient()
-runner = salt.runner.RunnerClient(opts)
+#opts = salt.config.master_config('/etc/salt/master')
+#wheel = salt.wheel.WheelClient(opts)
+#local = salt.client.LocalClient()
+#runner = salt.runner.RunnerClient(opts)
 
 
 
 def highstate(server):
-    pillar = server.get_pillar()
-    local.cmd(pillar.name, 'state.highstate', kwarg={'pillar': pillar})
+    #pillar = server.get_pillar()
+    #local.cmd(pillar.name, 'state.highstate', kwarg={'pillar': pillar})
+    pass
 
 def ping(server):
-    pillar = server.get_pillar()
-    local.cmd(pillar.name, 'test.ping')
+    #pillar = server.get_pillar()
+    #local.cmd(pillar.name, 'test.ping')
+    pass
 
 def reboot(server):
-    pillar = server.get_pillar()
-    local.cmd(pillar.name, 'system.reboot')
+    #pillar = server.get_pillar()
+    #local.cmd(pillar.name, 'system.reboot')
+    pass
