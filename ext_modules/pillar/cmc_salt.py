@@ -29,12 +29,12 @@ import json
 # Set up logging
 logger = logging.getLogger(__name__)
 
-def ext_pillar(minion_id, pillar,**kwargs):
+def ext_pillar(minion_id, pillar, args):
     """
     Read pillar data from cmc system via its API.
     """
-    logger.info('get pillar for minion_id:%s pillar:%s api:%s' % (minion_id, pillar, kwargs))
-    api_url = kwargs.get('api', 'http://127.0.0.1/config/salt/pillar')
+    logger.info('get pillar for minion_id:%s pillar:%s api:%s' % (minion_id, pillar, args))
+    api_url = args.get('api', 'http://127.0.0.1/config/salt/pillar')
     pillar_url = "%s%s" % (api_url,minion_id)
 
     return {
