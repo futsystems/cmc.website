@@ -9,5 +9,5 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 import views
 
 urlpatterns = [
-    url(r'^pillar/$', views.salt_pillar, name='salt_pillar'),
+    url(r'^salt/pillar/$', views.salt_pillar, name='salt_pillar'),
 ]

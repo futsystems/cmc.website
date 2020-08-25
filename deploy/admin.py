@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.contrib import admin
 
 # Register your models here.
-from salt import  helper
+
 
 from django.conf.urls import url
 from django.core.urlresolvers import reverse
@@ -25,7 +25,7 @@ import models
 from eventbus import EventBublisher
 from eventbus import CMCGatewayConfigUpdate
 import hashlib
-
+from common import  salt_helper
 
 class ServerAdminForm(forms.ModelForm):
     class Meta:
@@ -90,13 +90,13 @@ class ServerAdmin(admin.ModelAdmin):
     def salt_highstate(self, request, server_id):
         server = models.Server.objects.get(id= server_id)
         messages.info(request, "Hightstate Server:%s" % server.name)
-        helper.highstate(server)
+        salt_helper.highstate(server)
         previous_url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(previous_url)
 
     def salt_ping(self, request, server_id):
         server = models.Server.objects.get(id= server_id)
-        result = helper.ping(server)
+        result = salt_helper.ping(server)
         messages.info(request, "Reboot Server:%s Result:%s" % (server.name, result))
 
         previous_url = request.META.get('HTTP_REFERER')
@@ -105,7 +105,7 @@ class ServerAdmin(admin.ModelAdmin):
     def salt_reboot(self, request, server_id):
         server = models.Server.objects.get(id= server_id)
         messages.info(request, "Hightstate Server:%s" % server.name)
-        helper.reboot(server)
+        salt_helper.reboot(server)
         previous_url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(previous_url)
 

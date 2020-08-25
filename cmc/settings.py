@@ -40,8 +40,8 @@ INSTALLED_APPS = (
 
     'config',
     'deploy',
-    'salt',
     'eventbus',
+    'common'
 )
 
 MIDDLEWARE_CLASSES = (
