@@ -37,8 +37,19 @@ def ext_pillar(minion_id, pillar, args):
     api_url = args.get('api', 'http://127.0.0.1/config/salt/pillar')
     pillar_url = "%s%s" % (api_url,minion_id)
 
+    partion={
+        'env', 'Development'
+        'name', 'Partion',
+
+    }
+
+    common={
+        'env', 'Development'
+        'name', 'Common'
+    }
+
     return {
-        'env': 'Development',
+        'services': [partion, common]
 
     }
 
