@@ -19,9 +19,11 @@ from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 from config import urls as config_urls
+from salt import urls as salt_urls
 
 urlpatterns = [
     url(r'^config/', include(config_urls)),
+    url(r'^salt/', include(salt_urls)),
     url(r'^admin/', include(admin.site.urls)),
 ]
 

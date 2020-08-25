@@ -34,26 +34,21 @@ def ext_pillar(minion_id, pillar, args):
     Read pillar data from cmc system via its API.
     """
     logger.info('get pillar for minion_id:%s pillar:%s api:%s' % (minion_id, pillar, args))
-    api_url = args.get('api', 'http://127.0.0.1/config/salt/pillar')
-    pillar_url = "%s%s" % (api_url,minion_id)
+    api_url = args.get('api', 'http://127.0.0.1/salt/pillar')
+    pillar_url = "%s?minion_id=%s" % (api_url, minion_id)
 
-    partion={
-        'env': 'Development',
-        'name': 'Partion',
-        'service_name': 'srv.partion'
+    logger.info("Querying NMS system Pillar for %r via url:%s" % (minion_id, pillar_url))
+    try:
+        response = urllib2.urlopen(pillar_url).read()
+        result = json.loads(response)
+        logger.info('Result:%s' % result)
+    except Exception, e:
+        logger.exception(
+            'Query NMS system failed! Error: %s' % (e)
+        )
+        return {}
 
-    }
-
-    common={
-        'env': 'Development',
-        'name': 'Common',
-        'service_name': 'srv.common'
-    }
-
-    return {
-        'services': [partion, common]
-
-    }
+    return result
 
     #logger.info("Querying NMS system Pillar for %r via url:%s" % ( minion_id,pillar_url))
     #try:
