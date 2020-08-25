@@ -6,8 +6,8 @@ flask
 
 #django
 Django==1.10.4
-django-flat-theme
-django-flat-responsive
+#django-flat-theme
+#django-flat-responsive
 #django-multiselectfield
 #requests
 
@@ -15,8 +15,8 @@ django-flat-responsive
 #django-redis==4.8.0
 
 #gunicorn
-gunicorn==19.7.1
-gevent
+#gunicorn==19.7.1
+#gevent
 
 #celery
 #celery==3.1.25
@@ -25,9 +25,9 @@ gevent
 #skpy
 
 #rabbitmq
-pika==1.1.0
+#pika==1.1.0
 
 #salt
-salt==2019.2.5
+#salt==2019.2.5
 
 
