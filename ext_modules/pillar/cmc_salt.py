@@ -38,14 +38,14 @@ def ext_pillar(minion_id, pillar, args):
     pillar_url = "%s%s" % (api_url,minion_id)
 
     partion={
-        'env', 'Development'
-        'name', 'Partion',
+        'env': 'Development',
+        'name': 'Partion',
 
     }
 
     common={
-        'env', 'Development'
-        'name', 'Common'
+        'env':'Development',
+        'name': 'Common'
     }
 
     return {
