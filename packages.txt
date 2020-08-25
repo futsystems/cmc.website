@@ -27,3 +27,7 @@ gevent
 #rabbitmq
 pika==1.1.0
 
+#salt
+salt==2019.2.5
+
+

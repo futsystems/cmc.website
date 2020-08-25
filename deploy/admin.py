@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.contrib import admin
 
 # Register your models here.
+from salt import  helper
 
 from django.conf.urls import url
 from django.core.urlresolvers import reverse
@@ -38,13 +39,75 @@ class ServerAdminForm(forms.ModelForm):
 
 
 class ServerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'location', 'ip')
+    list_display = ('name', 'location', 'ip', 'salt_action')
     filter_horizontal = ('installed_services', 'installed_services')
     form = ServerAdminForm
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
             return ['installed_services',]
         return ['env']
+
+    def salt_action(self, obj):
+        """
+
+        """
+        return format_html(
+            '<a class="button" href="{}">Highstate</a>&nbsp;'
+            '<a class="button" href="{}">Ping</a>&nbsp;'
+            '<a class="button" href="{}">Reboot</a>&nbsp;',
+            reverse('admin:salt-highstate', args=[obj.pk]),
+            reverse('admin:salt-ping', args=[obj.pk]),
+            reverse('admin:salt-reboot', args=[obj.pk]),
+        )
+
+    salt_action.allow_tags = True
+    salt_action.short_description = "Action"
+
+    def get_urls(self):
+        # use get_urls for easy adding of views to the admin
+        urls = super(ServerAdmin, self).get_urls()
+        my_urls = [
+            url(
+                r'^(?P<server_id>.+)/highstate/$',
+                self.admin_site.admin_view(self.salt_highstate),
+                name='salt-highstate',
+            ),
+
+            url(
+                r'^(?P<server_id>.+)/ping/$',
+                self.admin_site.admin_view(self.salt_ping),
+                name='salt-ping',
+            ),
+            url(
+                r'^(?P<server_id>.+)/reboot/$',
+                self.admin_site.admin_view(self.salt_reboot),
+                name='salt-reboot',
+            ),
+        ]
+
+        return my_urls + urls
+
+    def salt_highstate(self, request, server_id):
+        server = models.Server.objects.get(id= server_id)
+        messages.info(request, "Hightstate Server:%s" % server.name)
+        helper.highstate(server)
+        previous_url = request.META.get('HTTP_REFERER')
+        return HttpResponseRedirect(previous_url)
+
+    def salt_ping(self, request, server_id):
+        server = models.Server.objects.get(id= server_id)
+        result = helper.ping(server)
+        messages.info(request, "Reboot Server:%s Result:%s" % (server.name, result))
+
+        previous_url = request.META.get('HTTP_REFERER')
+        return HttpResponseRedirect(previous_url)
+
+    def salt_reboot(self, request, server_id):
+        server = models.Server.objects.get(id= server_id)
+        messages.info(request, "Hightstate Server:%s" % server.name)
+        helper.reboot(server)
+        previous_url = request.META.get('HTTP_REFERER')
+        return HttpResponseRedirect(previous_url)
 
 
 
