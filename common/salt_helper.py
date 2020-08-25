@@ -28,16 +28,16 @@ logger = logging.getLogger(__name__)
 def highstate(server):
     pillar = server.get_pillar()
     local = client.LocalClient()
-    local.cmd(pillar.name, 'state.highstate', kwarg={'pillar': pillar})
+    local.cmd(server.name, 'state.highstate', kwarg={'pillar': pillar})
     pass
 
 def ping(server):
     pillar = server.get_pillar()
     local = client.LocalClient()
-    local.cmd(pillar.name, 'test.ping')
+    local.cmd(server.name, 'test.ping')
 
 
 def reboot(server):
     pillar = server.get_pillar()
     local = client.LocalClient()
-    local.cmd(pillar.name, 'system.reboot')
+    local.cmd(server.name, 'system.reboot')
