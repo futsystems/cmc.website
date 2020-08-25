@@ -34,7 +34,7 @@ def ext_pillar(minion_id, pillar, args):
     Read pillar data from cmc system via its API.
     """
     logger.info('get pillar for minion_id:%s pillar:%s api:%s' % (minion_id, pillar, args))
-    api_url = args.get('api', 'http://127.0.0.1/salt/pillar')
+    api_url = args.get('api', 'http://127.0.0.1/deploy/server/pillar')
     pillar_url = "%s?minion_id=%s" % (api_url, minion_id)
 
     logger.info("Querying NMS system Pillar for %r via url:%s" % (minion_id, pillar_url))
