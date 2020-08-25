@@ -266,7 +266,7 @@ class ServiceAdmin(admin.ModelAdmin):
             ("Other", {
 
                 "fields": [
-                    "description"
+                    "description", "pipeline_trigger"
                 ]
             })
         )

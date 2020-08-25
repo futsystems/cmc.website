@@ -43,6 +43,8 @@ class Service(models.Model):
     #section_name = models.CharField('Section Name', max_length=50, default=None, blank=True, null=True)
     description = models.CharField('Description', max_length=1000, default='', blank=True)
 
+    pipeline_trigger = models.CharField('Pipeline Trigger', max_length=1000, default='', blank=True)
+
     class Meta:
         app_label = 'config'
         unique_together = ('name', 'env',)
@@ -107,7 +109,8 @@ class Service(models.Model):
             'env': self.env,
             'minion_id': self.env,
             'name': self.name,
-            'service_name': 'srv.%s' % self.name.lower()
+            'service_name': 'srv.%s' % self.name.lower(),
+            'pipeline_trigger': self.pipeline_trigger
         }
 
 
