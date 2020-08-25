@@ -2,7 +2,7 @@
 mysql-python
 
 #flask
-flask
+#flask
 
 #django
 Django==1.10.4
@@ -15,8 +15,8 @@ Django==1.10.4
 #django-redis==4.8.0
 
 #gunicorn
-#gunicorn==19.7.1
-#gevent
+gunicorn==19.7.1
+gevent
 
 #celery
 #celery==3.1.25
@@ -25,7 +25,7 @@ Django==1.10.4
 #skpy
 
 #rabbitmq
-#pika==1.1.0
+pika==1.1.0
 
 #salt
 #salt==2019.2.5
