@@ -9,6 +9,7 @@ from django.views.generic import TemplateView, ListView, DetailView, CreateView
 
 from models import ApiGateway,Service
 from common import Response,Success,Error
+import hashlib
 
 import logging, traceback
 logger = logging.getLogger(__name__)
@@ -61,5 +62,30 @@ def service(request):
                 return json_response(Error("gateway config do not exist"))
 
             return json_response(services.get_config())
+        except Exception:
+            return json_response(Error("get service list error"))
+
+def service_hash(request):
+    if request.method == "POST":
+        return HttpResponse("POST not support")
+    else:
+        try:
+            service_name = request.GET.get("name")
+            env = request.GET.get("env")
+            logger.info('get config hash of service:%s env:%s' % (service_name, env))
+
+            services = Service.objects.filter(env__iexact=env, name=service_name).first()
+            if services is None:
+                return json_response(Error("gateway config do not exist"))
+
+            config = json.dumps(services.get_config(), indent=4)
+            logging.info('config:%s' % config)
+            
+            m = hashlib.md5()
+            m.update(config)
+            md5 = m.hexdigest()
+
+            return HttpResponse(md5)
+
         except Exception:
             return json_response(Error("get service list error"))

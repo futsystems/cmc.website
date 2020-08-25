@@ -13,4 +13,5 @@ urlpatterns = [
     url(r'^service/list/$', views.service_list, name='config_services_list'),
 
     url(r'^service/$', views.service, name='config_services'),
+    url(r'^service/hash/$', views.service_hash, name='config_services_hash'),
 ]
