@@ -40,12 +40,14 @@ def ext_pillar(minion_id, pillar, args):
     partion={
         'env': 'Development',
         'name': 'Partion',
+        'path': 'srv.partion'
 
     }
 
     common={
-        'env':'Development',
-        'name': 'Common'
+        'env': 'Development',
+        'name': 'Common',
+        'path': 'srv.common'
     }
 
     return {
