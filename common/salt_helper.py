@@ -2,6 +2,7 @@
 #!/usr/bin/python
 
 import salt
+from salt import client
 #import salt.client
 #import salt.config
 #import salt.wheel
@@ -26,17 +27,17 @@ logger = logging.getLogger(__name__)
 
 def highstate(server):
     pillar = server.get_pillar()
-    local = salt.client.LocalClient()
+    local = client.LocalClient()
     local.cmd(pillar.name, 'state.highstate', kwarg={'pillar': pillar})
     pass
 
 def ping(server):
     pillar = server.get_pillar()
-    local = salt.client.LocalClient()
+    local = client.LocalClient()
     local.cmd(pillar.name, 'test.ping')
 
 
 def reboot(server):
     pillar = server.get_pillar()
-    local = salt.client.LocalClient()
+    local = client.LocalClient()
     local.cmd(pillar.name, 'system.reboot')
