@@ -210,7 +210,7 @@ class ServiceAdminForm(forms.ModelForm):
             self.fields['event_bus'].queryset = models.EventBus.objects.filter(env=self.instance.env)
 
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'env', 'service_provider', 'event_bus','elastic_apm')
+    list_display = ('name', 'env', 'service_provider', 'event_bus', 'elastic_apm', 'support_rpc', 'rpc_port', 'support_api', 'api_port')
     ordering = ('name',)
     search_fields = ['name']
     filter_horizontal = ('used_services', 'mysql_connections')
@@ -241,7 +241,7 @@ class ServiceAdmin(admin.ModelAdmin):
             }),
             ("Services", {
                 "fields": [
-                    "service_provider", "used_services", "support_rpc", "support_api"
+                    "service_provider", "used_services", "support_rpc", "rpc_port", "support_api", "api_port"
                 ]
             }),
 

@@ -80,7 +80,7 @@ def service_hash(request):
 
             config = json.dumps(services.get_config(), indent=4)
             logging.info('config:%s' % config)
-            
+
             m = hashlib.md5()
             m.update(config)
             md5 = m.hexdigest()

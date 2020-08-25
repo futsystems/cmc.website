@@ -31,8 +31,10 @@ class Service(models.Model):
                                           blank=True, null=True)
 
     support_rpc = models.BooleanField('RPC Support', default=True)
+    rpc_port = models.IntegerField('RPC Port', default=91)
 
     support_api = models.BooleanField('HTTP Support', default=True)
+    api_port = models.IntegerField('Http Port', default=90)
 
     log_level = models.ForeignKey(LogItemGroup, verbose_name='LogLevel', on_delete=models.SET_NULL,default=None,
                                   blank=True, null=True)
@@ -87,7 +89,7 @@ class Service(models.Model):
                 'Name': '%sAPI' % self.name,
                 'Host': 'localhost',
                 'Protocol': 0,
-                'Port': 90
+                'Port': self.api_port
             }
 
         if self.support_rpc:
@@ -95,7 +97,7 @@ class Service(models.Model):
                 'Name': '%sRPC' % self.name,
                 'Host': 'localhost',
                 'Protocol': 1,
-                'Port': 91
+                'Port': self.rpc_port
             }
         return dict
 
