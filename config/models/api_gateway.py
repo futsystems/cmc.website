@@ -139,7 +139,7 @@ class ApiGateway(models.Model):
 
         dict['CMCGatewayConfig']={
             "Type": "gw.api",
-            "Url": "http://118.31.174.160",
+            "Url": "http://cmc.marvelsystem.net",
             "Token": "222"
         }
         return dict
