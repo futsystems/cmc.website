@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 def __virtual__():
     return 'demo'
 
-def test():
+def test(minion_id):
     logging.info('demo.test is called')
-    return False
+    return (False, 'minion do not exist')
 
