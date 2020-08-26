@@ -293,7 +293,7 @@ class ServiceAdmin(admin.ModelAdmin):
         return ['env']
 
 class RouteActionForm(ActionForm):
-    gateway = forms.ChoiceField(widget=forms.Select, choices=models.ApiGateway.objects.all().values_list('id', 'name'), required=True)
+    gateway = forms.CharField()#ChoiceField(widget=forms.Select, choices=models.ApiGateway.objects.all().values_list('id', 'name'), required=True)
 
 def copy_to_gateway(modeladmin, request, queryset):
     gateway = models.ApiGateway.objects.filter(id=request.POST['gateway']).first()
