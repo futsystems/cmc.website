@@ -22,7 +22,7 @@ class Service(models.Model):
     service_provider = models.ForeignKey(Consul, verbose_name='Consul', on_delete=models.SET_NULL, default=None,
                                          blank=True, null=True)
 
-    mysql_connections = models.ManyToManyField(MySqlConnection, verbose_name='MySql Connections')
+    mysql_connections = models.ManyToManyField(MySqlConnection, verbose_name='MySql Connections', blank=True)
 
     elastic_apm = models.ForeignKey(ElastAPM, verbose_name='ElasticAPM', on_delete=models.SET_NULL,
                                   default=None,
@@ -40,7 +40,7 @@ class Service(models.Model):
     log_level = models.ForeignKey(LogItemGroup, verbose_name='LogLevel', on_delete=models.SET_NULL,default=None,
                                   blank=True, null=True)
 
-    other_settings = models.ManyToManyField(SettingGroup, verbose_name='Other Settings')
+    other_settings = models.ManyToManyField(SettingGroup, verbose_name='Other Settings', blank=True)
     #used in for
     #section_name = models.CharField('Section Name', max_length=50, default=None, blank=True, null=True)
     description = models.CharField('Description', max_length=1000, default='', blank=True)
