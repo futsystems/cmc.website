@@ -19,3 +19,6 @@ from event_bus import EventBus
 from elastic_apm import ElastAPM
 from log_item import LogItem
 from log_item import LogItemGroup
+
+from setting import SettingGroup
+from setting import SettingItem

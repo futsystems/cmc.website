@@ -62,8 +62,9 @@ def service(request):
                 return json_response(Error("gateway config do not exist"))
 
             return json_response(services.get_config())
-        except Exception:
-            return json_response(Error("get service list error"))
+        except Exception as e:
+            logging.error('error:',e)
+            return json_response(Error("get service config error"))
 
 def service_hash(request):
     if request.method == "POST":

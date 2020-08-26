@@ -213,7 +213,7 @@ class ServiceAdmin(admin.ModelAdmin):
     list_display = ('name', 'env', 'service_provider', 'event_bus', 'elastic_apm', 'support_rpc', 'rpc_port', 'support_api', 'api_port')
     ordering = ('name',)
     search_fields = ['name']
-    filter_horizontal = ('used_services', 'mysql_connections')
+    filter_horizontal = ('used_services', 'mysql_connections', 'other_settings')
     list_filter = ('env',)
     form = ServiceAdminForm
 
@@ -266,7 +266,7 @@ class ServiceAdmin(admin.ModelAdmin):
             ("Other", {
 
                 "fields": [
-                    "description", "pipeline_trigger"
+                    "other_settings", "description", "pipeline_trigger"
                 ]
             })
         )
@@ -433,6 +433,13 @@ class LogItemGroupAdmin(admin.ModelAdmin):
     list_display = ('name',)
     filter_horizontal = ('items',)
 
+class SettingGroupAdmin(admin.ModelAdmin):
+    list_display = ('group_name', 'description')
+
+class SettingItemAdmin(admin.ModelAdmin):
+    list_display = ('setting_group', 'setting_key', 'setting_value', 'description')
+    list_filter = ('setting_group',)
+
 admin.site.register(models.ApiGateway, ApiGatewayAdmin)
 admin.site.register(models.Consul, ConsulAdmin)
 admin.site.register(models.Service, ServiceAdmin)
@@ -451,3 +458,6 @@ admin.site.register(models.ElastAPM, ElasticAPMAdmin)
 
 admin.site.register(models.LogItem, LogItemAdmin)
 admin.site.register(models.LogItemGroup, LogItemGroupAdmin)
+
+admin.site.register(models.SettingGroup, SettingGroupAdmin)
+admin.site.register(models.SettingItem, SettingItemAdmin)

@@ -31,7 +31,7 @@ def initialize_logger(output_dir):
     logger.addHandler(handler)
 
 
-initialize_logger('../../logs/')
+initialize_logger('logs/')
 
 
 

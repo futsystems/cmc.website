@@ -5,6 +5,7 @@ from elastic_apm import ElastAPM
 from event_bus import EventBus
 from consul import Consul
 from log_item import LogItemGroup
+from setting import SettingGroup
 
 class Service(models.Model):
     """
@@ -39,6 +40,7 @@ class Service(models.Model):
     log_level = models.ForeignKey(LogItemGroup, verbose_name='LogLevel', on_delete=models.SET_NULL,default=None,
                                   blank=True, null=True)
 
+    other_settings = models.ManyToManyField(SettingGroup, verbose_name='Other Settings')
     #used in for
     #section_name = models.CharField('Section Name', max_length=50, default=None, blank=True, null=True)
     description = models.CharField('Description', max_length=1000, default='', blank=True)
@@ -101,6 +103,9 @@ class Service(models.Model):
                 'Protocol': 1,
                 'Port': self.rpc_port
             }
+
+        for setting_group in self.other_settings.all():
+            dict[setting_group.group_name] = setting_group.to_dict()
         return dict
 
 
