@@ -68,7 +68,7 @@ class Service(models.Model):
     def get_config(self, ip=None):
         dict={}
         ex_ip = 'localhost'
-
+        dict['AllowedHosts'] = "*"
         if ip is not None:
             ex_ip = ip
         if self.log_level is not None:

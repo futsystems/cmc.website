@@ -75,9 +75,14 @@ class ApiGatewayAdminForm(forms.ModelForm):
     def __init__(self,*args,**kwargs):
         forms.ModelForm.__init__(self, *args, **kwargs)
         self.fields['default_config'].queryset = models.ApiGatewayConfig.objects.filter(gateway=self.instance)
+        self.fields['services'].queryset = models.Service.objects.filter(env=self.instance.env)
+        self.fields['service_provider'].queryset = models.Consul.objects.filter(env=self.instance.env)
+        self.fields['elastic_apm'].queryset = models.ElastAPM.objects.filter(env=self.instance.env)
+        self.fields['event_bus'].queryset = models.EventBus.objects.filter(env=self.instance.env)
 
 class ApiGatewayAdmin(admin.ModelAdmin):
     list_display = ('name', 'gw_type', 'env', 'base_url', 'default_config_title', 'config_action')
+    filter_horizontal = ('services', 'other_settings')
     form = ApiGatewayAdminForm
     #readonly_fields = ('gw_type','env')
 

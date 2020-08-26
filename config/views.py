@@ -42,6 +42,54 @@ def config_gateway(request):
             return json_response(Error("get gateway config list error"))
 
 
+def config_gatwway_dotnet(request):
+    if request.method == "POST":
+        return HttpResponse("POST not support")
+    else:
+        gw_type = request.GET.get("type")
+        env = request.GET.get("env")
+        logger.info('get config of node:%s env:%s' % (gw_type, env))
+
+        client_ip = get_client_ip(request)
+        logger.info('request server config from ip:%s' % client_ip)
+        if not Server.objects.in_white_list(client_ip):
+            return json_response(Error("ip is not allowed"))
+        try:
+            gw = ApiGateway.objects.filter(env__iexact=env, gw_type=gw_type, is_default=True).first()
+            if gw is None:
+                return json_response(Error("gateway config do not exist"))
+
+            return json_response(gw.get_config())
+        except Exception:
+            return json_response(Error("get gateway config list error"))
+
+def config_gatwway_dotnet_hash(request):
+    if request.method == "POST":
+        return HttpResponse("POST not support")
+    else:
+        gw_type = request.GET.get("type")
+        env = request.GET.get("env")
+        logger.info('get config of node:%s env:%s' % (gw_type, env))
+
+        client_ip = get_client_ip(request)
+        logger.info('request server config from ip:%s' % client_ip)
+        if not Server.objects.in_white_list(client_ip):
+            return json_response(Error("ip is not allowed"))
+        try:
+            gw = ApiGateway.objects.filter(env__iexact=env, gw_type=gw_type, is_default=True).first()
+            if gw is None:
+                return json_response(Error("gateway config do not exist"))
+
+            config = json.dumps(gw.get_config(), indent=4)
+            logging.info('config:%s' % config)
+
+            m = hashlib.md5()
+            m.update(config)
+            md5 = m.hexdigest()
+
+            return HttpResponse(md5)
+        except Exception:
+            return json_response(Error("get gateway config list error"))
 
 def service_list(request):
     try:
