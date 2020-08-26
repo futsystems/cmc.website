@@ -61,12 +61,13 @@ def service(request):
         try:
             service_name = request.GET.get("name")
             env = request.GET.get("env")
+            ip = request.GET.get("ip", None)
             logger.info('get config of service:%s env:%s' % (service_name, env))
-            services = Service.objects.filter(env__iexact=env, name=service_name).first()
-            if services is None:
+            service = Service.objects.filter(env__iexact=env, name=service_name).first()
+            if service is None:
                 return json_response(Error("gateway config do not exist"))
 
-            return json_response(services.get_config())
+            return json_response(service.get_config(ip))
         except Exception as e:
             logging.error('error:', e)
             return json_response(Error("get service config error"))

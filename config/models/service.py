@@ -65,9 +65,12 @@ class Service(models.Model):
         service.pipeline_trigger = self.pipeline_trigger
         service.save()
 
-    def get_config(self):
+    def get_config(self, ip=None):
         dict={}
+        ex_ip = 'localhost'
 
+        if ip is not None:
+            ex_ip = ip
         if self.log_level is not None:
             dict['Logging'] = self.log_level.to_dict()
 
@@ -101,7 +104,7 @@ class Service(models.Model):
         if self.support_api:
             dict['APIServer'] ={
                 'Name': '%sAPI' % self.name,
-                'Host': 'localhost',
+                'Host': ex_ip,
                 'Protocol': 0,
                 'Port': self.api_port
             }
@@ -109,7 +112,7 @@ class Service(models.Model):
         if self.support_rpc:
             dict['RPCServer'] = {
                 'Name': '%sRPC' % self.name,
-                'Host': 'localhost',
+                'Host': ex_ip,
                 'Protocol': 1,
                 'Port': self.rpc_port
             }
