@@ -9,6 +9,7 @@ from django.conf.urls import url
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseNotFound, Http404 ,HttpResponseRedirect, JsonResponse
 from django.template.response import TemplateResponse
+from django.contrib.admin.helpers import ActionForm
 from django.contrib import admin,messages
 from django.db import connection
 from django.utils.html import format_html
@@ -209,6 +210,20 @@ class ServiceAdminForm(forms.ModelForm):
             self.fields['elastic_apm'].queryset = models.ElastAPM.objects.filter(env=self.instance.env)
             self.fields['event_bus'].queryset = models.EventBus.objects.filter(env=self.instance.env)
 
+
+
+
+def copy_service_staging(modeladmin, request, queryset):
+    for service in queryset.all():
+        service.copy_to_env('Staging')
+copy_service_staging.short_description = "Copy Service To Staging"
+
+def copy_service_production(modeladmin, request, queryset):
+    for service in queryset.all():
+        service.copy_to_env('Production')
+copy_service_production.short_description = "Copy Service To Production"
+
+
 class ServiceAdmin(admin.ModelAdmin):
     list_display = ('name', 'env', 'service_provider', 'event_bus', 'elastic_apm', 'support_rpc', 'rpc_port', 'support_api', 'api_port')
     ordering = ('name',)
@@ -216,6 +231,7 @@ class ServiceAdmin(admin.ModelAdmin):
     filter_horizontal = ('used_services', 'mysql_connections', 'other_settings')
     list_filter = ('env',)
     form = ServiceAdminForm
+    actions = [copy_service_staging, copy_service_production]
 
     def get_fieldsets(self, request, obj=None):
         if obj is None:
@@ -276,12 +292,27 @@ class ServiceAdmin(admin.ModelAdmin):
             return ['service_provider', 'used_services', 'mysql_connections', 'event_bus', 'elastic_apm']
         return ['env']
 
+class RouteActionForm(ActionForm):
+    gateway = forms.ChoiceField(widget=forms.Select, choices=models.ApiGateway.objects.all().values_list('id', 'name'), required=True)
+
+def copy_to_gateway(modeladmin, request, queryset):
+    gateway = models.ApiGateway.objects.filter(id=request.POST['gateway']).first()
+    if gateway is None:
+        messages.info(request, "gateway do not exist")
+    else:
+        for obj in queryset:
+            obj.copy_to_gateway(gateway)
+
+
 class RouteAdmin(admin.ModelAdmin):
     list_display = ('name', 'upstream_path_template', 'downstream_path_template', 'priority', 'route_target', 'short_load_balancer',  'authentication_scheme', 'http_handler_options_title')
-    list_filter = ('service', 'authentication_scheme')
+    list_filter = ('api_gateway', 'service', 'authentication_scheme')
     ordering = ('name',)
     search_fields = ['name', 'upstream_path_template']
     filter_horizontal = ('upstream_http_method', 'upstream_header_transform')
+    action_form = RouteActionForm
+    actions = [copy_to_gateway]
+
     fieldsets = (
         (None, {
             "fields": [

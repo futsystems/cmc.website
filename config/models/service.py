@@ -6,7 +6,7 @@ from event_bus import EventBus
 from consul import Consul
 from log_item import LogItemGroup
 from setting import SettingGroup
-
+from choices import ENV_STAGE
 class Service(models.Model):
     """
     service
@@ -54,6 +54,16 @@ class Service(models.Model):
     def __unicode__(self):
         return u'Service-%s' % (self.name)
 
+    def copy_to_env(self,env):
+        service = Service()
+        service.name = self.name
+        service.env = env
+        service.support_rpc = self.support_rpc
+        service.rpc_port = self.rpc_port
+        service.support_api = self.support_api
+        service.api_port = self.api_port
+        service.pipeline_trigger = self.pipeline_trigger
+        service.save()
 
     def get_config(self):
         dict={}

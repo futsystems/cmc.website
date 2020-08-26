@@ -52,6 +52,35 @@ class Route(models.Model):
     def __unicode__(self):
         return u'Route-%s' % self.name
 
+    def copy_to_gateway(self, gateway):
+        route = Route()
+        route.name = self.name
+        route.api_gateway = gateway
+        route.priority = self.priority
+        route.upstream_path_template = self.upstream_path_template
+
+        route.downstream_path_template = self.downstream_path_template
+        route.downstream_scheme = self.downstream_scheme
+
+        route.load_balancer = self.load_balancer
+        route.downstream_host = self.downstream_host
+        route.downstream_port = self.downstream_port
+        route.authentication_scheme = self.authentication_scheme
+        route.authorization_scopes = self.authorization_scopes
+        route.rate_limite_options = self.rate_limite_options
+        route.http_handler_options = self.http_handler_options
+        route.description = self.description
+        route.save()
+
+        for item in self.upstream_http_method.all():
+            route.upstream_http_method.add(item)
+
+        for item in self.upstream_header_transform.all():
+            route.upstream_header_transform.add(item)
+
+        route.save()
+
+
 
     @property
     def route_target(self):
