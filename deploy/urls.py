@@ -10,4 +10,6 @@ import views
 
 urlpatterns = [
     url(r'^server/pillar/$', views.salt_pillar, name='server_pillar'),
+    url(r'^minion/valid/(?P<minion_id>[a-zA-Z0-9_.-]+)', views.minion_valid,
+        name='server_minion_valid'),
 ]

@@ -36,3 +36,17 @@ def salt_pillar(request):
             return json_response(server.get_pillar())
         except Exception:
             return json_response(Error("get service list error"))
+
+
+def minion_valid(request, **kwargs):
+    """
+    验证minion有效性
+    利用IP地址来验证 如果配置数据库中有该IP地址则通过否则拒绝
+    """
+    print 'sss'
+    minion_id = kwargs.get('minion_id',None)
+    logger.info('Valid minion for id:%s' % minion_id)
+    minion = Server.objects.filter(name=minion_id).first()
+    if minion is None:
+        return json_response(Error("minion do not exist"))
+    return json_response(Success('success'))

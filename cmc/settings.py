@@ -186,7 +186,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False
         },
-
+        'deploy': {
+            'handlers': ['tinyconsole', 'default'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
         'config': {
             'handlers': ['tinyconsole','default'],
             'level': 'DEBUG',
