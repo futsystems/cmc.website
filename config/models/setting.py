@@ -19,7 +19,7 @@ class SettingGroup(models.Model):
     def to_dict(self):
         dict={}
         for setting in self.settings.all():
-            dict[setting.setting_key] = setting.setting_value
+            dict[setting.setting_key] = setting.get_setting_value()
 
         return dict
 
@@ -30,6 +30,7 @@ class SettingItem(models.Model):
     """
     setting_key = models.CharField('SettingKey', max_length=50, default='SettingKey')
     setting_value = models.CharField('SettingValue', max_length=50, default='SettingValue')
+    is_array = models.BooleanField('Is Array', default=False)
     setting_group = models.ForeignKey(SettingGroup, verbose_name='SettingGroup', related_name='settings',  on_delete=models.SET_NULL, default=None,
                                          blank=True, null=True)
     description = models.CharField('Description', max_length=1000, default='', blank=True)
@@ -39,5 +40,11 @@ class SettingItem(models.Model):
 
     def __unicode__(self):
         return u'Setting-%s' % self.setting_key
+
+    def get_setting_value(self):
+        if self.is_array:
+            return self.setting_value.split(',')
+        else:
+            return self.setting_value
 
 
