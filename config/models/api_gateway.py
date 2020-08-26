@@ -143,5 +143,6 @@ class ApiGateway(models.Model):
         return {
             'env': self.env,
             'name': self.name,
+            'type': self.gw_type,
             'pipeline_trigger': self.pipeline_trigger
         }
