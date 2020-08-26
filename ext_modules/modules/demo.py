@@ -8,5 +8,6 @@ def __virtual__():
     return 'demo'
 
 def test():
-  return 'i am test'
+    logging.info('demo.test is called')
+    return False
 
