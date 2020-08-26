@@ -137,6 +137,11 @@ class ApiGateway(models.Model):
         for setting_group in self.other_settings.all():
             dict[setting_group.group_name] = setting_group.to_dict()
 
+        dict['CMCGatewayConfig']={
+            "Type": "gw.api",
+            "Url": "http://118.31.174.160",
+            "Token": "222"
+        }
         return dict
 
     def get_pillar(self):
