@@ -30,7 +30,7 @@ python manage.py migrate
 python manage.py collectstatic --noinput
 #python manage.py runserver 0.0.0.0:80
 
-unicorn $WEB_APP.wsgi:application -w $WEB_APP_WORKERS -b 0.0.0.0:$WEB_APP_PORT
+gunicorn $WEB_APP.wsgi:application -w $WEB_APP_WORKERS -b 0.0.0.0:$WEB_APP_PORT
 
 
 #gunicorn ${DJANGO_WSGI_MODULE}:application --name $NAME --workers $NUM_WORKERS --timeout $TIMEOUT --user=$USER --group=$GROUP --log-level=debug --bind=0.0.0.0:80 --log-file=$LOGFILE
