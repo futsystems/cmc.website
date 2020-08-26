@@ -41,6 +41,8 @@ def demo():
     """
     print "demo runner"
 
+    return False
+
 def console(data):
     """
     print data
