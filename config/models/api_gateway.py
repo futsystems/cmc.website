@@ -27,6 +27,7 @@ class ApiGateway(models.Model):
     date_created = models.DateTimeField('created time', auto_now=True, blank=True, null=True)
     default_config = models.ForeignKey('ApiGatewayConfig', verbose_name='Default Config', on_delete=models.SET_NULL, default=None,
                                          blank=True, null=True)
+    port = models.IntegerField('Http Port', default=8080)
 
     elastic_apm = models.ForeignKey(ElastAPM, verbose_name='ElasticAPM', on_delete=models.SET_NULL,
                                     default=None,
