@@ -29,7 +29,7 @@ class SettingItem(models.Model):
     Setting Item
     """
     setting_key = models.CharField('SettingKey', max_length=50, default='SettingKey')
-    setting_value = models.CharField('SettingValue', max_length=50, default='SettingValue')
+    setting_value = models.CharField('SettingValue', max_length=1000, default='SettingValue')
     is_array = models.BooleanField('Is Array', default=False)
     setting_group = models.ForeignKey(SettingGroup, verbose_name='SettingGroup', related_name='settings',  on_delete=models.SET_NULL, default=None,
                                          blank=True, null=True)
