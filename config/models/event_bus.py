@@ -30,7 +30,7 @@ class EventBus(models.Model):
             "SubscriptionClientName": self.default_subscription_client_name,
             'EventBusRetryCount': self.retry_count,
             'EventBusConnection': self.host,
-            'EventBusUserName': self.host,
-            'EventBusPassword': self.host,
+            'EventBusUserName': self.user_name,
+            'EventBusPassword': self.password,
         }
         return dict
