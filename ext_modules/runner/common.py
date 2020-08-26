@@ -20,7 +20,7 @@ runner = salt.runner.RunnerClient(opts)
 
 def get_pillar(minion_id):
     """
-    获得某个minion的pillar信息
+    get pillar of minion
     """
     pillar_url = "%s?minion_id=%s" % ('http://127.0.0.1/deploy/server/pillar/', minion_id)
     logger.info("Querying NMS system Pillar for %r via url:%s" % (minion_id, pillar_url))
@@ -35,16 +35,22 @@ def get_pillar(minion_id):
         )
         return None
 
+
+def demo():
+    """
+    """
+    print "demo runner"
+
 def console(data):
     """
-    输出数据
+    print data
     """
     print "runner console data:%s" % data
 
 
 def auth_minion(minion_id='minion'):
     """
-    通过Minion_ID来验证节点合法性
+    valid minion
     """
     api_url = 'http://127.0.0.1/nmscfg/api/minion/valid/%s' % minion_id
     logger.info('Try to valid minion:%s via url:%s' % (minion_id, api_url))
