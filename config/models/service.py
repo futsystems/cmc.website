@@ -122,7 +122,6 @@ class Service(models.Model):
     def get_pillar(self):
         return {
             'env': self.env,
-            'minion_id': self.env,
             'name': self.name,
             'service_name': 'srv.%s' % self.name.lower(),
             'pipeline_trigger': self.pipeline_trigger

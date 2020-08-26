@@ -10,7 +10,8 @@ from django.views.generic import TemplateView, ListView, DetailView, CreateView
 from models import ApiGateway,Service
 from common import Response,Success,Error
 import hashlib
-
+from deploy.models import Server
+from common.request_helper import get_client_ip
 import logging, traceback
 logger = logging.getLogger(__name__)
 
@@ -19,6 +20,7 @@ def json_response(obj):
     if issubclass(obj.__class__, Response):
         return HttpResponse(json.dumps(obj.to_dict()), content_type="application/json")
     return HttpResponse(json.dumps(obj, indent=4), content_type="application/json")
+
 
 
 def config_gateway(request):
@@ -52,24 +54,31 @@ def service(request):
     if request.method == "POST":
         return HttpResponse("POST not support")
     else:
+        client_ip = get_client_ip(request)
+        logger.info('request server config from ip:%s' % client_ip)
+        if not Server.objects.in_white_list(client_ip):
+            return json_response(Error("ip is not allowed"))
         try:
             service_name = request.GET.get("name")
             env = request.GET.get("env")
             logger.info('get config of service:%s env:%s' % (service_name, env))
-
             services = Service.objects.filter(env__iexact=env, name=service_name).first()
             if services is None:
                 return json_response(Error("gateway config do not exist"))
 
             return json_response(services.get_config())
         except Exception as e:
-            logging.error('error:',e)
+            logging.error('error:', e)
             return json_response(Error("get service config error"))
 
 def service_hash(request):
     if request.method == "POST":
         return HttpResponse("POST not support")
     else:
+        client_ip = get_client_ip(request)
+        logger.info('request server config from ip:%s' % client_ip)
+        if not Server.objects.in_white_list(client_ip):
+            return json_response(Error("ip is not allowed"))
         try:
             service_name = request.GET.get("name")
             env = request.GET.get("env")

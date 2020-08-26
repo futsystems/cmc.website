@@ -7,6 +7,10 @@ from config.models import Service
 from choices import LOCATION
 from config.models.choices import ENV_STAGE
 
+class ServerManager(models.Manager):
+
+    def in_white_list(self,ip):
+        return self.filter(ip=ip).first() is not None
 
 
 class Server(models.Model):
@@ -21,13 +25,15 @@ class Server(models.Model):
 
     description = models.CharField('Description', max_length=1000, default='', blank=True)
 
-
+    objects = ServerManager()
 
     class Meta:
         app_label = 'deploy'
 
     def __unicode__(self):
         return u'%s-%s' % (self.name, self.ip)
+
+
 
     def get_pillar(self):
         data = {

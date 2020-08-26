@@ -9,6 +9,7 @@ from django.views.generic import TemplateView, ListView, DetailView, CreateView
 
 from deploy.models import Server
 from common import Response,Success,Error
+from common.request_helper import get_client_ip
 
 import logging, traceback
 logger = logging.getLogger(__name__)
@@ -25,6 +26,10 @@ def salt_pillar(request):
     if request.method == "POST":
         return HttpResponse("POST not support")
     else:
+        client_ip = get_client_ip(request)
+        logger.info('request server config from ip:%s' % client_ip)
+        if not Server.objects.in_white_list(client_ip):
+            return json_response(Error("ip is not allowed"))
         try:
             minion_id = request.GET.get("minion_id")
             logger.info('get pillar of minion id:%s' % minion_id)
