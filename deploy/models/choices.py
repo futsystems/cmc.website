@@ -9,4 +9,5 @@ LOCATION = {
 NODETYPE = {
     ('Service', 'Service'),
     ('Gateway', 'Gateway'),
+    ('Access', 'Access'),
 }
