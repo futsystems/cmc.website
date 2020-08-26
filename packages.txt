@@ -6,9 +6,7 @@ mysql-python
 
 #django
 Django==1.10.4
-#django-flat-theme
-#django-flat-responsive
-#django-multiselectfield
+
 #requests
 
 #redis
@@ -22,12 +20,11 @@ gevent
 #celery==3.1.25
 #django-celery==3.2.2
 
-#skpy
-
 #rabbitmq
 pika==1.1.0
 
 #salt
-#salt==2019.2.5
+#salt==3001
+salt==2019.2.5
 
 
