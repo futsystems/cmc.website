@@ -150,5 +150,6 @@ class ApiGateway(models.Model):
             'env': self.env,
             'name': self.name,
             'type': self.gw_type,
+            'port': self.port,
             'pipeline_trigger': self.pipeline_trigger
         }
