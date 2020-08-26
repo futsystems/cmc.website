@@ -97,14 +97,14 @@ class ServerAdmin(admin.ModelAdmin):
     def salt_ping(self, request, server_id):
         server = models.Server.objects.get(id= server_id)
         result = salt_helper.ping(server)
-        messages.info(request, "Reboot Server:%s Result:%s" % (server.name, result))
+        messages.info(request, "Ping Server:%s Result:%s" % (server.name, result))
 
         previous_url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(previous_url)
 
     def salt_reboot(self, request, server_id):
         server = models.Server.objects.get(id= server_id)
-        messages.info(request, "Hightstate Server:%s" % server.name)
+        messages.info(request, "Reboot Server:%s" % server.name)
         salt_helper.reboot(server)
         previous_url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(previous_url)
