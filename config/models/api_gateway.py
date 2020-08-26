@@ -25,6 +25,8 @@ class ApiGateway(models.Model):
     default_config = models.ForeignKey('ApiGatewayConfig', verbose_name='Default Config', on_delete=models.SET_NULL, default=None,
                                          blank=True, null=True)
 
+    pipeline_trigger = models.CharField('Pipeline Trigger', max_length=1000, default='', blank=True)
+
     __original_default_config = None
 
     def __init__(self, *args, **kwargs):
@@ -83,3 +85,10 @@ class ApiGateway(models.Model):
             return  self.generate_ocelot_config()
         else:
             return json.loads(self.default_config.config)
+
+    def get_pillar(self):
+        return {
+            'env': self.env,
+            'name': self.name,
+            'pipeline_trigger': self.pipeline_trigger
+        }

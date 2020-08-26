@@ -16,7 +16,7 @@ from django.utils.html import format_html
 from django import forms
 from django.shortcuts import render_to_response
 from django.db.models import Max
-from config.models import Service
+from config.models import Service, ApiGateway
 
 import logging,traceback,json
 logger = logging.getLogger(__name__)
@@ -35,17 +35,24 @@ class ServerAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         forms.ModelForm.__init__(self, *args, **kwargs)
         if self.instance.id > 0:
-            self.fields['installed_services'].queryset = Service.objects.filter(env=self.instance.env)
+            if self.instance.node_type == 'Service':
+                self.fields['installed_services'].queryset = Service.objects.filter(env=self.instance.env)
+            if self.instance.node_type == 'Gateway':
+                self.fields['gateway'].queryset = ApiGateway.objects.filter(env=self.instance.env)
 
 
 class ServerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'location', 'ip', 'salt_action')
+    list_display = ('name', 'location', 'ip', 'env', 'node_type', 'salt_action')
     filter_horizontal = ('installed_services', 'installed_services')
     form = ServerAdminForm
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
-            return ['installed_services',]
-        return ['env']
+            return ['installed_services', 'gateway']
+        else:
+            if obj.node_type == 'Service':
+                return ['env', 'node_type', 'gateway']
+            if obj.node_type == 'Gateway':
+                return ['env', 'node_type', 'installed_services']
 
     def salt_action(self, obj):
         """

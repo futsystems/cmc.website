@@ -5,3 +5,8 @@
 LOCATION = {
     ('hangzhou', 'hangzhou'),
 }
+
+NODETYPE = {
+    ('Service', 'Service'),
+    ('Gateway', 'Gateway'),
+}
