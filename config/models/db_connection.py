@@ -28,8 +28,8 @@ class MySqlConnection(models.Model):
 
     def to_dict(self):
         dict = {
-            'ConnectionName':self.name,
-            'Host': 'server=%s;port=%s;uid=%s;pwd=%s;database=%s;charset=%s' % (self.host, self.port, self.user, self.password, self.database, self.charset),
+            'ConnectionName': self.name,
+            'DBConnectionString': 'server=%s;port=%s;uid=%s;pwd=%s;database=%s;charset=%s' % (self.host, self.port, self.user, self.password, self.database, self.charset),
             'DBProvider': 'MySql.Data.MySqlClient',
             'IsTracer': self.is_tracer
         }
