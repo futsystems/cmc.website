@@ -51,7 +51,7 @@ def config_gateway_hash(request):
 
 
         try:
-            gw = ApiGateway.objects.filter(env__iexact=env, gw_type=gw_type, is_default=True).first()
+            gw = ApiGateway.objects.filter(env=env, gw_type=gw_type).first()
             if gw is None:
                 return json_response(Error("gateway config do not exist"))
 
