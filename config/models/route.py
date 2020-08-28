@@ -52,6 +52,13 @@ class Route(models.Model):
     def __unicode__(self):
         return u'Route-%s' % self.name
 
+    @property
+    def env(self):
+        if self.api_gateway is None:
+            return  None
+        else:
+            return self.api_gateway.env
+
     def copy_to_gateway(self, gateway):
         route = Route()
         route.name = self.name

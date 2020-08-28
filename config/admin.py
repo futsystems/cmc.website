@@ -312,16 +312,25 @@ def copy_to_gateway(modeladmin, request, queryset):
         for obj in queryset:
             obj.copy_to_gateway(gateway)
 
+class RouteAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.Route
+        exclude = []
+
+    def __init__(self, *args, **kwargs):
+        forms.ModelForm.__init__(self, *args, **kwargs)
+        if self.instance.id > 0:
+            self.fields['service'].queryset = models.Service.objects.filter(env=self.instance.env)
 
 class RouteAdmin(admin.ModelAdmin):
-    list_display = ('name', 'upstream_path_template', 'downstream_path_template', 'priority', 'route_target', 'short_load_balancer',  'authentication_scheme', 'http_handler_options_title')
+    list_display = ('name', 'env', 'upstream_path_template', 'downstream_path_template', 'priority', 'route_target', 'short_load_balancer',  'authentication_scheme', 'http_handler_options_title')
     list_filter = ('api_gateway', 'service', 'authentication_scheme')
     ordering = ('name',)
     search_fields = ['name', 'upstream_path_template']
     filter_horizontal = ('upstream_http_method', 'upstream_header_transform')
     action_form = RouteActionForm
     actions = [copy_to_gateway]
-
+    form = RouteAdminForm
     fieldsets = (
         (None, {
             "fields": [
