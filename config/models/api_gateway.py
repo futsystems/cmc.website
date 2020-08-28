@@ -22,7 +22,7 @@ class ApiGateway(models.Model):
     base_url = models.CharField('Base Url', max_length=100, default='http://127.0.0.1')
     service_provider = models.ForeignKey(Consul, verbose_name='Consul', on_delete=models.SET_NULL, default=None,
                                          blank=True, null=True)
-    is_default = models.BooleanField('Is Default', default=False)
+    #is_default = models.BooleanField('Is Default', default=False)
     description = models.CharField('Description', max_length=1000, default='', blank=True)
     date_created = models.DateTimeField('created time', auto_now=True, blank=True, null=True)
     default_config = models.ForeignKey('ApiGatewayConfig', verbose_name='Default Config', on_delete=models.SET_NULL, default=None,

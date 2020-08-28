@@ -29,17 +29,17 @@ def config_gateway(request):
     else:
         gw_type = request.GET.get("type")
         env = request.GET.get("env")
-        logger.info('get config of node:%s env:%s' % (gw_type, env))
+        logger.info('get config of gateway type:%s env:%s' % (gw_type, env))
 
 
         try:
-            gw = ApiGateway.objects.filter(env__iexact=env, gw_type=gw_type, is_default=True).first()
+            gw = ApiGateway.objects.filter(env=env, gw_type=gw_type).first()
             if gw is None:
                 return json_response(Error("gateway config do not exist"))
 
             return json_response(gw.get_ocelot_config())
         except Exception:
-            return json_response(Error("get gateway config list error"))
+            return json_response(Error("get gateway ocelot config error"))
 
 def config_gateway_hash(request):
     if request.method == "POST":
