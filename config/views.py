@@ -80,7 +80,7 @@ def config_gatwway_dotnet(request):
         if not Server.objects.in_white_list(client_ip):
             return json_response(Error("ip is not allowed"))
         try:
-            gw = ApiGateway.objects.filter(env__iexact=env, gw_type=gw_type, is_default=True).first()
+            gw = ApiGateway.objects.filter(env=env, gw_type=gw_type).first()
             if gw is None:
                 return json_response(Error("gateway config do not exist"))
 
@@ -101,7 +101,7 @@ def config_gatwway_dotnet_hash(request):
         if not Server.objects.in_white_list(client_ip):
             return json_response(Error("ip is not allowed"))
         try:
-            gw = ApiGateway.objects.filter(env__iexact=env, gw_type=gw_type, is_default=True).first()
+            gw = ApiGateway.objects.filter(env=env, gw_type=gw_type).first()
             if gw is None:
                 return json_response(Error("gateway config do not exist"))
 
