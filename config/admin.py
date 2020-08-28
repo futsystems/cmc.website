@@ -134,7 +134,11 @@ class ApiGatewayAdmin(admin.ModelAdmin):
     def update_config(self, request, gw_id):
         gw = models.ApiGateway.objects.get(id= gw_id)
         ev = CMCGatewayConfigUpdate(gw.gw_type, gw.env)
-        EventBublisher().send_message(ev)
+        if gw.event_bus is None:
+            messages.info(request, "gateway have not set event bus")
+            previous_url = request.META.get('HTTP_REFERER')
+            return HttpResponseRedirect(previous_url)
+        EventBublisher(gw.event_bus).send_message(ev)
         messages.info(request, "Send Config Update Success")
         previous_url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(previous_url)

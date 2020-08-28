@@ -6,8 +6,9 @@ import json
 logger = logging.getLogger(__name__)
 
 class EventBublisher(object):
-    def __init__(self):
-        self._url='amqp://user:user@test.marvelsystem.net'
+    def __init__(self, eventbus):
+        #self._url='amqp://user:user@test.marvelsystem.net'
+        self._url = 'amqp://%s:%s@%s' % (eventbus.user_name, eventbus.password, eventbus.host)
         self._broker_name = 'marvel_event_bus'
         self._subscription_client_name='cmc'
         params = pika.URLParameters(self._url)
@@ -18,7 +19,7 @@ class EventBublisher(object):
         #self._channel.exchange_declare(exchange=self._broker_name, exchange_type='direct')
         self._channel.queue_declare(queue=self._subscription_client_name)  # Declare a queue
 
-    def send_message(self,event):
+    def send_message(self, event):
         # send a message
         print ('send event:%s body:%s' % (event.name, event.body))
         self._channel.basic_publish(exchange=self._broker_name, routing_key=event.name, body=json.dumps(event.body))
