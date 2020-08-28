@@ -3,7 +3,7 @@
 
 
 from django.db import models
-from config.models import Service, ApiGateway
+from config.models import Service, ApiGateway, Portal
 from choices import LOCATION, NODETYPE
 from config.models.choices import ENV_STAGE
 
@@ -22,11 +22,17 @@ class Server(models.Model):
     ip = models.CharField('IP', max_length=50, default='127.0.0.1')
     env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
     node_type = models.CharField(max_length=20, choices=NODETYPE, default='Service')
+
+    #服务器安装服务
     installed_services = models.ManyToManyField(Service, verbose_name='Installed Services', blank=True)
 
+    #服务器如果部署网关 则部署绑定的网关设置
     gateway = models.ForeignKey(ApiGateway, verbose_name='Gateway', on_delete=models.SET_NULL, default=None,
                                          blank=True, null=True)
 
+    portal = models.ForeignKey(Portal, verbose_name='Portal', on_delete=models.SET_NULL, default=None,
+                                         blank=True, null=True)
+    #服务器部署portal 绑定的portal设置
     description = models.CharField('Description', max_length=1000, default='', blank=True)
 
     objects = ServerManager()
@@ -38,6 +44,16 @@ class Server(models.Model):
         return u'%s-%s' % (self.name, self.ip)
 
 
+    @property
+    def function_title(self):
+        items=[]
+        if self.installed_services.count()>0:
+            items.append('Service')
+        if self.gateway is not None:
+            items.append('Gateway')
+        if self.portal is not None:
+            items.append('Portal')
+        return ','.join(items)
 
     def get_pillar(self):
         data = {
@@ -50,5 +66,9 @@ class Server(models.Model):
             data['services'] = [item.get_pillar() for item in self.installed_services.all()]
         if self.node_type == 'Gateway':
             data['gateway'] = None if self.gateway is None else self.gateway.get_pillar()
+
+        if self.portal is not None:
+            data['portal'] = self.portal.get_pillart()
+
         return data
 

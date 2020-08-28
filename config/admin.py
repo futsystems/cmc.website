@@ -397,6 +397,7 @@ class MySqlConnnectionAdmin(admin.ModelAdmin):
     list_display = ('name', 'env', 'host', 'database', 'user', 'charset', 'is_tracer')
     ordering = ('name',)
     search_fields = ['name']
+    list_filter = ['env']
     fieldsets = (
         (None, {
             "fields": [
@@ -489,6 +490,10 @@ class SettingItemAdmin(admin.ModelAdmin):
     list_display = ('setting_group', 'setting_key', 'setting_value', 'description')
     list_filter = ('setting_group',)
 
+class PortalAdmin(admin.ModelAdmin):
+    list_display = ('name', 'env', 'domain_name')
+    list_filter = ('env',)
+
 admin.site.register(models.ApiGateway, ApiGatewayAdmin)
 admin.site.register(models.Consul, ConsulAdmin)
 admin.site.register(models.Service, ServiceAdmin)
@@ -510,3 +515,4 @@ admin.site.register(models.LogItemGroup, LogItemGroupAdmin)
 
 admin.site.register(models.SettingGroup, SettingGroupAdmin)
 admin.site.register(models.SettingItem, SettingItemAdmin)
+admin.site.register(models.Portal, PortalAdmin)

@@ -22,3 +22,5 @@ from log_item import LogItemGroup
 
 from setting import SettingGroup
 from setting import SettingItem
+
+from portal import Portal

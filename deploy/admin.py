@@ -42,17 +42,14 @@ class ServerAdminForm(forms.ModelForm):
 
 
 class ServerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'location', 'ip', 'env', 'node_type', 'salt_action')
+    list_display = ('name', 'env', 'ip', 'location', 'function_title', 'salt_action')
     filter_horizontal = ('installed_services', 'installed_services')
     form = ServerAdminForm
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
-            return ['installed_services', 'gateway']
+            return ['installed_services', 'gateway', 'portal']
         else:
-            if obj.node_type == 'Service':
-                return ['env', 'node_type', 'gateway']
-            if obj.node_type == 'Gateway':
-                return ['env', 'node_type', 'installed_services']
+            return ['env', 'node_type']
 
     def salt_action(self, obj):
         """
