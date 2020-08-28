@@ -39,7 +39,8 @@ def salt_pillar(request):
                 return json_response(Error("minion do not exist"))
 
             return json_response(server.get_pillar())
-        except Exception:
+        except Exception,e:
+            logging.error(traceback.format_exc())
             return json_response(Error("get service list error"))
 
 

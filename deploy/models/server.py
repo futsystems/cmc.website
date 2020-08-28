@@ -17,7 +17,7 @@ class Server(models.Model):
     """
     server
     """
-    name = models.CharField('Name', max_length=100, default='Node1')
+    name = models.CharField('Name', max_length=100, default='Node1', unique=True)
     location = models.CharField(max_length=20, choices=LOCATION, default='hangzhou')
     ip = models.CharField('IP', max_length=50, default='127.0.0.1')
     env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
@@ -68,7 +68,7 @@ class Server(models.Model):
             data['gateway'] = None if self.gateway is None else self.gateway.get_pillar()
 
         if self.portal is not None:
-            data['portal'] = self.portal.get_pillart()
+            data['portal'] = self.portal.get_pillar()
 
         return data
 
