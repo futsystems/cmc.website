@@ -154,6 +154,6 @@ class ApiGateway(models.Model):
             'type': self.gw_type,
             'port': self.port,
             'base_url': self.base_url,
-            'domain_name': urlparse.urlspit(self.base_url).hostname,
+            'domain_name': urlparse.urlsplit(self.base_url).hostname,
             'pipeline_trigger': self.pipeline_trigger
         }
