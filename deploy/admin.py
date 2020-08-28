@@ -16,7 +16,7 @@ from django.utils.html import format_html
 from django import forms
 from django.shortcuts import render_to_response
 from django.db.models import Max
-from config.models import Service, ApiGateway
+from config.models import Service, ApiGateway,Portal
 
 import logging,traceback,json
 logger = logging.getLogger(__name__)
@@ -37,7 +37,7 @@ class ServerAdminForm(forms.ModelForm):
         if self.instance.id > 0:
             self.fields['installed_services'].queryset = Service.objects.filter(env=self.instance.env)
             self.fields['gateway'].queryset = ApiGateway.objects.filter(env=self.instance.env)
-            self.fields['portal'].queryset = ApiGateway.objects.filter(env=self.instance.env)
+            self.fields['portal'].queryset = Portal.objects.filter(env=self.instance.env)
 
 
 class ServerAdmin(admin.ModelAdmin):
