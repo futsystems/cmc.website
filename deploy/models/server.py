@@ -75,7 +75,7 @@ class Server(models.Model):
         if self.env == 'Development' or self.env == 'Staging':
             runner = {}
             runner['register_url'] = 'https://gitlab.marvelsystem.net/'
-            runner['register_token'] = self.gitlab_runner_token
+            runner['register_token'] = self.gitlab_runner_register_token
             if self.env == 'Development':
                 runner['tags'] = 'development'
             if self.env == 'Staging':
