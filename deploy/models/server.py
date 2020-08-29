@@ -35,7 +35,7 @@ class Server(models.Model):
     #服务器部署portal 绑定的portal设置
     description = models.CharField('Description', max_length=1000, default='', blank=True)
 
-    gitlab_runner_register_token = models.CharField(max_length=100, choices=ENV_STAGE, default='register_token')
+    gitlab_runner_register_token = models.CharField(max_length=100, default='register_token', blank=True)
 
     objects = ServerManager()
 
