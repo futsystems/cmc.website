@@ -69,6 +69,19 @@ class Server(models.Model):
 
         if self.portal is not None:
             data['portal'] = self.portal.get_pillar()
+        print '!!!!!!!!'
+        print self.node_type
+        if self.env == 'Development' or self.env == 'Staging':
+            runner = {}
+            runner['register_url'] = 'https://gitlab.marvelsystem.net/'
+            runner['register_token'] = ''
+            if self.node_type == 'Development':
+                runner['tags'] = 'development'
+            if self.node_type == 'Staging':
+                runner['tags'] = 'staging,production'
+            runner['identifier'] = '%s-runner' % self.name
+
+            data['gitable-runner'] = runner
 
         return data
 
