@@ -75,9 +75,9 @@ class Server(models.Model):
             runner = {}
             runner['register_url'] = 'https://gitlab.marvelsystem.net/'
             runner['register_token'] = ''
-            if self.node_type == 'Development':
+            if self.env == 'Development':
                 runner['tags'] = 'development'
-            if self.node_type == 'Staging':
+            if self.env == 'Staging':
                 runner['tags'] = 'staging,production'
             runner['identifier'] = '%s-runner' % self.name
 
