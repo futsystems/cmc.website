@@ -63,18 +63,14 @@ class Server(models.Model):
             'ip': self.ip,
             'env': self.env,
             'node_type': self.node_type,
-            'functions': []
         }
         if self.node_type == 'Service':
             data['services'] = [item.get_pillar() for item in self.installed_services.all()]
-            data['functions'].append('service')
         if self.node_type == 'Gateway':
             data['gateway'] = None if self.gateway is None else self.gateway.get_pillar()
-            data['functions'].append('gateway')
 
         if self.portal is not None:
             data['portal'] = self.portal.get_pillar()
-            data['functions'].append('portal')
 
         if self.env == 'Development' or self.env == 'Staging':
             runner = {}
@@ -87,11 +83,5 @@ class Server(models.Model):
             runner['identifier'] = '%s-runner' % self.name
 
             data['gitlab-runner'] = runner
-            data['functions'].append('gitlab-runner')
-            data['functions'].append('mysql')
-            data['functions'].append('consul')
-            data['functions'].append('rabbitmq')
-
-
         return data
 
