@@ -35,6 +35,8 @@ class Server(models.Model):
     #服务器部署portal 绑定的portal设置
     description = models.CharField('Description', max_length=1000, default='', blank=True)
 
+    gitlab_runner_register_token = models.CharField(max_length=100, choices=ENV_STAGE, default='register_token')
+
     objects = ServerManager()
 
     class Meta:
@@ -69,12 +71,11 @@ class Server(models.Model):
 
         if self.portal is not None:
             data['portal'] = self.portal.get_pillar()
-        print '!!!!!!!!'
-        print self.node_type
+
         if self.env == 'Development' or self.env == 'Staging':
             runner = {}
             runner['register_url'] = 'https://gitlab.marvelsystem.net/'
-            runner['register_token'] = ''
+            runner['register_token'] = self.gitlab_runner_token
             if self.env == 'Development':
                 runner['tags'] = 'development'
             if self.env == 'Staging':

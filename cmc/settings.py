@@ -81,6 +81,9 @@ WSGI_APPLICATION = 'cmc.wsgi.application'
 from settings_db import get_database_setting
 DATABASES = get_database_setting()
 
+from settings_gitlab import get_gitlab_setting
+GITLAB_SETTING = get_gitlab_setting()
+
 #DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.sqlite3',
