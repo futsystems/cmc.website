@@ -82,7 +82,7 @@ class Server(models.Model):
                 runner['tags'] = 'staging,production'
             runner['identifier'] = '%s-runner' % self.name
 
-            data['gitable-runner'] = runner
+            data['gitlab-runner'] = runner
 
         return data
 
