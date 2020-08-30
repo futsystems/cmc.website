@@ -43,12 +43,12 @@ def demo():
 
     return [False, 'comment']
 
-def console(**kwargs):
+def console(data):
     """
     print data
     """
-    logging.info(kwargs)
-    print kwargs
+    logging.info(data)
+    print data
     #fun = event_data.get('fun')
     #fun_args = event_data.get('fun_args')
     #logger.info('evnet_tag:%s fun:%s fun_args:%s' % (event_tag, fun, fun_args))
