@@ -54,7 +54,7 @@ def console(data):
     minion_id = data[3]
     retcode = data[4]
 
-    logger.info('****Event[%s] fun:%s fun_args:%s id:%s' % (tag, minion_id, fun, fun_args, minion_id))
+    logger.info('****Event[%s] fun:%s fun_args:%s id:%s retcode:%s' % (tag, fun, fun_args, minion_id, retcode))
 
     #fun = event_data.get('fun')
     #fun_args = event_data.get('fun_args')
