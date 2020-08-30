@@ -43,11 +43,14 @@ def demo():
 
     return [False, 'comment']
 
-def console(data):
+def console(event_tag, event_data):
     """
     print data
     """
-    print "runner console data:%s" % data
+    fun = event_data.get('fun')
+    fun_args = event_data.get('fun_args')
+    logger.info('evnet_tag:%s fun:%s fun_args:%s' % (event_tag, fun, fun_args))
+    print 'evnet_tag:%s fun:%s fun_args:%s' % (event_tag, fun, fun_args)
 
 
 def auth_minion(minion_id='minion'):
