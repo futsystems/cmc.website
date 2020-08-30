@@ -48,7 +48,14 @@ def console(data):
     print data
     """
     logging.info(data)
-    print data
+    tag = data[0]
+    fun = data[1]
+    fun_args = data[2]
+    minion_id = data[3]
+    retcode = data[4]
+
+    logger.info('****Event[%s] fun:%s fun_args:%s id:%s' % (tag, minion_id, fun, fun_args, minion_id))
+
     #fun = event_data.get('fun')
     #fun_args = event_data.get('fun_args')
     #logger.info('evnet_tag:%s fun:%s fun_args:%s' % (event_tag, fun, fun_args))
