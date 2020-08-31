@@ -13,6 +13,7 @@ import hashlib
 from deploy.models import Server
 from common.request_helper import get_client_ip
 import logging, traceback
+from collections import OrderedDict
 logger = logging.getLogger(__name__)
 
 
@@ -181,3 +182,26 @@ def service_hash(request):
         except Exception,e:
             logging.error(traceback.format_exc())
             return json_response(Error("get service list error"))
+
+
+def used_services(request):
+    if request.method == "POST":
+        return HttpResponse("POST not support")
+    else:
+        client_ip = get_client_ip(request)
+        logger.info('request server config from ip:%s' % client_ip)
+        if not Server.objects.in_white_list(client_ip):
+            return json_response(Error("ip is not allowed"))
+        try:
+            env = request.GET.get("env")
+            services = Service.objects.filter(env__iexact=env).order_by('name')
+            items = OrderedDict()
+            for service in services:
+                items[service.name] = [s.name for s in service.used_services.order_by('name')]
+            data = OrderedDict()
+            data['env'] = env
+            data['services'] = items
+            return json_response(data)
+        except Exception, e:
+            logging.error(traceback.format_exc())
+            return json_response(Error("get service config error"))

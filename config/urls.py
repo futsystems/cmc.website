@@ -15,6 +15,8 @@ urlpatterns = [
     url(r'^gateway/dotnet/hash/$', views.config_gatwway_dotnet_hash, name='config_gateway_dotnet_hash'),
     url(r'^service/list/$', views.service_list, name='config_services_list'),
 
-    url(r'^service/$', views.service, name='config_services'),
-    url(r'^service/hash/$', views.service_hash, name='config_services_hash'),
+    url(r'^service/$', views.service, name='config_service'),
+    url(r'^service/hash/$', views.service_hash, name='config_service_hash'),
+
+    #url(r'^service/used/$', views.used_services, name='config_used_services'),
 ]

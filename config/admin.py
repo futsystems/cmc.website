@@ -16,7 +16,7 @@ from django.utils.html import format_html
 from django import forms
 from django.shortcuts import render_to_response
 from django.db.models import Max
-
+from collections import OrderedDict
 import logging,traceback,json
 logger = logging.getLogger(__name__)
 
@@ -98,9 +98,11 @@ class ApiGatewayAdmin(admin.ModelAdmin):
         return format_html(
             '<a class="button" href="{}">Update</a>&nbsp;'
             '<a class="button" href="{}">Download Draft</a>&nbsp;'
+            '<a class="button" href="{}">Services Dependency</a>&nbsp;'
             '<a class="button" href="{}">ConfigSnapshot</a>&nbsp;',
             reverse('admin:config-update', args=[obj.pk]),
             reverse('admin:config-download-draft', args=[obj.pk]),
+            reverse('admin:config-service-dependency', args=[obj.pk]),
             reverse('admin:config-snapshot', args=[obj.pk]),
         )
 
@@ -126,6 +128,11 @@ class ApiGatewayAdmin(admin.ModelAdmin):
                 r'^(?P<gw_id>.+)/snapshot/$',
                 self.admin_site.admin_view(self.snapshot_config),
                 name='config-snapshot',
+            ),
+            url(
+                r'^(?P<gw_id>.+)/service-dependency/$',
+                self.admin_site.admin_view(self.service_dependency),
+                name='config-service-dependency',
             ),
         ]
 
@@ -176,6 +183,21 @@ class ApiGatewayAdmin(admin.ModelAdmin):
         messages.info(request, "Config Snapshot:%s-%s Success" % (config_snapshot.gateway.gateway_schema, config_snapshot.version))
         previous_url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(previous_url)
+
+
+    def service_dependency(self, request, gw_id):
+
+        gw = models.ApiGateway.objects.get(id=gw_id)
+
+        services = models.Service.objects.filter(env__iexact=gw.env).order_by('name')
+        items = OrderedDict()
+        for service in services:
+            items[service.name] = [s.name for s in service.used_services.order_by('name')]
+        data = OrderedDict()
+        data['env'] = gw.env
+        data['services'] = items
+
+        return HttpResponse(json.dumps(data, indent=4), content_type='application/json')
 
 class ConsulAdmin(admin.ModelAdmin):
     list_display = ('name', 'env', 'host')
