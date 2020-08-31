@@ -83,9 +83,9 @@ class Server(models.Model):
                 runner['register_token'] = self.gitlab_runner_register_token
                 runner['auth_token'] = self.gitlab_runner_auth_token
                 if self.env == 'Development':
-                    runner['tags'] = 'development'
+                    runner['tags'] = 'development,%s' % self.name
                 if self.env == 'Staging':
-                    runner['tags'] = 'staging,production'
+                    runner['tags'] = 'staging,production,%s' % self.name
                 runner['identifier'] = '%s-runner' % self.name
 
                 data['gitlab-runner'] = runner
