@@ -77,16 +77,18 @@ class Server(models.Model):
             data['portal'] = self.portal.get_pillar()
 
         if self.env == 'Development' or self.env == 'Staging':
-            runner = {}
-            runner['register_url'] = 'https://gitlab.marvelsystem.net/'
-            runner['register_token'] = self.gitlab_runner_register_token
-            if self.env == 'Development':
-                runner['tags'] = 'development'
-            if self.env == 'Staging':
-                runner['tags'] = 'staging,production'
-            runner['identifier'] = '%s-runner' % self.name
+            if self.gitlab_runner_id is not None:
+                runner = {}
+                runner['register_url'] = 'https://gitlab.marvelsystem.net/'
+                runner['register_token'] = self.gitlab_runner_register_token
+                runner['auth_token'] = self.gitlab_runner_auth_token
+                if self.env == 'Development':
+                    runner['tags'] = 'development'
+                if self.env == 'Staging':
+                    runner['tags'] = 'staging,production'
+                runner['identifier'] = '%s-runner' % self.name
 
-            data['gitlab-runner'] = runner
+                data['gitlab-runner'] = runner
         return data
 
 
