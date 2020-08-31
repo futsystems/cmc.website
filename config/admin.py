@@ -516,6 +516,10 @@ class PortalAdmin(admin.ModelAdmin):
     list_display = ('name', 'env', 'domain_name')
     list_filter = ('env',)
 
+class WXBoundServerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'env', 'ip')
+    list_filter = ('env',)
+
 admin.site.register(models.ApiGateway, ApiGatewayAdmin)
 admin.site.register(models.Consul, ConsulAdmin)
 admin.site.register(models.Service, ServiceAdmin)
@@ -538,3 +542,5 @@ admin.site.register(models.LogItemGroup, LogItemGroupAdmin)
 admin.site.register(models.SettingGroup, SettingGroupAdmin)
 admin.site.register(models.SettingItem, SettingItemAdmin)
 admin.site.register(models.Portal, PortalAdmin)
+
+admin.site.register(models.WXBoundServer, WXBoundServerAdmin)

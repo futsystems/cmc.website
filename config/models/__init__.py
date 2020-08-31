@@ -24,3 +24,4 @@ from setting import SettingGroup
 from setting import SettingItem
 
 from portal import Portal
+from wx_bound_server import WXBoundServer
