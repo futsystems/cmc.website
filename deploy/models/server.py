@@ -37,6 +37,10 @@ class Server(models.Model):
 
     gitlab_runner_register_token = models.CharField(max_length=100, default='register_token', blank=True)
 
+    gitlab_runner_id = models.IntegerField('Runner Id', default=8080)
+
+    gitlab_runner_auth_token = models.CharField(max_length=100, blank=True, null=True, default=None)
+
     objects = ServerManager()
 
     class Meta:
@@ -84,4 +88,53 @@ class Server(models.Model):
 
             data['gitlab-runner'] = runner
         return data
+
+
+    def register_runner(self):
+        from common import GitlabAPI
+        api = GitlabAPI()
+
+        #如果已经注册过 则直接删除原来的runner并重新注册新的runner
+        if self.gitlab_runner_id is not None:
+            api.delete_runner(self.gitlab_runner_id)
+
+        #初始化参数
+        description = '%s-runner' % self.name
+        tags= []
+        if self.env == 'Development':
+            tags.append('development')
+        if self.env == 'Staging':
+            tags.append('staging')
+            tags.append('production')
+
+        runner_id, runner_auth_token = api.create_runner(self.gitlab_runner_register_token,description,tags)
+        self.gitlab_runner_id = runner_id
+        self.gitlab_runner_auth_token = runner_auth_token
+        self.save()
+
+        #将项目注册到runner
+        if self.gateway is not None:
+            for project in api.get_gateway_projects():
+                project.runners.create({'runner_id':runner_id})
+        if self.portal is not None:
+            for project in api.get_portal_projects():
+                project.runners.create({'runner_id': runner_id})
+
+        if self.installed_services.count()>0:
+            names = ['srv.%s' % service.name.lower() for service in self.installed_services.all()]
+            for project in api.get_projects_by_service_names(names):
+                project.runners.create({'runner_id': runner_id})
+
+    def sync_project_runner(self):
+        """
+        当设定改变后 修改runner中包含的project
+        """
+        pass
+
+
+
+
+
+
+
 

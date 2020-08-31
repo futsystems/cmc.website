@@ -57,9 +57,11 @@ class ServerAdmin(admin.ModelAdmin):
         return format_html(
             '<a class="button" href="{}">Highstate</a>&nbsp;'
             '<a class="button" href="{}">Ping</a>&nbsp;'
+            '<a class="button" href="{}">RegisterRunner</a>&nbsp;'
             '<a class="button" href="{}">Reboot</a>&nbsp;',
             reverse('admin:salt-highstate', args=[obj.pk]),
             reverse('admin:salt-ping', args=[obj.pk]),
+            reverse('admin:gitlab-register-runner', args=[obj.pk]),
             reverse('admin:salt-reboot', args=[obj.pk]),
         )
 
@@ -86,6 +88,11 @@ class ServerAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.salt_reboot),
                 name='salt-reboot',
             ),
+            url(
+                r'^(?P<server_id>.+)/register-runner/$',
+                self.admin_site.admin_view(self.gitlab_register_runner),
+                name='gitlab-register-runner',
+            ),
         ]
 
         return my_urls + urls
@@ -102,6 +109,13 @@ class ServerAdmin(admin.ModelAdmin):
         result = salt_helper.ping(server)
         messages.info(request, "Ping Server:%s Result:%s" % (server.name, result))
 
+        previous_url = request.META.get('HTTP_REFERER')
+        return HttpResponseRedirect(previous_url)
+
+    def gitlab_register_runner(self, request, server_id):
+        server = models.Server.objects.get(id= server_id)
+        server.register_runner()
+        messages.info(request, "Register Runner Success")
         previous_url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(previous_url)
 

@@ -2,8 +2,12 @@
 #!/usr/bin/python
 
 import gitlab
+
 from settings import GITLAB_SETTING
 
+
+import logging, traceback
+logger = logging.getLogger(__name__)
 
 class GitlabAPI(object):
     def __init__(self):
@@ -15,7 +19,7 @@ class GitlabAPI(object):
     def get_runner_by_ip(self, ip):
         for item in self._gl.runners.list():
             if item.ip_address == ip:
-                return  item
+                return item
         return None
 
     def delete_runner_by_ip(self, ip):
@@ -42,3 +46,21 @@ class GitlabAPI(object):
                 projects.append(item)
 
         return projects
+
+    def create_runner(self, token, description, tags):
+        """
+        register a gitlab runner for server
+        """
+        runner = self._gl.runners.create(
+            {'token': token, 'description': description, 'locked': False, 'run_untagged': False,
+             'tag_list': ','.join(tags)})
+
+        return (runner.attributes['id'], runner.attributes['token'])
+
+    def delete_runner(self, runner_id):
+        try:
+            runner = self._gl.runners.get(str(runner_id))
+            runner.delete()
+        except Exception ,e:
+            logging.error(traceback.format_exc())
+
