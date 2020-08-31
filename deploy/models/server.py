@@ -108,6 +108,7 @@ class Server(models.Model):
         if self.env == 'Staging':
             tags.append('staging')
             tags.append('production')
+        tags.append(self.name)
 
         runner_id, runner_auth_token = api.create_runner(self.gitlab_runner_register_token,description,tags)
         self.gitlab_runner_id = runner_id
