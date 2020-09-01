@@ -6,7 +6,7 @@ from event_bus import EventBus
 from consul import Consul
 from log_item import LogItemGroup
 from setting import SettingGroup
-from choices import ENV_STAGE
+from choices import ENV_STAGE, SERVICE_DISCOVERY_SCHEME
 class Service(models.Model):
     """
     service
@@ -21,6 +21,10 @@ class Service(models.Model):
 
     service_provider = models.ForeignKey(Consul, verbose_name='Consul', on_delete=models.SET_NULL, default=None,
                                          blank=True, null=True)
+    discovery_scheme = models.CharField('Discovery Scheme', max_length=20, choices=SERVICE_DISCOVERY_SCHEME, default='Consul')
+
+    host = models.CharField('Host', max_length=255, default='dev-api.marvelsystem.net', blank=True, null=True)
+    #port = models.IntegerField('Port', default=80)
 
     mysql_connections = models.ManyToManyField(MySqlConnection, verbose_name='MySql Connections', blank=True)
 
@@ -90,16 +94,7 @@ class Service(models.Model):
 
         for service in self.used_services.all():
             key = 'Srv%sClient' % service.name
-            dict[key] = {
-                'Name': '%sRPC' % service.name,
-                'MaxRetry': 3,
-                'Discovery': {
-                    'Consul': {
-                        'Host': service.service_provider.host if service.service_provider is not None else 'localhost',
-                        'Port': service.service_provider.port if service.service_provider is not None else 8500
-                    }
-                }
-            }
+            dict[key] = service.get_rpc_discovery_config();
 
         if self.support_api:
             dict['APIServer'] ={
@@ -120,6 +115,33 @@ class Service(models.Model):
         for setting_group in self.other_settings.all():
             dict[setting_group.group_name] = setting_group.to_dict()
         return dict
+
+    def get_rpc_discovery_config(self):
+        if self.discovery_scheme == 'Consul':
+            return {
+                'Name': '%sRPC' % self.name,
+                'MaxRetry': 3,
+                'Discovery': {
+                    'Consul': {
+                        'Host': self.service_provider.host if self.service_provider is not None else 'localhost',
+                        'Port': self.service_provider.port if self.service_provider is not None else 8500
+                    }
+                }
+            }
+        elif self.discovery_scheme == 'EndPoints':
+            return {
+                'Name': '%sRPC' % self.name,
+                'MaxRetry': 3,
+                'Discovery': {
+                    'EndPoints': [
+                        {
+                            'Host': self.host,
+                            'Port': self.rpc_port
+                        }
+                    ]
+                }
+            }
+        return {}
 
 
     def get_pillar(self):

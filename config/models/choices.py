@@ -38,6 +38,11 @@ ROUTE_SCHEME = (
     ('HostGroup', 'HostGroup'),
 )
 
+SERVICE_DISCOVERY_SCHEME = (
+    ('Consul', 'Consul'),
+    ('EndPoints', 'EndPoints'),
+)
+
 MYSQL_CHARSET= (
     ('utf8mb4', 'utf8mb4'),
     ('utf8', 'utf8'),

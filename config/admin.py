@@ -288,9 +288,15 @@ class ServiceAdmin(admin.ModelAdmin):
                     "name", "env"
                 ]
             }),
-            ("Services", {
+            ("Used Services", {
                 "fields": [
-                    "service_provider", "used_services", "support_rpc", "rpc_port", "support_api", "api_port"
+                    "used_services",
+                ]
+            }),
+
+            ("Service Discovery", {
+                "fields": [
+                    "discovery_scheme", "service_provider", "host", "support_rpc", "rpc_port", "support_api", "api_port"
                 ]
             }),
 

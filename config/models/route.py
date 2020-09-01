@@ -93,12 +93,13 @@ class Route(models.Model):
 
     @property
     def route_target(self):
-        if self.route_scheme == 'Consul':
-            if self.service is None:
-                return '%s [%s]' % (self.route_scheme, 'Invalid Service')
-            return '%s [%sAPI-%s]' % (self.route_scheme, self.service.name, self.short_load_balancer())
-        elif self.route_scheme == 'Host':
-            return '%s [%s:%s]' % (self.route_scheme, self.downstream_host, self.downstream_port)
+        if self.service is not None:
+            if self.service.discovery_scheme == 'Consul':
+                return 'Consul [%sAPI-%s]' % (self.service.name, self.short_load_balancer())
+            elif self.service.discovery_scheme == 'EndPoints':
+                return 'EndPoints [%s:%s]' % (self.service.host, self.service.port)
+        else:
+            return "No Service"
 
     def short_load_balancer(self):
         if self.load_balancer == 'NoLoadBalancer':
@@ -141,14 +142,12 @@ class Route(models.Model):
         dict['DownstreamPathTemplate'] = self.downstream_path_template
         dict['DownstreamScheme'] = self.downstream_scheme
 
-        if self.route_scheme == 'Consul':
-            if self.service is not None:
+        if self.service is not None:
+            if self.service.discovery_scheme == 'Consul':
                 dict['ServiceName'] = '%sAPI' % self.service.name
-            else:
-                dict['ServiceName'] = '%sAPI' % 'Invalid'
-            dict['LoadBalancerOptions'] = {'Type':self.load_balancer}
-        elif self.route_scheme == 'Host':
-            dict['DownstreamHostAndPorts'] = [{'Host': self.downstream_host, "Port": self.downstream_port}]
+                dict['LoadBalancerOptions'] = {'Type':self.load_balancer}
+            elif self.service.discovery_scheme == 'EndPoints':
+                dict['DownstreamHostAndPorts'] = [{'Host': self.service.host, "Port": self.service.api_port}]
 
         if self.authentication_scheme != 'NoAuth':
             auth_dict = {'AuthenticationProviderKey': self.authentication_scheme}
@@ -162,4 +161,4 @@ class Route(models.Model):
         if self.http_handler_options is not None:
             dict['HttpHandlerOptions'] = self.http_handler_options.to_dict()
 
-        return  dict
+        return dict
