@@ -240,6 +240,8 @@ class ServiceAdminForm(forms.ModelForm):
             self.fields['mysql_connections'].queryset = models.MySqlConnection.objects.filter(env=self.instance.env)
             self.fields['elastic_apm'].queryset = models.ElastAPM.objects.filter(env=self.instance.env)
             self.fields['event_bus'].queryset = models.EventBus.objects.filter(env=self.instance.env)
+            self.fields['log_level'].queryset = models.LogItemGroup.objects.filter(env=self.instance.env)
+            self.fields['other_settings'].queryset = models.SettingGroup.objects.filter(env=self.instance.env)
 
 
 
@@ -345,7 +347,7 @@ class RouteAdminForm(forms.ModelForm):
             self.fields['service'].queryset = models.Service.objects.filter(env=self.instance.env)
 
 class RouteAdmin(admin.ModelAdmin):
-    list_display = ('name', 'env', 'upstream_path_template', 'downstream_path_template', 'priority', 'route_target', 'short_load_balancer',  'authentication_scheme', 'http_handler_options_title')
+    list_display = ('name', 'env', 'upstream_path_template', 'downstream_path_template', 'priority', 'route_target',  'authentication_scheme', 'http_handler_options_title')
     list_filter = ('api_gateway', 'service', 'authentication_scheme')
     ordering = ('name',)
     search_fields = ['name', 'upstream_path_template']
@@ -496,11 +498,11 @@ class LogItemAdmin(admin.ModelAdmin):
     list_display = ('prefix', 'level')
 
 class LogItemGroupAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name', 'env', 'description')
     filter_horizontal = ('items',)
 
 class SettingGroupAdmin(admin.ModelAdmin):
-    list_display = ('group_name', 'description')
+    list_display = ('group_name','env', 'description')
 
 class SettingItemAdmin(admin.ModelAdmin):
     list_display = ('setting_group', 'setting_key', 'setting_value', 'description')

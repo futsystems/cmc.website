@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
+from choices import ENV_STAGE
 
 class SettingGroup(models.Model):
     """
     Setting Group
     """
     group_name = models.CharField('GroupName', max_length=50, default='GroupName')
+    env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
     description = models.CharField('Description', max_length=1000, default='', blank=True)
 
     class Meta:

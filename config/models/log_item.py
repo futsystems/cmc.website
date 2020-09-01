@@ -3,7 +3,7 @@
 
 
 from django.db import models
-from choices import LOG_LEVEL_NET_CORE
+from choices import LOG_LEVEL_NET_CORE, ENV_STAGE
 
 class LogItem(models.Model):
     """
@@ -20,6 +20,7 @@ class LogItem(models.Model):
 
 class LogItemGroup(models.Model):
     name = models.CharField('Name', max_length=100, default='Default')
+    env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
     items = models.ManyToManyField(LogItem, verbose_name='Log Items')
     description = models.CharField('Description', max_length=1000, default='', blank=True)
 
