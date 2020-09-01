@@ -123,7 +123,7 @@ def config_gatwway_dotnet_hash(request):
 
 def service_list(request):
     try:
-        services = Service.objects.all().order_by('name')
+        services = Service.objects.filter(env='Development').order_by('name')
         return json_response(Success([item.name for item in services]))
     except Exception,e:
         logging.error(traceback.format_exc())
