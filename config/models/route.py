@@ -141,10 +141,13 @@ class Route(models.Model):
         dict['DownstreamPathTemplate'] = self.downstream_path_template
         dict['DownstreamScheme'] = self.downstream_scheme
 
-        if self.service is not None:
-            dict['ServiceName'] = '%sAPI' % self.service.name
+        if self.route_scheme == 'Consul':
+            if self.service is not None:
+                dict['ServiceName'] = '%sAPI' % self.service.name
+            else:
+                dict['ServiceName'] = '%sAPI' % 'Invalid'
             dict['LoadBalancerOptions'] = {'Type':self.load_balancer}
-        else:
+        elif self.route_scheme == 'Host':
             dict['DownstreamHostAndPorts'] = [{'Host': self.downstream_host, "Port": self.downstream_port}]
 
         if self.authentication_scheme != 'NoAuth':
