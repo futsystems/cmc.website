@@ -32,6 +32,12 @@ LOADBALANCER_SCHEME = (
     ('RoundRobin', 'RoundRobin'),
 )
 
+ROUTE_SCHEME = (
+    ('Consul', 'Consul'),
+    ('Host', 'Host'),
+    ('HostGroup', 'HostGroup'),
+)
+
 MYSQL_CHARSET= (
     ('utf8mb4', 'utf8mb4'),
     ('utf8', 'utf8'),

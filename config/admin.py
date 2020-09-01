@@ -372,16 +372,10 @@ class RouteAdmin(admin.ModelAdmin):
                 "downstream_path_template", "downstream_scheme"
             ]
         }),
-        ("Consul", {
+        ("Route Scheme", {
             "description": "The information about the hist data service.",
             "fields": [
-                "service", "load_balancer"
-            ]
-        }),
-        ("Host Port", {
-            "description": "The information about the hist data service.",
-            "fields": [
-                "downstream_host", "downstream_port"
+                "route_scheme", "service", "load_balancer", "downstream_host", "downstream_port"
             ]
         }),
 

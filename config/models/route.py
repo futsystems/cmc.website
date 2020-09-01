@@ -5,15 +5,15 @@ from django.db import models
 
 
 
-from .service import  Service
-from .option_http_handler import HttpHandlerOption
-from .option_rate_limit import RateLimitOption
-from .http_method import HttpMethod
-from .header_transform import HeaderTransform
-from .api_gateway import  ApiGateway
+from service import  Service
+from option_http_handler import HttpHandlerOption
+from option_rate_limit import RateLimitOption
+from http_method import HttpMethod
+from header_transform import HeaderTransform
+from api_gateway import  ApiGateway
 
 
-from .choices import DOWNSTREAM_SCHEME, AUTH_SCHEME,LOADBALANCER_SCHEME
+from .choices import DOWNSTREAM_SCHEME, AUTH_SCHEME, LOADBALANCER_SCHEME, ROUTE_SCHEME
 
 class Route(models.Model):
     """
@@ -33,6 +33,8 @@ class Route(models.Model):
 
     service = models.ForeignKey(Service, verbose_name='Serice', on_delete=models.SET_NULL, default=None, blank=True, null=True)
     load_balancer = models.CharField(max_length=20, choices=LOADBALANCER_SCHEME, default='LeastConnection')
+
+    route_scheme = models.CharField('Route Scheme', max_length=20, choices=ROUTE_SCHEME, default='Consul')
 
     downstream_host = models.CharField('DownstreamHost', max_length=255, default=None, blank=True, null=True)
     downstream_port = models.CharField('DownstreamPort', max_length=255, default=None, blank=True, null=True)
@@ -91,10 +93,12 @@ class Route(models.Model):
 
     @property
     def route_target(self):
-        if self.service is not None:
-            return '%sAPI' % (self.service.name)
-        else:
-            return  '%s:%s' % (self.downstream_host, self.downstream_port)
+        if self.route_scheme == 'Consul':
+            if self.service is None:
+                return '%s [%s]' % (self.route_scheme, 'Invalid Service')
+            return '%s [%sAPI]' % (self.route_scheme, self.service.name)
+        elif self.route_scheme == 'Host':
+            return '%s [%s:%s]' % (self.route_scheme, self.downstream_host, self.downstream_port)
 
     def short_load_balancer(self):
         if self.load_balancer == 'NoLoadBalancer':
