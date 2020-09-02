@@ -34,10 +34,10 @@ class Route(models.Model):
     service = models.ForeignKey(Service, verbose_name='Serice', on_delete=models.SET_NULL, default=None, blank=True, null=True)
     load_balancer = models.CharField(max_length=20, choices=LOADBALANCER_SCHEME, default='LeastConnection')
 
-    route_scheme = models.CharField('Route Scheme', max_length=20, choices=ROUTE_SCHEME, default='Consul')
+    #route_scheme = models.CharField('Route Scheme', max_length=20, choices=ROUTE_SCHEME, default='Consul')
 
-    downstream_host = models.CharField('DownstreamHost', max_length=255, default='dev-api.marvelsystem.net', blank=True, null=True)
-    downstream_port = models.CharField('DownstreamPort', max_length=255, default=80, blank=True, null=True)
+    #downstream_host = models.CharField('DownstreamHost', max_length=255, default='dev-api.marvelsystem.net', blank=True, null=True)
+    #downstream_port = models.CharField('DownstreamPort', max_length=255, default=80, blank=True, null=True)
 
     authentication_scheme = models.CharField('Auth Schema',max_length=9, choices=AUTH_SCHEME, default='NoAuth')
     authorization_scopes = models.CharField('AllowedScopes', max_length=255, blank=True, default='')
