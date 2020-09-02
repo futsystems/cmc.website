@@ -97,7 +97,7 @@ class Route(models.Model):
             if self.service.discovery_scheme == 'Consul':
                 return 'Consul [%sAPI-%s]' % (self.service.name, self.short_load_balancer())
             elif self.service.discovery_scheme == 'EndPoints':
-                return 'EndPoints [%s:%s]' % (self.service.host, self.service.port)
+                return 'EndPoints [%s:%s]' % (self.service.host, self.service.api_port)
         else:
             return "No Service"
 
