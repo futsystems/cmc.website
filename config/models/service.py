@@ -80,6 +80,7 @@ class Service(models.Model):
 
         if self.event_bus is not None:
             dict['EventBus'] = self.event_bus.to_dict()
+            dict['EventBus']['SubscriptionClientName'] = self.name
 
         if self.elastic_apm is not None:
             apm = self.elastic_apm.to_dict()
