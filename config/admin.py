@@ -383,7 +383,7 @@ class RouteAdmin(admin.ModelAdmin):
         ("Route Scheme", {
             "description": "The information about the hist data service.",
             "fields": [
-                "route_scheme", "service", "load_balancer", "downstream_host", "downstream_port"
+                "service", "load_balancer"
             ]
         }),
 
