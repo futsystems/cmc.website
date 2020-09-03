@@ -72,8 +72,6 @@ class Route(models.Model):
         route.downstream_scheme = self.downstream_scheme
 
         route.load_balancer = self.load_balancer
-        route.downstream_host = self.downstream_host
-        route.downstream_port = self.downstream_port
         route.authentication_scheme = self.authentication_scheme
         route.authorization_scopes = self.authorization_scopes
         route.rate_limite_options = self.rate_limite_options
