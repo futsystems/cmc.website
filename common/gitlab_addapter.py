@@ -2,10 +2,11 @@
 #!/usr/bin/python
 
 import gitlab
+from gitlab import GitlabCreateError, GitlabMRClosedError
 
 from settings import GITLAB_SETTING
 
-
+import  datetime
 import logging, traceback
 logger = logging.getLogger(__name__)
 
@@ -46,6 +47,31 @@ class GitlabAPI(object):
                 projects.append(item)
 
         return projects
+
+    def get_project_by_path(self, path):
+        for item in self._gl.projects.list(simple=True, per_page=100):
+            if item.path_with_namespace == path:
+                return item
+
+        return None
+
+    def merge_project(self, path):
+        project = self.get_project_by_path(path)
+        if project is None:
+            return [True, 'Project do not exist']
+
+        mr_title = 'Merge:' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        try:
+            mr = project.mergerequests.create({'source_branch': 'develop', 'target_branch': 'master', 'title': mr_title})
+        except GitlabCreateError as e:
+            return [False, e.message]
+
+        try:
+            mr.approve()
+            mr.merge()
+            return [True, "Merge Success"]
+        except GitlabMRClosedError as e:
+            return [False, e.message]
 
     def create_runner(self, token, description, tags):
         """

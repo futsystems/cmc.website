@@ -1,5 +1,5 @@
 from django.db import models
-from .choices import ENV_STAGE
+
 from db_connection import MySqlConnection
 from elastic_apm import ElastAPM
 from event_bus import EventBus
@@ -7,6 +7,8 @@ from consul import Consul
 from log_item import LogItemGroup
 from setting import SettingGroup
 from choices import ENV_STAGE, SERVICE_DISCOVERY_SCHEME
+from common import GitlabAPI
+
 class Service(models.Model):
     """
     service
@@ -50,6 +52,10 @@ class Service(models.Model):
     description = models.CharField('Description', max_length=1000, default='', blank=True)
 
     pipeline_trigger = models.CharField('Pipeline Trigger', max_length=1000, default='', blank=True)
+
+    merge_success = models.BooleanField('Merge Success', default=True)
+    merge_message = models.CharField('Merge Message', max_length=500, default='', blank=True, null=True)
+
 
     class Meta:
         app_label = 'config'
@@ -144,6 +150,17 @@ class Service(models.Model):
             }
         return {}
 
+    def merge_project(self):
+        if self.env == 'Development':
+            path = 'platform/srv.%s' % self.name.lower()
+            api = GitlabAPI()
+            ret = api.merge_project(path)
+            self.merge_success = ret[0]
+            self.merge_message = ret[1]
+            self.save()
+        else:
+            self.merge_success = True
+            self.merge_message = 'Only Development Merge'
 
     def get_pillar(self):
         return {

@@ -251,6 +251,13 @@ def copy_service_staging(modeladmin, request, queryset):
         service.copy_to_env('Staging')
 copy_service_staging.short_description = "Copy Service To Staging"
 
+
+def merge_project(modeladmin, request, queryset):
+    for service in queryset.all():
+        service.merge_project()
+merge_project.short_description = "Merge to master branch"
+
+
 def copy_service_production(modeladmin, request, queryset):
     for service in queryset.all():
         service.copy_to_env('Production')
@@ -264,7 +271,7 @@ class ServiceAdmin(admin.ModelAdmin):
     filter_horizontal = ('used_services', 'mysql_connections', 'other_settings')
     list_filter = ('env',)
     form = ServiceAdminForm
-    actions = [copy_service_staging, copy_service_production]
+    actions = [copy_service_staging, copy_service_production, merge_project]
 
     def get_fieldsets(self, request, obj=None):
         if obj is None:
@@ -323,7 +330,14 @@ class ServiceAdmin(admin.ModelAdmin):
                 "fields": [
                     "other_settings", "description", "pipeline_trigger"
                 ]
+            }),
+
+            ("Git", {
+                "fields": [
+                    "merge_success", "merge_message"
+                ]
             })
+
         )
 
     def get_readonly_fields(self, request, obj=None):
