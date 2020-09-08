@@ -521,8 +521,21 @@ class LogItemGroupAdmin(admin.ModelAdmin):
     list_display = ('name', 'env', 'description')
     filter_horizontal = ('items',)
 
+def copy_setting_staging(modeladmin, request, queryset):
+    for setting_group in queryset.all():
+        setting_group.copy_to_env('Staging')
+copy_setting_staging.short_description = "Copy Setting To Staging"
+
+
+def copy_settinng_production(modeladmin, request, queryset):
+    for setting_group in queryset.all():
+        setting_group.copy_to_env('Production')
+copy_settinng_production.short_description = "Copy Setting To Production"
+
+
 class SettingGroupAdmin(admin.ModelAdmin):
     list_display = ('group_name','env', 'description')
+    actions = [copy_setting_staging, copy_settinng_production]
 
 class SettingItemAdmin(admin.ModelAdmin):
     list_display = ('setting_group', 'setting_key', 'setting_value', 'description')

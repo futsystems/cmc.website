@@ -18,6 +18,23 @@ class SettingGroup(models.Model):
     def __unicode__(self):
         return u'SettingGroup-%s' % self.group_name
 
+    def copy_to_env(self,env):
+        group = SettingGroup()
+        group.group_name = self.group_name
+        group.env = env
+        group.description = self.description
+        group.save()
+        for item in self.settings.all():
+            setting = SettingItem()
+            setting.setting_key = item.setting_key
+            setting.setting_value = item.setting_value
+            setting.is_array = item.is_array
+            setting.setting_group = group
+            setting.description = item.description
+            setting.save()
+
+
+
     def to_dict(self):
         dict={}
         for setting in self.settings.all():
