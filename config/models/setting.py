@@ -16,7 +16,7 @@ class SettingGroup(models.Model):
         app_label = 'config'
 
     def __unicode__(self):
-        return u'SettingGroup-%s' % self.group_name
+        return u'%s-%s' % (self.group_name, self.env)
 
     def copy_to_env(self,env):
         group = SettingGroup()
