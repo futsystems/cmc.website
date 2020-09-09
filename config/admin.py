@@ -241,7 +241,7 @@ class ServiceAdminForm(forms.ModelForm):
             self.fields['elastic_apm'].queryset = models.ElastAPM.objects.filter(env=self.instance.env)
             self.fields['event_bus'].queryset = models.EventBus.objects.filter(env=self.instance.env)
             self.fields['log_level'].queryset = models.LogItemGroup.objects.filter(env=self.instance.env)
-            #self.fields['other_settings'].queryset = models.SettingGroup.objects.filter(env=self.instance.env)
+            self.fields['other_settings'].queryset = models.SettingGroup.objects.filter(env=self.instance.env)
 
 
 
