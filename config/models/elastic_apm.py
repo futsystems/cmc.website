@@ -20,7 +20,7 @@ class ElastAPM(models.Model):
         app_label = 'config'
 
     def __unicode__(self):
-        return u'apm-%s-%s' % (self.service_urls, self.env)
+        return u'apm-' % self.env
 
     def to_dict(self):
         dict = {

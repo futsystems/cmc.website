@@ -23,7 +23,7 @@ class EventBus(models.Model):
         app_label = 'config'
 
     def __unicode__(self):
-        return u'eventbus-%s %s' % (self.host, self.env)
+        return u'eventbus- %s' % self.env
 
     def to_dict(self):
         dict = {

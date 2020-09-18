@@ -18,7 +18,7 @@ class Consul(models.Model):
         app_label = 'config'
 
     def __unicode__(self):
-        return u'consul-%s %s' % (self.name, self.env)
+        return u'consul-%s' % self.env
 
     def to_dict(self):
         dict = {

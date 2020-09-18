@@ -124,6 +124,7 @@ class Service(models.Model):
         return dict
 
     def get_rpc_discovery_config(self):
+
         if self.discovery_scheme == 'Consul':
             return {
                 'Name': '%sRPC' % self.name,
