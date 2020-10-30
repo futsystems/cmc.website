@@ -6,7 +6,8 @@ from gitlab import GitlabCreateError, GitlabMRClosedError
 
 from settings import GITLAB_SETTING
 
-import  datetime
+import datetime
+import time
 import logging, traceback
 logger = logging.getLogger(__name__)
 
@@ -60,6 +61,11 @@ class GitlabAPI(object):
         if project is None:
             return [True, 'Project do not exist']
 
+        diff = project.repository_compare('master', 'develop')
+        if diff['commit'] is None:
+            return [True, "No Commit"]
+
+
         mr_title = 'Merge:' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         try:
             mr = project.mergerequests.create({'source_branch': 'develop', 'target_branch': 'master', 'title': mr_title})
@@ -67,7 +73,9 @@ class GitlabAPI(object):
             return [False, e.message]
 
         try:
+            time.sleep(1)
             mr.approve()
+            time.sleep(1)
             mr.merge()
             return [True, "Merge Success"]
         except GitlabMRClosedError as e:
