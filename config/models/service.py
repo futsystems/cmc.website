@@ -84,6 +84,8 @@ class Service(models.Model):
         if self.log_level is not None:
             dict['Logging'] = self.log_level.to_dict()
 
+        dict['System'] = self.get_system_config()
+
         if self.event_bus is not None:
             dict['EventBus'] = self.event_bus.to_dict()
             dict['EventBus']['SubscriptionClientName'] = self.name
@@ -122,6 +124,14 @@ class Service(models.Model):
         for setting_group in self.other_settings.all():
             dict[setting_group.group_name] = setting_group.to_dict()
         return dict
+
+    def get_system_config(self):
+        return {
+            'Product': 'WeiShop',
+            'Service': self.name,
+            'Stage': self.env,
+            'Version': '1.0',
+        }
 
     def get_rpc_discovery_config(self):
 

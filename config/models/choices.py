@@ -58,3 +58,8 @@ LOG_LEVEL_NET_CORE= (
     ('Debug', 'Debug'),
     ('Trace', 'Trace'),
 )
+
+PRODUCT=(
+    ('WeiSite', 'WeiSite'),
+    ('WeiShop', 'WeiShop'),
+)

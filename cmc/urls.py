@@ -20,10 +20,12 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 from config import urls as config_urls
 from deploy import urls as deploy_urls
+from acl import urls as acl_urls
 
 urlpatterns = [
     url(r'^config/', include(config_urls)),
     url(r'^deploy/', include(deploy_urls)),
+    url(r'^acl/', include(acl_urls)),
     url(r'^admin/', include(admin.site.urls)),
 ]
 

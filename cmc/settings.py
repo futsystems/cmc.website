@@ -38,10 +38,11 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'acl',
     'config',
     'deploy',
     'eventbus',
-    'common'
+    'common',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -198,8 +199,14 @@ LOGGING = {
             'handlers': ['tinyconsole','default'],
             'level': 'DEBUG',
             'propagate': False
-        },
 
+        },
+        'acl': {
+            'handlers': ['tinyconsole', 'default'],
+            'level': 'DEBUG',
+            'propagate': False
+
+        },
         'pushkit': {
             'handlers': ['tinyconsole','default'],
             'level': 'DEBUG',
