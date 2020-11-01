@@ -23,8 +23,6 @@ class PermissionManager(models.Manager):
         logger.info(service)
 
         for permission in permissions:
-            if permission['Title'] is None:
-                permission['Title'] = 'title'
             try:
                 item = Permission.objects.get(name=permission['Name'], service=service, env=stage)
 
