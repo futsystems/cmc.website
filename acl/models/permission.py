@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class PermissionManager(models.Manager):
     def sync_permission(self, product_name, service_name, permissions, stage='Development'):
 
-        service = Service.objects.get(name=service_name)
+        service = Service.objects.get(name=service_name, env=stage)
         if service is None:
             raise Exception(u"service:%s do not exist" % service_name)
 
