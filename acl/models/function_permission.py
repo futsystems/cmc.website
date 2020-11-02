@@ -45,7 +45,7 @@ class Permission(models.Model):
             return '%s.%s' % (self.parent.get_path(), self.permission)
 
     def __unicode__(self):
-        return u'%s-%s' % (self.title, self.permission)
+        return u'%s-%s' % (self.title, self.path)
 
     def save(self, *args, **kwargs):
         logger.info('save operation')
