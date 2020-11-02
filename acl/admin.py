@@ -42,7 +42,7 @@ class APIPermissionAdmin(admin.ModelAdmin):
             return ['env', 'service']
 
 
-class FunctionPermissionAdmin(admin.ModelAdmin):
+class PermissionAdmin(admin.ModelAdmin):
     list_display = ('permissionId', 'title', 'name', 'path', 'api_permissionns_code', 'env')
     list_filter = ('env',)
     filter_horizontal = ('api_permissions',)
@@ -55,4 +55,4 @@ class FunctionPermissionAdmin(admin.ModelAdmin):
             return ['env']
 
 admin.site.register(models.APIPermission, APIPermissionAdmin)
-admin.site.register(models.Permission, FunctionPermissionAdmin)
+admin.site.register(models.Permission, PermissionAdmin)

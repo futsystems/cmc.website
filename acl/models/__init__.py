@@ -1,5 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from permission import APIPermission
-from function_permission import Permission
+from api_permission import APIPermission
+from permission import Permission

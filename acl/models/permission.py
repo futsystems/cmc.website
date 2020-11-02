@@ -9,78 +9,61 @@ from config.models import Service
 import logging, traceback
 from collections import OrderedDict
 logger = logging.getLogger(__name__)
+from permission import APIPermission
 
-class APIPermissionManager(models.Manager):
-    def sync_permission(self, product_name, service_name, permissions, stage='Development'):
-
-        service = Service.objects.get(name=service_name, env=stage)
-        if service is None:
-            raise Exception(u"service:%s do not exist" % service_name)
-
-        # 将本次需要更新的权限同步标识更新为False
-        APIPermission.objects.filter(service=service, env=stage).update(synced=False)
-
-        logger.info(service)
-
-        for permission in permissions:
-            logger.info(permission)
-            try:
-                item = APIPermission.objects.get(name=permission['Name'], service=service, env=stage)
-
-                item.code = permission['Code']
-                item.title = permission['Title']
-                item.group_name = permission['GroupName']
-                item.description = permission['Description']
-                item.synced = True
-                item.save()
-
-            except APIPermission.DoesNotExist:
-                APIPermission.objects.create(name=permission['Name'],
-                                          code=permission['Code'],
-                                          title=permission['Title'],
-                                          group_name=permission['GroupName'],
-                                          description=permission['Description'],
-                                          service=service,
-                                          env=stage,
-                                          )
-
-        # 过滤出没有更新的权限(权限调整去除的权限项)并删除
-        APIPermission.objects.filter(service=service, env=stage, synced=False).delete()
-
-
-
-class APIPermission(models.Model):
+class Permission(models.Model):
     """
-    permission
+    Permission
     """
     title = models.CharField('Title', max_length=50, default='Title')
-    group_name = models.CharField('Group Name', max_length=50, default='GroupName')
-    description = models.CharField('Description', max_length=100, default='', blank=True)
     name = models.CharField('Name', max_length=50, default='Name')
-    code = models.IntegerField('Code', default=0)
+    description = models.CharField('Description', max_length=100, default='', blank=True)
+    path = models.CharField('Path', max_length=100, default='', blank=True)
 
-    service = models.ForeignKey(Service, related_name='permissions', verbose_name='Service', on_delete=models.CASCADE,
-                                default=None, blank=True, null=True)
+    parent = models.ForeignKey('Permission', verbose_name='Parent', related_name='children',
+                               on_delete=models.SET_NULL,default=None, blank=True, null=True)
 
+    api_permissions = models.ManyToManyField(APIPermission, verbose_name='API Permissions', blank=True)
     env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
-    synced = models.BooleanField('Sync', default=True)
 
-    objects = APIPermissionManager()
 
     class Meta:
         app_label = 'acl'
 
+    @property
+    def api_permissionns_code(self):
+        return [item.code for item in self.api_permissions.all()]
+
+    @property
+    def permissionId(self):
+        return self.pk
+
+    def get_path(self):
+        if self.parent is None:
+            return self.name
+        else:
+            return '%s.%s' % (self.parent.get_path(), self.name)
+
+    def __unicode__(self):
+        return u'%s-%s' % (self.title, self.path)
+
+    def save(self, *args, **kwargs):
+        logger.info('save operation')
+        self.path = self.get_path()
+        super(Permission, self).save(*args, **kwargs)
+
     def get_dict(self):
         item = {
             'title': self.title,
-            'group_name': self.group_name,
-            'description': self.description,
+            'permissionId': self.permissionId,
             'name': self.name,
-            'code': self.code,
-            'service': self.service.name,
+            'path': self.path,
+            'childen': [child.get_dict() for child in self.children.all()],
+            'code': [item.code for item in self.api_permissions.all()],
+            'parentId': None if self.parent is None else self.parent.pk,
+
         }
         return item
 
-    def __unicode__(self):
-        return u'%s-%s' % (self.name, self.code)
+
 
