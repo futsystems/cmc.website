@@ -63,3 +63,19 @@ def permission(request):
         except Exception, e:
             logging.error(traceback.format_exc())
             return json_response(Error("get gateway ocelot config error"))
+
+
+def api_permission(request):
+    if request.method == "POST":
+        return HttpResponse("POST not support")
+    else:
+        env = request.GET.get("env")
+        logger.info('get permission of env:%s' % env)
+
+        try:
+            permissions = APIPermission.objects.filter(env=env)
+
+            return json_response([perm.get_dict() for perm in permissions])
+        except Exception, e:
+            logging.error(traceback.format_exc())
+            return json_response(Error("get gateway ocelot config error"))

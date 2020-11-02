@@ -70,6 +70,17 @@ class APIPermission(models.Model):
     class Meta:
         app_label = 'acl'
 
+    def get_dict(self):
+        item = {
+            'title': self.title,
+            'group_name': self.group_name,
+            'description': self.description,
+            'name': self.name,
+            'permission': self.permission,
+            'service': self.service.name,
+        }
+        return item
+
     def __unicode__(self):
         return u'%s-%s' % (self.name, self.permission)
 
