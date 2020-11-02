@@ -42,7 +42,7 @@ class Permission(models.Model):
         if self.parent is None:
             return self.permission
         else:
-            return '%s.%s' % (self.parent.get_path(), self.permission)
+            return '%s.%s' % (self.parent.get_path(), self.name)
 
     def __unicode__(self):
         return u'%s-%s' % (self.title, self.path)
@@ -50,13 +50,13 @@ class Permission(models.Model):
     def save(self, *args, **kwargs):
         logger.info('save operation')
         self.path = self.get_path()
-        super(FunctionPermission, self).save(*args, **kwargs)
+        super(Permission, self).save(*args, **kwargs)
 
     def get_dict(self):
         item = {
             'title': self.title,
             'permissionId': self.permissionId,
-            'name': self.permission,
+            'name': self.name,
             'path': self.path,
             'childen': [child.get_dict() for child in self.children.all()],
             'code': [item.code for item in self.api_permissions.all()],
