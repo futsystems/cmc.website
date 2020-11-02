@@ -10,7 +10,7 @@ import logging, traceback
 from collections import OrderedDict
 logger = logging.getLogger(__name__)
 
-class PermissionManager(models.Manager):
+class APIPermissionManager(models.Manager):
     def sync_permission(self, product_name, service_name, permissions, stage='Development'):
 
         service = Service.objects.get(name=service_name, env=stage)
@@ -18,13 +18,14 @@ class PermissionManager(models.Manager):
             raise Exception(u"service:%s do not exist" % service_name)
 
         # 将本次需要更新的权限同步标识更新为False
-        Permission.objects.filter(service=service, env=stage).update(synced=False)
+        APIPermission.objects.filter(service=service, env=stage).update(synced=False)
 
         logger.info(service)
 
         for permission in permissions:
+            logger.info(permission)
             try:
-                item = Permission.objects.get(name=permission['Name'], service=service, env=stage)
+                item = APIPermission.objects.get(name=permission['Name'], service=service, env=stage)
 
                 item.permission = permission['Permission']
                 item.title = permission['Title']
@@ -33,8 +34,8 @@ class PermissionManager(models.Manager):
                 item.synced = True
                 item.save()
 
-            except Permission.DoesNotExist:
-                Permission.objects.create(name=permission['Name'],
+            except APIPermission.DoesNotExist:
+                APIPermission.objects.create(name=permission['Name'],
                                           permission=permission['Permission'],
                                           title=permission['Title'],
                                           group_name=permission['GroupName'],
@@ -44,11 +45,11 @@ class PermissionManager(models.Manager):
                                           )
 
         # 过滤出没有更新的权限(权限调整去除的权限项)并删除
-        Permission.objects.filter(service=service, env=stage, synced=False).delete()
+        APIPermission.objects.filter(service=service, env=stage, synced=False).delete()
 
 
 
-class Permission(models.Model):
+class APIPermission(models.Model):
     """
     permission
     """
@@ -64,7 +65,7 @@ class Permission(models.Model):
     env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
     synced = models.BooleanField('Sync', default=True)
 
-    objects = PermissionManager()
+    objects = APIPermissionManager()
 
     class Meta:
         app_label = 'acl'

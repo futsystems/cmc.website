@@ -30,7 +30,7 @@ import hashlib
 from common import  salt_helper
 
 
-class PermissionAdmin(admin.ModelAdmin):
+class APIPermissionAdmin(admin.ModelAdmin):
     list_display = ('permission', 'name', 'title', 'group_name', 'description', 'service', 'env')
     list_filter = ('env', 'service')
     ordering = ('permission',)
@@ -42,8 +42,17 @@ class PermissionAdmin(admin.ModelAdmin):
             return ['env', 'service']
 
 
+class FunctionPermissionAdmin(admin.ModelAdmin):
+    list_display = ('permissionId', 'title', 'permission', 'path', 'api_permissionns_code', 'env')
+    list_filter = ('env',)
+    filter_horizontal = ('api_permissions',)
+    ordering = ('path',)
 
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None:
+            return []
+        else:
+            return ['env']
 
-
-
-admin.site.register(models.Permission, PermissionAdmin)
+admin.site.register(models.APIPermission, APIPermissionAdmin)
+admin.site.register(models.FunctionPermission, FunctionPermissionAdmin)

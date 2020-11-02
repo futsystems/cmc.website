@@ -10,5 +10,6 @@ import views
 
 urlpatterns = [
     url(r'^permission/sync/$', views.sync_permission, name='permission_sync'),
+    url(r'^permission/$', views.permission, name='permission_sync'),
 
 ]
