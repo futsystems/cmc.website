@@ -32,7 +32,7 @@ class FunctionPermission(models.Model):
 
     @property
     def api_permissionns_code(self):
-        return [item.permission for item in self.api_permissions.all()]
+        return [item.code for item in self.api_permissions.all()]
 
     @property
     def permissionId(self):

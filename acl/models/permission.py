@@ -27,7 +27,7 @@ class APIPermissionManager(models.Manager):
             try:
                 item = APIPermission.objects.get(name=permission['Name'], service=service, env=stage)
 
-                item.permission = permission['Permission']
+                item.code = permission['Permission']
                 item.title = permission['Title']
                 item.group_name = permission['GroupName']
                 item.description = permission['Description']
@@ -36,7 +36,7 @@ class APIPermissionManager(models.Manager):
 
             except APIPermission.DoesNotExist:
                 APIPermission.objects.create(name=permission['Name'],
-                                          permission=permission['Permission'],
+                                          code=permission['Permission'],
                                           title=permission['Title'],
                                           group_name=permission['GroupName'],
                                           description=permission['Description'],
@@ -57,7 +57,7 @@ class APIPermission(models.Model):
     group_name = models.CharField('Group Name', max_length=50, default='GroupName')
     description = models.CharField('Description', max_length=100, default='', blank=True)
     name = models.CharField('Name', max_length=50, default='Name')
-    permission = models.IntegerField('Permission', default=0)
+    code = models.IntegerField('Permission', default=0)
 
     service = models.ForeignKey(Service, related_name='permissions', verbose_name='Service', on_delete=models.CASCADE,
                                 default=None, blank=True, null=True)
@@ -76,7 +76,7 @@ class APIPermission(models.Model):
             'group_name': self.group_name,
             'description': self.description,
             'name': self.name,
-            'permission': self.permission,
+            'code': self.code,
             'service': self.service.name,
         }
         return item

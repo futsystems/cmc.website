@@ -31,9 +31,9 @@ from common import  salt_helper
 
 
 class APIPermissionAdmin(admin.ModelAdmin):
-    list_display = ('permission', 'name', 'title', 'group_name', 'description', 'service', 'env')
+    list_display = ('code', 'name', 'title', 'group_name', 'description', 'service', 'env')
     list_filter = ('env', 'service')
-    ordering = ('permission',)
+    ordering = ('code',)
 
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
