@@ -82,5 +82,5 @@ class APIPermission(models.Model):
         return item
 
     def __unicode__(self):
-        return u'%s-%s' % (self.name, self.permission)
+        return u'%s-%s' % (self.name, self.code)
 
