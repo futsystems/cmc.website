@@ -59,7 +59,7 @@ class FunctionPermission(models.Model):
             'permission': self.permission,
             'path': self.path,
             'childen': [child.get_dict() for child in self.children.all()],
-            'api_permissions': [item.permission for item in self.api_permissions.all()]
+            'code': [item.code for item in self.api_permissions.all()]
 
         }
         return item
