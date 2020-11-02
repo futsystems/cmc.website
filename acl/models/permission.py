@@ -9,7 +9,7 @@ from config.models import Service
 import logging, traceback
 from collections import OrderedDict
 logger = logging.getLogger(__name__)
-from permission import APIPermission
+from api_permission import APIPermission
 
 class Permission(models.Model):
     """
