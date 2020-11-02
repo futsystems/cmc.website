@@ -11,16 +11,16 @@ from collections import OrderedDict
 logger = logging.getLogger(__name__)
 from permission import APIPermission
 
-class FunctionPermission(models.Model):
+class Permission(models.Model):
     """
-    FunctionPermission
+    Permission
     """
     title = models.CharField('Title', max_length=50, default='Title')
     name = models.CharField('Name', max_length=50, default='Name')
     description = models.CharField('Description', max_length=100, default='', blank=True)
     path = models.CharField('Path', max_length=100, default='', blank=True)
 
-    parent = models.ForeignKey('FunctionPermission', verbose_name='Parent', related_name='children',
+    parent = models.ForeignKey('Permission', verbose_name='Parent', related_name='children',
                                on_delete=models.SET_NULL,default=None, blank=True, null=True)
 
     api_permissions = models.ManyToManyField(APIPermission, verbose_name='API Permissions', blank=True)

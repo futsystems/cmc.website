@@ -55,4 +55,4 @@ class FunctionPermissionAdmin(admin.ModelAdmin):
             return ['env']
 
 admin.site.register(models.APIPermission, APIPermissionAdmin)
-admin.site.register(models.FunctionPermission, FunctionPermissionAdmin)
+admin.site.register(models.Permission, FunctionPermissionAdmin)

@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseNotFound, Http404 ,HttpResponseRedirect
 from django.views.generic import TemplateView, ListView, DetailView, CreateView
 
-from models import APIPermission, FunctionPermission
+from models import APIPermission, Permission
 from common import Response,Success,Error
 import hashlib
 from deploy.models import Server
@@ -57,7 +57,7 @@ def permission(request):
         logger.info('get permission of env:%s' % (env))
 
         try:
-            permissions = FunctionPermission.objects.filter(env=env, parent=None)
+            permissions = Permission.objects.filter(env=env, parent=None)
 
             return json_response([perm.get_dict() for perm in permissions])
         except Exception, e:

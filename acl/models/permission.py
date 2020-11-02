@@ -57,7 +57,7 @@ class APIPermission(models.Model):
     group_name = models.CharField('Group Name', max_length=50, default='GroupName')
     description = models.CharField('Description', max_length=100, default='', blank=True)
     name = models.CharField('Name', max_length=50, default='Name')
-    code = models.IntegerField('Permission', default=0)
+    code = models.IntegerField('Code', default=0)
 
     service = models.ForeignKey(Service, related_name='permissions', verbose_name='Service', on_delete=models.CASCADE,
                                 default=None, blank=True, null=True)
