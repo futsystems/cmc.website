@@ -27,7 +27,7 @@ class APIPermissionManager(models.Manager):
             try:
                 item = APIPermission.objects.get(name=permission['Name'], service=service, env=stage)
 
-                item.code = permission['Permission']
+                item.code = permission['Code']
                 item.title = permission['Title']
                 item.group_name = permission['GroupName']
                 item.description = permission['Description']
@@ -36,7 +36,7 @@ class APIPermissionManager(models.Manager):
 
             except APIPermission.DoesNotExist:
                 APIPermission.objects.create(name=permission['Name'],
-                                          code=permission['Permission'],
+                                          code=permission['Code'],
                                           title=permission['Title'],
                                           group_name=permission['GroupName'],
                                           description=permission['Description'],
