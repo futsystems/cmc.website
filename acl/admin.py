@@ -43,7 +43,7 @@ class APIPermissionAdmin(admin.ModelAdmin):
 
 
 class FunctionPermissionAdmin(admin.ModelAdmin):
-    list_display = ('permissionId', 'title', 'permission', 'path', 'api_permissionns_code', 'env')
+    list_display = ('permissionId', 'title', 'name', 'path', 'api_permissionns_code', 'env')
     list_filter = ('env',)
     filter_horizontal = ('api_permissions',)
     ordering = ('path',)

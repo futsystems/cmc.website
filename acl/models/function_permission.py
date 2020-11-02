@@ -16,7 +16,7 @@ class FunctionPermission(models.Model):
     FunctionPermission
     """
     title = models.CharField('Title', max_length=50, default='Title')
-    permission = models.CharField('Permission', max_length=50, default='Title')
+    name = models.CharField('Name', max_length=50, default='Name')
     description = models.CharField('Description', max_length=100, default='', blank=True)
     path = models.CharField('Path', max_length=100, default='', blank=True)
 
@@ -56,7 +56,7 @@ class FunctionPermission(models.Model):
         item = {
             'title': self.title,
             'permissionId': self.permissionId,
-            'permission': self.permission,
+            'name': self.permission,
             'path': self.path,
             'childen': [child.get_dict() for child in self.children.all()],
             'code': [item.code for item in self.api_permissions.all()],
