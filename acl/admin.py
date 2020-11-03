@@ -43,10 +43,10 @@ class APIPermissionAdmin(admin.ModelAdmin):
 
 
 class PermissionAdmin(admin.ModelAdmin):
-    list_display = ('permissionKey', 'title', 'name', 'path', 'api_permissionns_code', 'env')
+    list_display = ('permissionKey', 'title', 'name', 'path', 'type', 'api_permissionns_code','relation',  'env')
     list_filter = ('env',)
     filter_horizontal = ('api_permissions',)
-    ordering = ('path',)
+    ordering = ('relation',)
 
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
