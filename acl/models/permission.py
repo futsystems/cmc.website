@@ -58,7 +58,7 @@ class Permission(models.Model):
             'permissionKey': self.permissionKey,
             'name': self.name,
             'path': self.path,
-            'childen': [child.get_dict() for child in self.children.all()],
+            'children': [child.get_dict() for child in self.children.all()],
             'code': [item.code for item in self.api_permissions.all()],
             'parentId': None if self.parent is None else self.parent.pk,
 
