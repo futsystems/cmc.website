@@ -12,22 +12,26 @@ from collections import OrderedDict
 logger = logging.getLogger(__name__)
 from api_permission import APIPermission
 from choices import PERMISSION_TYPE
-from page import Page
+from group import Group
 
-
-class Permission(models.Model):
+class Page(models.Model):
     """
     Permission
     """
 
+
     title = models.CharField('Title', max_length=50, default='Title')
     name = models.CharField('Name', max_length=50, default='Name')
 
+    path = models.CharField('Path', max_length=100, default='', blank=True)
     env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
-    page = models.ForeignKey('Page', verbose_name='Page', related_name='children',
+
+    group = models.ForeignKey('Group', verbose_name='Group', related_name='children',
                                on_delete=models.SET_NULL, default=None, blank=True, null=True)
 
-    api_permissions = models.ManyToManyField(APIPermission, verbose_name='API Permissions', blank=True)
+    category = models.CharField('Categoy', max_length=100, default='', blank=True)
+
+    #api_permissions = models.ManyToManyField(APIPermission, verbose_name='API Permissions', blank=True)
 
     key = models.CharField('Key', max_length=100, default='', blank=True)
     description = models.CharField('Description', max_length=100, default='', blank=True)
@@ -38,23 +42,26 @@ class Permission(models.Model):
         app_label = 'acl'
         ordering = ['sort']
 
+    @property
+    def permissions(self):
+        return [item.name for item in self.children.all()]
+
+    def get_key(self):
+       if self.group is None:
+           return self.name
+       else:
+           return '%s.%s' % (self.group.name, self.name)
 
     def __unicode__(self):
         return u'%s[%s]' % (self.title, self.name)
 
-    @property
-    def api_permissionns_code(self):
-        return [item.code for item in self.api_permissions.all()]
 
-    def get_key(self):
-       if self.page is None:
-           return self.name
-       else:
-           return '%s.%s' % (self.page.get_key(), self.name)
+
+
 
     def save(self, *args, **kwargs):
         self.key = self.get_key()
-        super(Permission, self).save(*args, **kwargs)
+        super(Page, self).save(*args, **kwargs)
 
 
     def get_dict(self):
@@ -62,14 +69,17 @@ class Permission(models.Model):
             'title': self.title,
             'permissionKey': self.pk,
             'name': self.name,
-            #'path': '',
-            #'children': [],
-            'code': [item.code for item in self.api_permissions.all()],
-            'parentId': None if self.page is None else self.page.pk,
-            #'category': '',
+            'path': self.path,
+            'children': [child.get_dict() for child in self.children.all()],
+            #'code': [item.code for item in self.api_permissions.all()],
+            'parentId': None if self.group is None else self.group.pk,
+            'category': self.category,
             'key': self.key,
-            'type': 'Permission',
+            'type': 'Page',
             'sort': self.sort
 
         }
         return item
+
+
+

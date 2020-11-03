@@ -13,7 +13,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseNotFound, Http404 ,HttpResponseRedirect, JsonResponse
 from django.template.response import TemplateResponse
 from django.contrib import admin,messages
-from adminsortable2.admin import SortableAdminMixin
+from adminsortable2.admin import SortableAdminMixin,SortableInlineAdminMixin
 
 from django.db import connection
 from django.utils.html import format_html
@@ -44,11 +44,14 @@ class APIPermissionAdmin(admin.ModelAdmin):
             return ['env', 'service']
 
 
-class PermissionAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ('title', 'name', 'path', 'type', 'api_permissionns_code', 'category', 'key',  'env')
+class PermissionlInline(SortableInlineAdminMixin, admin.TabularInline):  # or admin.StackedInline
+    model = models.Permission
+
+class PageAdmin(SortableAdminMixin, admin.ModelAdmin):
+    list_display = ('title', 'name', 'path', 'group', 'permissions', 'category', 'key',  'env')
     list_filter = ('env',)
-    filter_horizontal = ('api_permissions',)
     ordering = ('sort',)
+    #inlines = (PermissionlInline,)
     #change_list_template = 'admin/list.html'
 
     def get_readonly_fields(self, request, obj=None):
@@ -68,6 +71,19 @@ class GroupAdmin(SortableAdminMixin, admin.ModelAdmin):
         else:
             return ['env']
 
+class PermssionAdmin(SortableAdminMixin, admin.ModelAdmin):
+    list_display = ('title', 'name', 'page', 'key', 'api_permissionns_code', 'env')
+    list_filter = ('env',)
+    filter_horizontal = ('api_permissions',)
+    ordering = ('sort',)
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None:
+            return []
+        else:
+            return ['env']
+
 admin.site.register(models.APIPermission, APIPermissionAdmin)
 admin.site.register(models.Group, GroupAdmin)
-admin.site.register(models.Permission, PermissionAdmin)
+admin.site.register(models.Page, PageAdmin)
+admin.site.register(models.Permission, PermssionAdmin)

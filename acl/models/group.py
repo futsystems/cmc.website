@@ -28,6 +28,26 @@ class Group(models.Model):
 
     class Meta:
         app_label = 'acl'
+        ordering = ['sort']
 
     def __unicode__(self):
         return u'Group[%s]' % self.title
+
+
+    def get_dict(self):
+        from page import Page
+        item = {
+            'title': self.title,
+            'permissionKey': self.pk,
+            'name': self.name,
+            #'path': self.path,
+            'children': [child.get_dict() for child in self.children.all()],
+            #'code': [item.code for item in self.api_permissions.all()],
+            #'parentId': None if self.group is None else self.group.pk,
+            #'category': self.category,
+            'key': self.name,
+            'type': 'Group',
+            'sort': self.sort
+
+        }
+        return item
