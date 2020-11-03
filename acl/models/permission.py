@@ -12,6 +12,8 @@ from collections import OrderedDict
 logger = logging.getLogger(__name__)
 from api_permission import APIPermission
 from choices import PERMISSION_TYPE
+
+
 class Permission(models.Model):
     """
     Permission
@@ -39,6 +41,8 @@ class Permission(models.Model):
 
     key = models.CharField('Key', max_length=100, default='', blank=True)
     description = models.CharField('Description', max_length=100, default='', blank=True)
+
+    sort = models.PositiveIntegerField(default=0, blank=False, null=False)
 
     class Meta:
         app_label = 'acl'

@@ -29,4 +29,7 @@ salt==2019.2.5
 
 python-gitlab
 
+django-admin-sortable2
+
+
 

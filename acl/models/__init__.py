@@ -3,3 +3,4 @@
 
 from api_permission import APIPermission
 from permission import Permission
+from group import Group
