@@ -50,9 +50,9 @@ class PermissionAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
-            return []
+            return ['relation']
         else:
-            return ['env']
+            return ['env', 'relation']
 
 admin.site.register(models.APIPermission, APIPermissionAdmin)
 admin.site.register(models.Permission, PermissionAdmin)
