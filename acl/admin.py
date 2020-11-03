@@ -43,16 +43,16 @@ class APIPermissionAdmin(admin.ModelAdmin):
 
 
 class PermissionAdmin(admin.ModelAdmin):
-    list_display = ('permissionKey', 'title', 'name', 'path', 'type', 'api_permissionns_code', 'category', 'relation',  'env')
+    list_display = ('permissionKey', 'title', 'name', 'path', 'type', 'api_permissionns_code', 'category', 'key',  'env')
     list_filter = ('env',)
     filter_horizontal = ('api_permissions',)
-    ordering = ('relation',)
+    ordering = ('key',)
 
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
-            return ['relation']
+            return ['key']
         else:
-            return ['env', 'relation']
+            return ['env', 'key']
 
 admin.site.register(models.APIPermission, APIPermissionAdmin)
 admin.site.register(models.Permission, PermissionAdmin)

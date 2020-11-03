@@ -37,7 +37,7 @@ class Permission(models.Model):
 
     api_permissions = models.ManyToManyField(APIPermission, verbose_name='API Permissions', blank=True)
 
-    relation = models.CharField('Relation', max_length=100, default='', blank=True)
+    key = models.CharField('Key', max_length=100, default='', blank=True)
     description = models.CharField('Description', max_length=100, default='', blank=True)
 
     class Meta:
@@ -104,7 +104,7 @@ class Permission(models.Model):
 
 
     def save(self, *args, **kwargs):
-        self.relation = self.get_relation()
+        self.key = self.get_relation()
         super(Permission, self).save(*args, **kwargs)
 
         if self.parent != self.__original_parent:
@@ -123,6 +123,7 @@ class Permission(models.Model):
             'code': [item.code for item in self.api_permissions.all()],
             'parentId': None if self.parent is None else self.parent.pk,
             'category': self.category,
+            'key': self.key,
             'type': self.type
 
         }
