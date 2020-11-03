@@ -16,6 +16,14 @@ class Permission(models.Model):
     """
     Permission
     """
+
+    __original_parent = None
+
+    def __init__(self, *args, **kwargs):
+        super(Permission, self).__init__(*args, **kwargs)
+        self.__original_parent = self.parent
+
+
     title = models.CharField('Title', max_length=50, default='Title')
     name = models.CharField('Name', max_length=50, default='Name')
     description = models.CharField('Description', max_length=100, default='', blank=True)
@@ -93,10 +101,14 @@ class Permission(models.Model):
 
 
     def save(self, *args, **kwargs):
-        logger.info('save operation')
         self.relation = self.get_relation()
-
         super(Permission, self).save(*args, **kwargs)
+
+        if self.parent != self.__original_parent:
+            #logger.info('save children')
+            for item in self.children.all():
+                item.save()
+        self.__original_parent = self.parent
 
     def get_dict(self):
         item = {
