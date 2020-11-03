@@ -35,7 +35,7 @@ class Permission(models.Model):
         return [item.code for item in self.api_permissions.all()]
 
     @property
-    def permissionId(self):
+    def permissionKey(self):
         return self.pk
 
     def get_path(self):
@@ -55,7 +55,7 @@ class Permission(models.Model):
     def get_dict(self):
         item = {
             'title': self.title,
-            'permissionId': self.permissionId,
+            'permissionKey': self.permissionKey,
             'name': self.name,
             'path': self.path,
             'childen': [child.get_dict() for child in self.children.all()],
