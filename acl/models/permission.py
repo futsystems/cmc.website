@@ -53,9 +53,9 @@ class Permission(models.Model):
 
     def get_relation(self):
        if self.parent is None:
-           return self.pk
+           return self.name
        else:
-           return '%s-%s' % (self.parent.get_relation(), self.pk)
+           return '%s-%s' % (self.parent.get_relation(), self.name)
 
     def __unicode__(self):
         return u'%s[%s]' % (self.title, self.type)
