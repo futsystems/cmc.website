@@ -33,6 +33,8 @@ class Permission(models.Model):
     parent = models.ForeignKey('Permission', verbose_name='Parent', related_name='children',
                                on_delete=models.SET_NULL,default=None, blank=True, null=True)
 
+    category = models.CharField('Categoy', max_length=100, default='', blank=True)
+
     api_permissions = models.ManyToManyField(APIPermission, verbose_name='API Permissions', blank=True)
 
     relation = models.CharField('Relation', max_length=100, default='', blank=True)
@@ -120,6 +122,7 @@ class Permission(models.Model):
             'children': [child.get_dict() for child in self.children.all()],
             'code': [item.code for item in self.api_permissions.all()],
             'parentId': None if self.parent is None else self.parent.pk,
+            'category': self.category,
             'type': self.type
 
         }
