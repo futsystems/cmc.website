@@ -145,7 +145,7 @@ class PermssionAdmin(SortableAdminMixin, admin.ModelAdmin):
 
 
 class RoleAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ('name', 'key',  'env')
+    list_display = ('name', 'key', 'description', 'env')
     list_filter = ('env',)
     filter_horizontal = ('permissions',)
     #inlines = (PermissionlInline,)
