@@ -47,9 +47,43 @@ class APIPermissionAdmin(admin.ModelAdmin):
 class PermissionlInline(SortableInlineAdminMixin, admin.TabularInline):  # or admin.StackedInline
     model = models.Permission
 
+class GropListFilter(admin.SimpleListFilter):
+    # Human-readable title which will be displayed in the
+    # right admin sidebar just above the filter options.
+    title = 'Group'
+
+    # Parameter for the filter that will be used in the URL query.
+    parameter_name = 'group_name'
+
+    def lookups(self, request, model_admin):
+        """
+        Returns a list of tuples. The first element in each
+        tuple is the coded value for the option that will
+        appear in the URL query. The second element is the
+        human-readable name for the option that will appear
+        in the right sidebar.
+        """
+        list = [(item.name, item.title) for item in models.Group.objects.all()]
+        # 去重
+        func = lambda x, y: x if y in x else x + [y]
+        return  reduce(func, [[], ] + list)
+
+
+    def queryset(self, request, queryset):
+        """
+        Returns the filtered queryset based on the value
+        provided in the query string and retrievable via
+        `self.value()`.
+        """
+        logger.info('value:%s' % self.value())
+        # to decide how to filter the queryset.
+        if self.value() is not None:
+            return queryset.filter(group__name=self.value())
+
+
 class PageAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('title', 'name', 'path', 'group', 'permissions', 'category', 'key',  'env')
-    list_filter = ('env',)
+    list_filter = ('env', GropListFilter)
     ordering = ('sort',)
     #inlines = (PermissionlInline,)
     #change_list_template = 'admin/list.html'
