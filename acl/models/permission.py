@@ -59,16 +59,13 @@ class Permission(models.Model):
 
     def get_dict(self):
         item = {
+            'id': self.pk,
             'title': self.title,
-            'permissionKey': self.pk,
             'name': self.name,
-            #'path': '',
-            #'children': [],
-            'code': [item.code for item in self.api_permissions.all()],
-            'parentId': None if self.page is None else self.page.pk,
-            #'category': '',
             'key': self.key,
             'type': 'Permission',
+            'parentId': None if self.page is None else self.page.pk,
+            'code': [item.code for item in self.api_permissions.all()],
             'sort': self.sort
 
         }

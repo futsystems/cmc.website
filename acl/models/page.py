@@ -55,27 +55,21 @@ class Page(models.Model):
     def __unicode__(self):
         return u'%s[%s]' % (self.title, self.name)
 
-
-
-
-
     def save(self, *args, **kwargs):
         self.key = self.get_key()
         super(Page, self).save(*args, **kwargs)
 
-
     def get_dict(self):
         item = {
+            'id': self.pk,
             'title': self.title,
-            'permissionKey': self.pk,
             'name': self.name,
             'path': self.path,
-            'children': [child.get_dict() for child in self.children.all()],
-            #'code': [item.code for item in self.api_permissions.all()],
-            'parentId': None if self.group is None else self.group.pk,
-            'category': self.category,
             'key': self.key,
             'type': 'Page',
+            'category': self.category,
+            'parentId': None if self.group is None else self.group.pk,
+            'permissions': [child.get_dict() for child in self.children.all()],
             'sort': self.sort
 
         }
