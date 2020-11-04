@@ -143,7 +143,21 @@ class PermssionAdmin(SortableAdminMixin, admin.ModelAdmin):
         else:
             return ['env']
 
+
+class RoleAdmin(SortableAdminMixin, admin.ModelAdmin):
+    list_display = ('name', 'key',  'env')
+    list_filter = ('env',)
+    filter_horizontal = ('permissions',)
+    #inlines = (PermissionlInline,)
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None:
+            return []
+        else:
+            return ['env']
+
 admin.site.register(models.APIPermission, APIPermissionAdmin)
 admin.site.register(models.Group, GroupAdmin)
 admin.site.register(models.Page, PageAdmin)
 admin.site.register(models.Permission, PermssionAdmin)
+admin.site.register(models.Role, RoleAdmin)
