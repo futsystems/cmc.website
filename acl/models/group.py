@@ -21,6 +21,7 @@ class Group(models.Model):
 
     title = models.CharField('Title', max_length=50, default='Title')
     name = models.CharField('Name', max_length=50, default='Name')
+    icon = models.CharField('Icon', max_length=50, default='Icon')
     env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
     description = models.CharField('Description', max_length=100, default='', blank=True)
     sort = models.PositiveIntegerField(default=0, blank=False, null=False)
@@ -37,6 +38,7 @@ class Group(models.Model):
         item = {
             'pk': self.pk,
             'title': self.title,
+            'icon': self.icon,
             'name': self.name,
             'key': self.name,
             'type': 'Group',
