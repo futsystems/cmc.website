@@ -44,8 +44,9 @@ class APIPermissionAdmin(admin.ModelAdmin):
             return ['env', 'service']
 
 
-class PermissionlInline(SortableInlineAdminMixin, admin.TabularInline):  # or admin.StackedInline
+class PermissionlInline(SortableInlineAdminMixin, admin.StackedInline):  # or admin.StackedInline
     model = models.Permission
+    filter_horizontal = ('api_permissions',)
 
 class GropListFilter(admin.SimpleListFilter):
     # Human-readable title which will be displayed in the
@@ -85,7 +86,7 @@ class PageAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('title', 'name', 'path', 'group', 'permissions', 'category', 'key',  'env')
     list_filter = ('env', GropListFilter)
     ordering = ('sort',)
-    #inlines = (PermissionlInline,)
+    inlines = (PermissionlInline,)
     #change_list_template = 'admin/list.html'
 
     def get_readonly_fields(self, request, obj=None):
