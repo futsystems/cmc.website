@@ -61,7 +61,7 @@ class Page(models.Model):
 
     def get_dict(self):
         item = {
-            'id': self.pk,
+            'pk': self.pk,
             'title': self.title,
             'name': self.name,
             'path': self.path,

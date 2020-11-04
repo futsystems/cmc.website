@@ -35,7 +35,7 @@ class Group(models.Model):
 
     def get_dict(self):
         item = {
-            'id': self.pk,
+            'pk': self.pk,
             'title': self.title,
             'name': self.name,
             'key': self.name,
