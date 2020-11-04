@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 import models
 from eventbus import EventBublisher
-from eventbus import CMCGatewayConfigUpdate
+from eventbus import CMCGatewayConfigUpdate,CMCACLPermissionUpdate
 import hashlib
 
 
@@ -99,10 +99,12 @@ class ApiGatewayAdmin(admin.ModelAdmin):
             '<a class="button" href="{}">Update</a>&nbsp;'
             '<a class="button" href="{}">Download Draft</a>&nbsp;'
             '<a class="button" href="{}">Services Dependency</a>&nbsp;'
+            '<a class="button" href="{}">UploadPermission</a>&nbsp;'
             '<a class="button" href="{}">ConfigSnapshot</a>&nbsp;',
             reverse('admin:config-update', args=[obj.pk]),
             reverse('admin:config-download-draft', args=[obj.pk]),
             reverse('admin:config-service-dependency', args=[obj.pk]),
+            reverse('admin:config-upload-permission', args=[obj.pk]),
             reverse('admin:config-snapshot', args=[obj.pk]),
         )
 
@@ -130,6 +132,11 @@ class ApiGatewayAdmin(admin.ModelAdmin):
                 name='config-snapshot',
             ),
             url(
+                r'^(?P<gw_id>.+)/upload_permission/$',
+                self.admin_site.admin_view(self.upload_permission),
+                name='config-upload-permission',
+            ),
+            url(
                 r'^(?P<gw_id>.+)/service-dependency/$',
                 self.admin_site.admin_view(self.service_dependency),
                 name='config-service-dependency',
@@ -141,6 +148,18 @@ class ApiGatewayAdmin(admin.ModelAdmin):
     def update_config(self, request, gw_id):
         gw = models.ApiGateway.objects.get(id= gw_id)
         ev = CMCGatewayConfigUpdate(gw.gw_type, gw.env)
+        if gw.event_bus is None:
+            messages.info(request, "gateway have not set event bus")
+            previous_url = request.META.get('HTTP_REFERER')
+            return HttpResponseRedirect(previous_url)
+        EventBublisher(gw.event_bus).send_message(ev)
+        messages.info(request, "Send Config Update Success")
+        previous_url = request.META.get('HTTP_REFERER')
+        return HttpResponseRedirect(previous_url)
+
+    def upload_permission(self, request, gw_id):
+        gw = models.ApiGateway.objects.get(id= gw_id)
+        ev = CMCACLPermissionUpdate(gw.env)
         if gw.event_bus is None:
             messages.info(request, "gateway have not set event bus")
             previous_url = request.META.get('HTTP_REFERER')

@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 import models
 from eventbus import EventBublisher
-from eventbus import CMCGatewayConfigUpdate
+from eventbus import CMCGatewayConfigUpdate, CMCACLPermissionUpdate
 import hashlib
 from common import  salt_helper
 
@@ -75,7 +75,7 @@ class GropListFilter(admin.SimpleListFilter):
         provided in the query string and retrievable via
         `self.value()`.
         """
-        logger.info('value:%s' % self.value())
+        #logger.info('value:%s' % self.value())
         # to decide how to filter the queryset.
         if self.value() is not None:
             return queryset.filter(group__name=self.value())
@@ -98,7 +98,32 @@ class GroupAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('title', 'name',  'env')
     list_filter = ('env',)
     ordering = ('sort',)
+    change_list_template = 'acl/admin/change_list.html'
 
+    def get_urls(self):
+        urls = super(GroupAdmin, self).get_urls()
+        my_urls = [
+            url(
+                r'^sync_permission/$',
+                self.admin_site.admin_view(self.sync_view),
+                name='sync_permission',
+            ),
+        ]
+        return my_urls + urls
+
+    def sync_view(self, request):
+        # custom view which should return an HttpResponse
+        previous_url = request.META.get('HTTP_REFERER')
+        #ev = CMCACLPermissionUpdate('Development')
+        #if gw.event_bus is None:
+        #    messages.info(request, "gateway have not set event bus")
+        #    previous_url = request.META.get('HTTP_REFERER')
+        #    return HttpResponseRedirect(previous_url)
+        #EventBublisher(gw.event_bus).send_message(ev)
+        #messages.info(request, "Send Config Update Success")
+        #previous_url = request.META.get('HTTP_REFERER')
+        return HttpResponseRedirect(previous_url)
+        pass
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
             return []
