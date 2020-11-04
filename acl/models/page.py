@@ -13,6 +13,8 @@ logger = logging.getLogger(__name__)
 from api_permission import APIPermission
 from choices import PERMISSION_TYPE
 from group import Group
+from smart_selects.db_fields import ChainedForeignKey
+from group import Group
 
 class Page(models.Model):
     """
@@ -27,7 +29,14 @@ class Page(models.Model):
     env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
 
     group = models.ForeignKey('Group', verbose_name='Group', related_name='children',
-                               on_delete=models.SET_NULL, default=None, blank=True, null=True)
+                              on_delete=models.SET_NULL, default=None, blank=True, null=True)
+    #group = ChainedForeignKey(
+    #    Group,
+    #    chained_field="env",# 当前模型关联字段
+    #    chained_model_field="env", # 链接模型Group中哪个字段 当选择env时 会自动过滤出对应可用的group
+    #    show_all=False,
+    #    auto_choose=True,
+    #    sort=True)
 
     category = models.CharField('Categoy', max_length=100, default='', blank=True)
 

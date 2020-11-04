@@ -31,5 +31,6 @@ python-gitlab
 
 django-admin-sortable2
 
+django-smart-selects
 
 

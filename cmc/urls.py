@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^deploy/', include(deploy_urls)),
     url(r'^acl/', include(acl_urls)),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^chaining/', include('smart_selects.urls')),
 ]
 
 

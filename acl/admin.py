@@ -82,18 +82,53 @@ class GropListFilter(admin.SimpleListFilter):
             return queryset.filter(group__name=self.value())
 
 
+class PageAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.Page
+        exclude = []
+
+    def __init__(self,*args,**kwargs):
+        forms.ModelForm.__init__(self, *args, **kwargs)
+        if self.instance.id > 0:
+            self.fields['group'].queryset = models.Group.objects.filter(env=self.instance.env)
+
 class PageAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('title', 'name', 'path', 'group', 'permissions', 'category', 'key',  'env')
     list_filter = ('env', GropListFilter)
     ordering = ('sort',)
     inlines = (PermissionlInline,)
+    form = PageAdminForm
     #change_list_template = 'admin/list.html'
+
 
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
             return ['key']
         else:
             return ['env', 'key']
+
+    def get_fieldsets(self, request, obj=None):
+        if obj is None:
+            return (("Basic", {
+                    "fields": [
+                        "name", "env"
+                    ]
+                }),
+            )
+
+        return (("Basic", {
+                    "fields": [
+                        "title", "name", "env", "path", "group", "category"
+                    ]
+                }),
+
+                ("Other", {
+
+                    "fields": [
+                        "key", "description"
+                    ]
+                })
+            )
 
 class GroupAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('title', 'name',  'env')
@@ -131,17 +166,50 @@ class GroupAdmin(SortableAdminMixin, admin.ModelAdmin):
         else:
             return ['env']
 
+class PermissionAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.Page
+        exclude = []
+
+    def __init__(self,*args,**kwargs):
+        forms.ModelForm.__init__(self, *args, **kwargs)
+        if self.instance.id > 0:
+            self.fields['page'].queryset = models.Page.objects.filter(env=self.instance.env)
+
 class PermssionAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('title', 'name', 'page', 'key', 'api_permissionns_code', 'env')
     list_filter = ('env',)
     filter_horizontal = ('api_permissions',)
     ordering = ('sort',)
-
+    form = PermissionAdminForm
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
             return []
         else:
             return ['env']
+
+    def get_fieldsets(self, request, obj=None):
+        if obj is None:
+            return (("Basic", {
+                    "fields": [
+                        "name", "env"
+                    ]
+                }),
+            )
+
+        return (("Basic", {
+                    "fields": [
+                        "title", "name", "env", "page", "api_permissions"
+                    ]
+                }),
+
+                ("Other", {
+
+                    "fields": [
+                        "key", "description"
+                    ]
+                })
+            )
 
 
 class RoleAdmin(SortableAdminMixin, admin.ModelAdmin):

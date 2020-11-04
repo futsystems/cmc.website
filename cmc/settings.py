@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'adminsortable2',
+    'smart_selects',
 
     'acl',
     'config',
