@@ -31,3 +31,17 @@ class Role(models.Model):
     class Meta:
         app_label = 'acl'
         ordering = ['sort']
+
+
+    def get_dict(self):
+        item = {
+            'pk': self.pk,
+            'name': self.name,
+            'key': self.key,
+            'type': 'Role',
+            'description': self.description,
+            'permissions': [item.pk for item in self.permissions.all()],
+            'sort': self.sort
+
+        }
+        return item

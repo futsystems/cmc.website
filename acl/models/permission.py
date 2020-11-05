@@ -40,7 +40,7 @@ class Permission(models.Model):
 
 
     def __unicode__(self):
-        return u'%s[%s]' % (self.title, self.name)
+        return u'%s[%s]' % (self.title, self.key)
 
 
     @property

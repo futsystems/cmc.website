@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseNotFound, Http404 ,HttpResponseRedirect
 from django.views.generic import TemplateView, ListView, DetailView, CreateView
 
-from models import APIPermission, Page,Permission,Group
+from models import APIPermission, Page,Permission,Group, Role
 from common import Response,Success,Error
 import hashlib
 from deploy.models import Server
@@ -59,6 +59,20 @@ def permission(request):
         try:
             groups = Group.objects.filter(env=env)
             return json_response([item.get_dict() for item in groups])
+        except Exception, e:
+            logging.error(traceback.format_exc())
+            return json_response(Error("get gateway ocelot config error"))
+
+def role(request):
+    if request.method == "POST":
+        return HttpResponse("POST not support")
+    else:
+        env = request.GET.get("env")
+        logger.info('get role of env:%s' % (env))
+
+        try:
+            roles = Role.objects.filter(env=env)
+            return json_response([item.get_dict() for item in roles])
         except Exception, e:
             logging.error(traceback.format_exc())
             return json_response(Error("get gateway ocelot config error"))
