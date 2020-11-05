@@ -93,7 +93,7 @@ class PageAdminForm(forms.ModelForm):
             self.fields['group'].queryset = models.Group.objects.filter(env=self.instance.env)
 
 class PageAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ('title', 'name', 'path', 'group', 'permissions', 'category', 'key',  'env')
+    list_display = ('title', 'name', 'path', 'group', 'permissions', 'category', 'key', 'enable', 'env')
     list_filter = ('env', GropListFilter)
     ordering = ('sort',)
     inlines = (PermissionlInline,)
@@ -131,7 +131,7 @@ class PageAdmin(SortableAdminMixin, admin.ModelAdmin):
             )
 
 class GroupAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ('title', 'name',  'env')
+    list_display = ('title', 'name', 'enable', 'env')
     list_filter = ('env',)
     ordering = ('sort',)
     change_list_template = 'acl/admin/change_list.html'

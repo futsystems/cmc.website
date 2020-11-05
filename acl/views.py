@@ -57,7 +57,7 @@ def permission(request):
         logger.info('get permission of env:%s' % (env))
 
         try:
-            groups = Group.objects.filter(env=env)
+            groups = Group.objects.filter(env=env,enable=True)
             return json_response([item.get_dict() for item in groups])
         except Exception, e:
             logging.error(traceback.format_exc())

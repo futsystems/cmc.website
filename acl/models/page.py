@@ -51,6 +51,7 @@ class Page(models.Model):
     description = models.CharField('Description', max_length=100, default='', blank=True)
 
     sort = models.PositiveIntegerField(default=0, blank=False, null=False)
+    enable = models.BooleanField('Enable', default=True)
 
     class Meta:
         app_label = 'acl'

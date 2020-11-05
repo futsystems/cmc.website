@@ -30,6 +30,7 @@ class Group(models.Model):
     env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
     description = models.CharField('Description', max_length=100, default='', blank=True)
     sort = models.PositiveIntegerField(default=0, blank=False, null=False)
+    enable = models.BooleanField('Enable', default=True)
 
 
     class Meta:
@@ -57,7 +58,7 @@ class Group(models.Model):
             'name': self.name,
             'key': self.name,
             'type': 'Group',
-            'pages': [child.get_dict() for child in self.children.all()],
+            'pages': [child.get_dict() for child in self.children.filter(enable=True).all()],
             'sort': self.sort
 
         }
