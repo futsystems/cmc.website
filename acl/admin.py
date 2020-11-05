@@ -111,7 +111,7 @@ class PageAdmin(SortableAdminMixin, admin.ModelAdmin):
         if obj is None:
             return (("Basic", {
                     "fields": [
-                        "name", "env"
+                        "title", "name", "env"
                     ]
                 }),
             )
