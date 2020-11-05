@@ -25,4 +25,26 @@ class CMCACLPermissionUpdate(IntegrationEvent):
         dict['env'] = self._env
         return dict
 
+class CMCACLRoleUpdate(IntegrationEvent):
+    def __init__(self, env, product='WeiShop', tag=''):
+        """
+
+        :param gw_type: gw.api gw.api.app gw.api.admin and so on
+        :param gw_env: Production Stage Development
+        """
+        super(CMCACLRoleUpdate, self).__init__()
+        self._product = product
+        self._env = env
+        self._tag = tag
+        self._event_name = 'CMCACLRoleUpdateIntegrationEvent'
+
+    @property
+    def body(self):
+        dict = super(CMCACLRoleUpdate, self).body
+
+        dict['product'] = self._product
+        dict['tag'] = self._tag
+        dict['env'] = self._env
+        return dict
+
 
