@@ -224,7 +224,7 @@ class PermssionAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     def permission_code_title(self, instance):
         return format_html(
-            '<span title="{}">{}</span>',
+            '<div title="{}" style="width:200px;word-break:break-word">{}</div>',
             instance.api_permissionns_name,
             ','.join([str(item) for item in instance.api_permissionns_code])
         )
