@@ -18,6 +18,11 @@ class Group(models.Model):
     """
     menu group
     """
+    __original_key = None
+
+    def __init__(self, *args, **kwargs):
+        super(Group, self).__init__(*args, **kwargs)
+        self.__original_key = self.name
 
     title = models.CharField('Title', max_length=50, default='Title')
     name = models.CharField('Name', max_length=50, default='Name')
@@ -32,7 +37,17 @@ class Group(models.Model):
         ordering = ['sort']
 
     def __unicode__(self):
-        return u'Group[%s]' % self.title
+        return u'%s[%s]' % (self.title, self.name)
+
+
+    def save(self, *args, **kwargs):
+        super(Group, self).save(*args, **kwargs)
+
+        # key changed then save all children
+        if self.name != self.__original_key:
+            for item in self.children.all():
+                item.save()
+        self.__original_key = self.name
 
     def get_dict(self):
         item = {

@@ -176,11 +176,45 @@ class PermissionAdminForm(forms.ModelForm):
         if self.instance.id > 0:
             self.fields['page'].queryset = models.Page.objects.filter(env=self.instance.env)
 
+class PermissionGroupListFilter(admin.SimpleListFilter):
+    # Human-readable title which will be displayed in the
+    # right admin sidebar just above the filter options.
+    title = 'Group'
+
+    # Parameter for the filter that will be used in the URL query.
+    parameter_name = 'group_name'
+
+    def lookups(self, request, model_admin):
+        """
+        Returns a list of tuples. The first element in each
+        tuple is the coded value for the option that will
+        appear in the URL query. The second element is the
+        human-readable name for the option that will appear
+        in the right sidebar.
+        """
+        list = [(item.name, item.title) for item in models.Group.objects.all()]
+        # 去重
+        func = lambda x, y: x if y in x else x + [y]
+        return  reduce(func, [[], ] + list)
+
+
+    def queryset(self, request, queryset):
+        """
+        Returns the filtered queryset based on the value
+        provided in the query string and retrievable via
+        `self.value()`.
+        """
+        #logger.info('value:%s' % self.value())
+        # to decide how to filter the queryset.
+        if self.value() is not None:
+            return queryset.filter(page__group__name=self.value())
+
 class PermssionAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ('title', 'name', 'page', 'key', 'api_permissionns_code', 'env')
-    list_filter = ('env',)
+    list_display = ('title', 'name', 'page', 'group', 'key', 'api_permissionns_code', 'env')
+    list_filter = ('env', PermissionGroupListFilter)
     filter_horizontal = ('api_permissions',)
     ordering = ('sort',)
+    search_fields = ('key',)
     form = PermissionAdminForm
     def get_readonly_fields(self, request, obj=None):
         if obj is None:

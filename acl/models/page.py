@@ -21,6 +21,11 @@ class Page(models.Model):
     Permission
     """
 
+    __original_key = None
+
+    def __init__(self, *args, **kwargs):
+        super(Page, self).__init__(*args, **kwargs)
+        self.__original_key = self.key
 
     title = models.CharField('Title', max_length=50, default='Title')
     name = models.CharField('Name', max_length=50, default='Name')
@@ -67,6 +72,12 @@ class Page(models.Model):
     def save(self, *args, **kwargs):
         self.key = self.get_key()
         super(Page, self).save(*args, **kwargs)
+
+        # key changed then save all children
+        if self.key != self.__original_key:
+            for item in self.children.all():
+                item.save()
+        self.__original_key = self.key
 
     def get_dict(self):
         item = {

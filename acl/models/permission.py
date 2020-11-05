@@ -42,6 +42,12 @@ class Permission(models.Model):
     def __unicode__(self):
         return u'%s[%s]' % (self.title, self.name)
 
+
+    @property
+    def group(self):
+        if self.page is not None and self.page.group is not None:
+            return self.page.group
+
     @property
     def api_permissionns_code(self):
         return [item.code for item in self.api_permissions.all()]
