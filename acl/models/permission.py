@@ -49,6 +49,10 @@ class Permission(models.Model):
             return self.page.group
 
     @property
+    def api_permissionns_name(self):
+        return ','.join([item.name for item in self.api_permissions.all()])
+
+    @property
     def api_permissionns_code(self):
         return [item.code for item in self.api_permissions.all()]
 

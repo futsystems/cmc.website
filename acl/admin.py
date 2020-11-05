@@ -210,7 +210,7 @@ class PermissionGroupListFilter(admin.SimpleListFilter):
             return queryset.filter(page__group__name=self.value())
 
 class PermssionAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ('title', 'name', 'page', 'group', 'key', 'api_permissionns_code', 'env')
+    list_display = ('title', 'name', 'page', 'group', 'key', 'permission_code_title','description', 'env')
     list_filter = ('env', PermissionGroupListFilter)
     filter_horizontal = ('api_permissions',)
     ordering = ('sort',)
@@ -221,6 +221,13 @@ class PermssionAdmin(SortableAdminMixin, admin.ModelAdmin):
             return []
         else:
             return ['env']
+
+    def permission_code_title(self, instance):
+        return format_html(
+            '<span title="{}">{}</span>',
+            instance.api_permissionns_name,
+            ','.join([str(item) for item in instance.api_permissionns_code])
+        )
 
     def get_fieldsets(self, request, obj=None):
         if obj is None:
