@@ -40,7 +40,7 @@ class Role(models.Model):
             'key': self.key,
             'type': 'Role',
             'description': self.description,
-            'permissions': [item.pk for item in self.permissions.all()],
+            'permissionsPKs': [item.pk for item in self.permissions.all()],
             'sort': self.sort
 
         }
