@@ -88,7 +88,7 @@ def permission_used(request):
         api_permissions = APIPermission.objects.filter(service__name=service)
 
         #for code in api_permissions:
-        permissions = Permission.objects.filter(api_permissions__in=api_permissions)
+        permissions = Permission.objects.filter(api_permissions__in=api_permissions).distinct()
 
 
         logger.info(permissions)
