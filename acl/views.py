@@ -93,7 +93,7 @@ def permission_used(request):
 
         logger.info(permissions)
 
-        return json_response([item.get_dict() for item in permissions])
+        return json_response([item.get_api_code_info() for item in permissions])
 
 def api_permission(request):
     if request.method == "POST":

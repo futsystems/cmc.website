@@ -67,6 +67,17 @@ class Permission(models.Model):
         super(Permission, self).save(*args, **kwargs)
 
 
+    def get_api_code_info(self):
+        item = {
+            'pk': self.pk,
+            'title': self.title,
+            'name': self.name,
+            'key': self.key,
+            'code': ["%s-%s" % (item.code, item.name) for item in self.api_permissions.all()],
+
+        }
+        return item
+
     def get_dict(self):
         item = {
             'pk': self.pk,
