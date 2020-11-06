@@ -13,5 +13,6 @@ urlpatterns = [
     url(r'^permission/$', views.permission, name='permission_sync'),
     url(r'^role/$', views.role, name='role'),
     url(r'^api_permission/$', views.api_permission, name='api_permission'),
+    url(r'^permission/used/$', views.permission_used, name='permission_used'),
 
 ]

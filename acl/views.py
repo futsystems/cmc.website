@@ -77,6 +77,23 @@ def role(request):
             logging.error(traceback.format_exc())
             return json_response(Error("get gateway ocelot config error"))
 
+def permission_used(request):
+    if request.method == "POST":
+        return HttpResponse("POST not support")
+    else:
+        env = request.GET.get("env")
+        service = request.GET.get("service")
+        logger.info('get permssions used  of service:%s env:%s' % (service, env))
+
+        api_permissions = APIPermission.objects.filter(service__name=service)
+
+        #for code in api_permissions:
+        permissions = Permission.objects.filter(api_permissions__in=api_permissions)
+
+
+        logger.info(permissions)
+
+        return json_response([item.get_dict() for item in permissions])
 
 def api_permission(request):
     if request.method == "POST":
