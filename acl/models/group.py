@@ -40,6 +40,21 @@ class Group(models.Model):
     def __unicode__(self):
         return u'%s[%s]' % (self.title, self.name)
 
+    def copy_to_env(self, env):
+        try:
+            group = Group.objects.get(env=env, name=self.name)
+        except Group.DoesNotExist:
+            group = Group()
+
+        group.title = self.title
+        group.name = self.name
+        group.icon = self.icon
+        group.env = env
+        group.description = self.description
+        group.enable = self.enable
+        group.save()
+
+
 
     def save(self, *args, **kwargs):
         super(Group, self).save(*args, **kwargs)

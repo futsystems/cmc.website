@@ -62,6 +62,32 @@ class Permission(models.Model):
        else:
            return '%s.%s' % (self.page.get_key(), self.name)
 
+
+    def copy_to_env(self, env):
+        try:
+            permission = Permission.objects.get(env=env, key=self.key)
+        except Permission.DoesNotExist:
+            permission = Permission()
+
+        try:
+            page = Page.objects.get(env=env, key=self.page.key)
+        except Page.DoesNotExist:
+            page = None
+
+        if page is None:
+            return
+
+        permission.title = self.title
+        permission.name = self.name
+        permission.env = env
+        permission.page = page
+
+        #permission.api_permissions = self.api_permissions
+
+        permission.key = self.key
+        permission.description = self.description
+        permission.save()
+
     def save(self, *args, **kwargs):
         self.key = self.get_key()
         super(Permission, self).save(*args, **kwargs)

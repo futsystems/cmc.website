@@ -81,6 +81,33 @@ class APIPermission(models.Model):
         }
         return item
 
+    def copy_to_env(self, env):
+        try:
+            api_permission = APIPermission.objects.get(env=env, name=self.name)
+        except APIPermission.DoesNotExist:
+            api_permission = APIPermission()
+
+        try:
+            service = Service.objects.get(env=env, name=self.service.name)
+        except Service.DoesNotExist:
+            service = None
+
+        if service is None:
+            return
+
+        api_permission.title = self.title
+        api_permission.group_name = self.group_name
+        api_permission.description = self.description
+        api_permission.name = self.name
+        api_permission.code = self.code
+
+        api_permission.service = service
+
+        api_permission.env = env
+        api_permission.synced = self.synced
+        api_permission.save()
+
+
     def __unicode__(self):
         return u'%s-%s' % (self.name, self.code)
 

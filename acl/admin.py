@@ -65,10 +65,16 @@ class ServiceListFilter(admin.SimpleListFilter):
         if self.value() is not None:
             return queryset.filter(service__name=self.value())
 
+def copy_api_permission_staging(modeladmin, request, queryset):
+    for item in queryset.all():
+        item.copy_to_env('Staging')
+copy_api_permission_staging.short_description = "Copy API Permission To Staging"
+
 class APIPermissionAdmin(admin.ModelAdmin):
     list_display = ('code', 'name', 'title', 'group_name', 'description', 'service', 'env')
     list_filter = ('env', ServiceListFilter)
     ordering = ('code',)
+    actions = [copy_api_permission_staging]
 
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
@@ -115,6 +121,11 @@ class GropListFilter(admin.SimpleListFilter):
             return queryset.filter(group__name=self.value())
 
 
+def copy_page_staging(modeladmin, request, queryset):
+    for page in queryset.all():
+        page.copy_to_env('Staging')
+copy_page_staging.short_description = "Copy Page To Staging"
+
 class PageAdminForm(forms.ModelForm):
     class Meta:
         model = models.Page
@@ -130,6 +141,7 @@ class PageAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_filter = ('env', GropListFilter)
     ordering = ('sort',)
     inlines = (PermissionlInline,)
+    actions = [copy_page_staging]
     form = PageAdminForm
     #change_list_template = 'admin/list.html'
 
@@ -163,11 +175,17 @@ class PageAdmin(SortableAdminMixin, admin.ModelAdmin):
                 })
             )
 
+def copy_group_staging(modeladmin, request, queryset):
+    for group in queryset.all():
+        group.copy_to_env('Staging')
+copy_group_staging.short_description = "Copy Group To Staging"
+
 class GroupAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('title', 'name', 'enable', 'env')
     list_filter = ('env',)
     ordering = ('sort',)
     change_list_template = 'acl/admin/change_list.html'
+    actions = [copy_group_staging]
 
     def get_urls(self):
         urls = super(GroupAdmin, self).get_urls()
@@ -242,6 +260,13 @@ class PermissionGroupListFilter(admin.SimpleListFilter):
         if self.value() is not None:
             return queryset.filter(page__group__name=self.value())
 
+
+def copy_permission_staging(modeladmin, request, queryset):
+    for page in queryset.all():
+        page.copy_to_env('Staging')
+copy_permission_staging.short_description = "Copy Permission To Staging"
+
+
 class PermssionAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('title', 'name', 'page', 'group', 'key', 'permission_code_title','description', 'env')
     list_filter = ('env', PermissionGroupListFilter)
@@ -249,6 +274,8 @@ class PermssionAdmin(SortableAdminMixin, admin.ModelAdmin):
     ordering = ('sort',)
     search_fields = ('key',)
     form = PermissionAdminForm
+    actions = [copy_page_staging]
+
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
             return []

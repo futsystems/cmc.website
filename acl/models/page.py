@@ -70,6 +70,31 @@ class Page(models.Model):
     def __unicode__(self):
         return u'%s[%s]' % (self.title, self.name)
 
+    def copy_to_env(self, env):
+        try:
+            page = Page.objects.get(env=env, key = self.key)
+        except Page.DoesNotExist:
+            page = Page()
+
+        try:
+            group = Group.objects.get(env=env, name=self.group.name)
+        except Group.DoesNotExist:
+            group = None
+
+        if group is None:
+            return
+        page.title = self.title
+        page.name = self.name
+        page.path = self.path
+        page.env = env
+        page.group = group
+
+        page.category = self.category
+        page.key = self.key
+        page.description = self.description
+        page.enable = self.enable
+        page.save()
+
     def save(self, *args, **kwargs):
         self.key = self.get_key()
         super(Page, self).save(*args, **kwargs)
