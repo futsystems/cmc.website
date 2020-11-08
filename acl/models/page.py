@@ -78,7 +78,7 @@ class Page(models.Model):
 
         try:
             if self.group is None:
-                return 
+                return
             group = Group.objects.get(env=env, name=self.group.name)
         except Group.DoesNotExist:
             group = None
