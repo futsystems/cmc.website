@@ -325,8 +325,52 @@ class RoleAdmin(SortableAdminMixin, admin.ModelAdmin):
         else:
             return ['env']
 
+
+
+class PermissionConfigAdmin(admin.ModelAdmin):
+    list_display = ('version', 'env', 'md5', 'date_created','config_action')
+    list_filter = ('env',)
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None:
+            return []
+        return ['config', 'env', 'md5', 'version']
+
+    def config_action(self, obj):
+        """
+
+        """
+        return format_html(
+            '<a class="button" href="{}">Download</a>&nbsp;',
+            reverse('admin:permission-download', args=[obj.pk]),
+        )
+
+    config_action.allow_tags = True
+    config_action.short_description = "Action"
+
+    def get_urls(self):
+        # use get_urls for easy adding of views to the admin
+        urls = super(PermissionConfigAdmin, self).get_urls()
+        my_urls = [
+            url(
+                r'^(?P<gw_config_id>.+)/download/$',
+                self.admin_site.admin_view(self.download_config),
+                name='config-download',
+            ),
+        ]
+
+        return my_urls + urls
+
+
+    def download_config(self, request, gw_config_id):
+        permission_config = models.PermissionConfig.objects.get(id=gw_config_id)
+        response = HttpResponse(json.dumps(json.loads(permission_config.config), indent=4), content_type='application/txt')
+        response['Content-Disposition'] = 'attachment; filename=ocelot_%s_%s.config' % (permission_config.env, permission_config.version)
+        return response
+
+
 admin.site.register(models.APIPermission, APIPermissionAdmin)
 admin.site.register(models.Group, GroupAdmin)
 admin.site.register(models.Page, PageAdmin)
 admin.site.register(models.Permission, PermssionAdmin)
 admin.site.register(models.Role, RoleAdmin)
+admin.site.register(models.PermissionConfig, PermissionConfigAdmin)

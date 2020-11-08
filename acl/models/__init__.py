@@ -6,3 +6,4 @@ from page import Page
 from group import Group
 from permission import Permission
 from role import Role
+from permissionn_config import PermissionConfig
