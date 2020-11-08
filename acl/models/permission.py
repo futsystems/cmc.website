@@ -82,11 +82,17 @@ class Permission(models.Model):
         permission.env = env
         permission.page = page
 
-        #permission.api_permissions = self.api_permissions
-
         permission.key = self.key
         permission.description = self.description
         permission.save()
+
+        # udpate api permission code
+        codes = APIPermission.objects.filter(env=env, name__in=[item.name for item in self.api_permissions.all()])
+        #logger.info(codes)
+        for item in codes.all():
+            permission.api_permissions.add(item)
+
+
 
     def save(self, *args, **kwargs):
         self.key = self.get_key()
