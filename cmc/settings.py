@@ -211,6 +211,12 @@ LOGGING = {
             'propagate': False
 
         },
+        'basic': {
+            'handlers': ['tinyconsole', 'default'],
+            'level': 'DEBUG',
+            'propagate': False
+
+        },
         'pushkit': {
             'handlers': ['tinyconsole','default'],
             'level': 'DEBUG',
