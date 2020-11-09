@@ -226,6 +226,7 @@ class PermissionAdminForm(forms.ModelForm):
         forms.ModelForm.__init__(self, *args, **kwargs)
         if self.instance.id > 0:
             self.fields['page'].queryset = models.Page.objects.filter(env=self.instance.env)
+            self.fields['api_permissions'].queryset = models.APIPermission.objects.filter(env=self.instance.env)
 
 class PermissionGroupListFilter(admin.SimpleListFilter):
     # Human-readable title which will be displayed in the
