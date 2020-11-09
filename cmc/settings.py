@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'adminsortable2',
     'smart_selects',
 
+    'basic',
     'acl',
     'config',
     'deploy',
