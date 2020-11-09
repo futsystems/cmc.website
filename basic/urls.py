@@ -10,4 +10,5 @@ import views
 
 urlpatterns = [
     url(r'^bank/$', views.bank, name='bank'),
+    url(r'^delivery_company/$', views.delivery_company, name='delivery_company'),
 ]

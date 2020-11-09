@@ -36,4 +36,11 @@ class BankAdmin(admin.ModelAdmin):
     list_display = ('bank_name', 'bank_code')
     ordering = ('bank_code',)
 
+
+class DeliveryCompanyAdmin(admin.ModelAdmin):
+    list_display = ('company_name', 'company_code')
+    ordering = ('company_name',)
+
+
+admin.site.register(models.DeliveryCompany, DeliveryCompanyAdmin)
 admin.site.register(models.Bank, BankAdmin)

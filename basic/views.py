@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseNotFound, Http404 ,HttpResponseRedirect
 from django.views.generic import TemplateView, ListView, DetailView, CreateView
 
-from models import Bank
+from models import Bank,DeliveryCompany
 from common import Response,Success,Error
 import hashlib
 from deploy.models import Server
@@ -30,8 +30,21 @@ def bank(request):
         logger.info('get bank list')
 
         try:
-            banks = Bank.objects.all()
-            return json_response([item.get_dict() for item in banks])
+            items = Bank.objects.all()
+            return json_response([item.get_dict() for item in items])
         except Exception, e:
             logging.error(traceback.format_exc())
-            return json_response(Error("get bank ocelot config error"))
+            return json_response(Error("get bank list error"))
+
+def delivery_company(request):
+    if request.method == "POST":
+        return HttpResponse("POST not support")
+    else:
+        logger.info('get delivery company list')
+
+        try:
+            items = DeliveryCompany.objects.all()
+            return json_response([item.get_dict() for item in items])
+        except Exception, e:
+            logging.error(traceback.format_exc())
+            return json_response(Error("get delivery list error"))
