@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseNotFound, Http404 ,HttpResponseRedirect
 from django.views.generic import TemplateView, ListView, DetailView, CreateView
 
-from models import Bank,DeliveryCompany
+from models import Bank, DeliveryCompany, Region
 from common import Response,Success,Error
 import hashlib
 from deploy.models import Server
@@ -48,3 +48,17 @@ def delivery_company(request):
         except Exception, e:
             logging.error(traceback.format_exc())
             return json_response(Error("get delivery list error"))
+
+
+def region(request):
+    if request.method == "POST":
+        return HttpResponse("POST not support")
+    else:
+        logger.info('get region list')
+
+        try:
+            items = Region.objects.all()
+            return json_response([item.get_dict() for item in items])
+        except Exception, e:
+            logging.error(traceback.format_exc())
+            return json_response(Error("get region list error"))

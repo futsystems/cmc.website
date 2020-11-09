@@ -3,3 +3,4 @@
 
 from bank import Bank
 from delivery_company import DeliveryCompany
+from region import Region

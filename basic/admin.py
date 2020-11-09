@@ -42,5 +42,11 @@ class DeliveryCompanyAdmin(admin.ModelAdmin):
     ordering = ('company_name',)
 
 
+class RegionAdmin(admin.ModelAdmin):
+    list_display = ('region_name', 'region_code', 'parent')
+    ordering = ('region_code',)
+
+
 admin.site.register(models.DeliveryCompany, DeliveryCompanyAdmin)
 admin.site.register(models.Bank, BankAdmin)
+admin.site.register(models.Region,RegionAdmin)
