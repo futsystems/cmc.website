@@ -13,7 +13,8 @@ class Portal(models.Model):
     env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
     domain_name = models.CharField('Domain Name', max_length=100, default='dev-portal.marvelsystem.net')
     admin_pipeline_trigger = models.CharField('Admin Pipeline Trigger', max_length=1000, default='', blank=True)
-    console_pipeline_trigger = models.CharField('console Pipeline Trigger', max_length=1000, default='', blank=True)
+    console_pipeline_trigger = models.CharField('Console Pipeline Trigger', max_length=1000, default='', blank=True)
+    h5_pipeline_trigger = models.CharField('H5 Pipeline Trigger', max_length=1000, default='', blank=True)
     description = models.CharField('Description', max_length=1000, default='', blank=True)
 
 
@@ -27,6 +28,7 @@ class Portal(models.Model):
         dict = {
             "admin_pipeline_trigger": self.admin_pipeline_trigger,
             'console_pipeline_trigger': self.console_pipeline_trigger,
+            'h5_pipeline_trigger': self.h5_pipeline_trigger,
             'domain_name': self.domain_name,
         }
         return dict
