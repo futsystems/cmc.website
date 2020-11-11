@@ -42,7 +42,7 @@ class Portal(models.Model):
             ret3 = api.merge_project(path3)
 
             self.merge_success = ret1[0] and ret2[0] and ret3[0]
-            self.merge_message ='%s,%s,%s' (ret1[1], ret2[1], ret3[1])
+            self.merge_message ='%s,%s,%s' % (ret1[1], ret2[1], ret3[1])
             self.save()
         else:
             self.merge_success = True
