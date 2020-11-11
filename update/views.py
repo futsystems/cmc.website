@@ -85,7 +85,7 @@ def diff_route_detail(new_route,old_route):
         diff['downstream_scheme'] = '%s->%s' % (old_route.downstream_scheme, new_route.downstream_scheme)
 
     if diff_route_detail_service_name(new_route) != diff_route_detail_service_name(old_route):
-        diff['service'] = '%s->%s' % (diff_route_detail_service_name(old_route), diff_route_detail_service_name(new_route.service))
+        diff['service'] = '%s->%s' % (diff_route_detail_service_name(old_route), diff_route_detail_service_name(new_route))
 
     if new_route.authentication_scheme != old_route.authentication_scheme:
         diff['authentication_scheme'] = '%s->%s' % (old_route.authentication_scheme, new_route.authentication_scheme)
