@@ -80,10 +80,17 @@ class ApiGatewayAdminForm(forms.ModelForm):
         self.fields['elastic_apm'].queryset = models.ElastAPM.objects.filter(env=self.instance.env)
         self.fields['event_bus'].queryset = models.EventBus.objects.filter(env=self.instance.env)
 
+
+def merge_gateway_project(modeladmin, request, queryset):
+    for gateway in queryset.all():
+        gateway.merge_project()
+merge_gateway_project.short_description = "Merge to master branch"
+
 class ApiGatewayAdmin(admin.ModelAdmin):
-    list_display = ('name', 'gw_type', 'env', 'base_url', 'default_config_title', 'config_action')
+    list_display = ('name', 'gw_type', 'env', 'base_url', 'default_config_title', 'config_action','merge_success', 'merge_message')
     filter_horizontal = ('services', 'other_settings')
     form = ApiGatewayAdminForm
+    actions =[merge_gateway_project]
     #readonly_fields = ('gw_type','env')
 
     def get_readonly_fields(self, request, obj=None):
@@ -612,9 +619,16 @@ class SettingItemAdmin(admin.ModelAdmin):
     list_display = ('setting_group', 'setting_key', 'setting_value', 'description')
     list_filter = ('setting_group',)
 
+
+def merge_portal_project(modeladmin, request, queryset):
+    for portal in queryset.all():
+        portal.merge_project()
+merge_portal_project.short_description = "Merge to master branch"
+
 class PortalAdmin(admin.ModelAdmin):
-    list_display = ('name', 'env', 'domain_name')
+    list_display = ('name', 'env', 'domain_name','merge_success', 'merge_message')
     list_filter = ('env',)
+    actions = [merge_portal_project]
 
 class WXBoundServerAdmin(admin.ModelAdmin):
     list_display = ('name', 'env', 'ip')

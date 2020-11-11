@@ -12,6 +12,7 @@ from eventbus import CMCGatewayConfigUpdate
 from setting import SettingGroup
 from log_item import LogItemGroup
 import urlparse
+from common import GitlabAPI
 
 class ApiGateway(models.Model):
     """
@@ -47,6 +48,9 @@ class ApiGateway(models.Model):
 
     pipeline_trigger = models.CharField('Pipeline Trigger', max_length=1000, default='', blank=True)
 
+    merge_success = models.BooleanField('Merge Success', default=True)
+    merge_message = models.CharField('Merge Message', max_length=500, default='', blank=True, null=True)
+
     __original_default_config = None
 
     def __init__(self, *args, **kwargs):
@@ -75,6 +79,17 @@ class ApiGateway(models.Model):
     def __unicode__(self):
         return u'%s-%s / %s' % (self.gw_type.lower(), self.env.lower(), self.name)
 
+    def merge_project(self):
+        if self.env == 'Development':
+            path = 'platform/gateway'
+            api = GitlabAPI()
+            ret = api.merge_project(path)
+            self.merge_success = ret[0]
+            self.merge_message = ret[1]
+            self.save()
+        else:
+            self.merge_success = True
+            self.merge_message = 'Only Development Merge'
 
     def default_config_title(self):
         if self.default_config is not None:
