@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     'deploy',
     'eventbus',
     'common',
+    'update',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -212,6 +213,12 @@ LOGGING = {
 
         },
         'basic': {
+            'handlers': ['tinyconsole', 'default'],
+            'level': 'DEBUG',
+            'propagate': False
+
+        },
+        'update': {
             'handlers': ['tinyconsole', 'default'],
             'level': 'DEBUG',
             'propagate': False
