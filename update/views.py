@@ -90,6 +90,7 @@ def diff_route_detail(new_route,old_route):
     if new_route.authentication_scheme != old_route.authentication_scheme:
         diff['authentication_scheme'] = '%s->%s' % (old_route.authentication_scheme, new_route.authentication_scheme)
 
+    return diff
 
 
 def diff_route_detail_service_name(route):
