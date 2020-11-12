@@ -72,6 +72,14 @@ class ApiGateway(models.Model):
         unique_together = ('gw_type', 'env',)
         app_label = 'config'
 
+    def get_system_config(self):
+        return {
+            'Product': 'WeiShop',
+            'Service': 'APIGateway',
+            'Stage': self.env,
+            'Version': '1.0',
+        }
+
     @property
     def gateway_schema(self):
         return u'%s-%s' % (self.gw_type.lower(), self.env.lower())
@@ -160,6 +168,8 @@ class ApiGateway(models.Model):
             "Url": "http://cmc.marvelsystem.net",
             "Token": "222"
         }
+
+        dict['System'] = self.get_system_config()
         return dict
 
     def get_pillar(self):
