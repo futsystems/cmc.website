@@ -23,6 +23,7 @@ DOWNSTREAM_SCHEME = (
 AUTH_SCHEME = (
     ('NoAuth', 'NoAuth'),
     ('Bearer', 'Bearer'),
+    ('JWT-Anonymous', 'JWT-Anonymous'),
     ('HMAC', 'HMAC'),
 )
 
