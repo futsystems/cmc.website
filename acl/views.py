@@ -85,7 +85,7 @@ def permission_used(request):
         service = request.GET.get("service")
         logger.info('get permssions used  of service:%s env:%s' % (service, env))
 
-        api_permissions = APIPermission.objects.filter(service__name=service)
+        api_permissions = APIPermission.objects.filter(service__name=service,env=env)
 
         #for code in api_permissions:
         permissions = Permission.objects.filter(api_permissions__in=api_permissions).distinct()
