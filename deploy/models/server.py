@@ -72,6 +72,8 @@ class Server(models.Model):
             data['services'] = [item.get_pillar() for item in self.installed_services.all()]
         if self.node_type == 'Gateway':
             data['gateway'] = None if self.gateway is None else self.gateway.get_pillar()
+            if self.installed_services.filter(name='CMS').count() > 0:
+                data['cms_screenshot'] = True
 
         if self.portal is not None:
             data['portal'] = self.portal.get_pillar()
@@ -89,6 +91,7 @@ class Server(models.Model):
                 runner['identifier'] = '%s-runner' % self.name
 
                 data['gitlab-runner'] = runner
+
         return data
 
 

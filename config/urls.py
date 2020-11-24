@@ -10,7 +10,7 @@ import views
 
 urlpatterns = [
     url(r'^gateway/$', views.config_gateway, name='config_gateway_ocelot'),
-   url(r'^gateway/hash/$', views.config_gateway_hash, name='config_gateway_ocelot_hash'),
+    url(r'^gateway/hash/$', views.config_gateway_hash, name='config_gateway_ocelot_hash'),
     url(r'^gateway/dotnet/$', views.config_gatwway_dotnet, name='config_gateway_dotnet'),
     url(r'^gateway/dotnet/hash/$', views.config_gatwway_dotnet_hash, name='config_gateway_dotnet_hash'),
     url(r'^service/list/$', views.service_list, name='config_services_list'),
