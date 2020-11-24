@@ -377,6 +377,13 @@ class ServiceAdmin(admin.ModelAdmin):
                 ]
             }),
 
+            ("Docker", {
+
+                "fields": [
+                    "production_tag",
+                ]
+            }),
+
             ("Git", {
                 "fields": [
                     "merge_success", "merge_message"
