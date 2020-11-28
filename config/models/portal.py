@@ -50,9 +50,11 @@ class Portal(models.Model):
 
     def get_pillar(self):
         dict = {
-            "admin_pipeline_trigger": self.admin_pipeline_trigger,
-            'console_pipeline_trigger': self.console_pipeline_trigger,
-            'h5_pipeline_trigger': self.h5_pipeline_trigger,
             'domain_name': self.domain_name,
         }
+
+        if self.env != 'Production':
+            dict['admin_pipeline_trigger'] = self.admin_pipeline_trigger
+            dict['console_pipeline_trigger'] = self.console_pipeline_trigger
+            dict['h5_pipeline_trigger'] = self.h5_pipeline_trigger
         return dict

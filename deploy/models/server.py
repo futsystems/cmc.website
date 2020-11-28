@@ -32,6 +32,7 @@ class Server(models.Model):
 
     portal = models.ForeignKey(Portal, verbose_name='Portal', on_delete=models.SET_NULL, default=None,
                                          blank=True, null=True)
+
     #服务器部署portal 绑定的portal设置
     description = models.CharField('Description', max_length=1000, default='', blank=True)
 
@@ -68,12 +69,16 @@ class Server(models.Model):
             'env': self.env,
             'node_type': self.node_type,
         }
-        if self.node_type == 'Service':
+
+        # Service Node
+        if self.installed_services.all().count()>0:
             data['services'] = [item.get_pillar() for item in self.installed_services.all()]
-        if self.node_type == 'Gateway':
-            data['gateway'] = None if self.gateway is None else self.gateway.get_pillar()
             if self.installed_services.filter(name='CMS').count() > 0:
                 data['cms_screenshot'] = True
+
+        # Gateway Node
+        if self.gateway is not None:
+            data['gateway'] = self.gateway.get_pillar()
 
         if self.portal is not None:
             data['portal'] = self.portal.get_pillar()

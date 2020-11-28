@@ -10,4 +10,6 @@ NODETYPE = {
     ('Service', 'Service'),
     ('Gateway', 'Gateway'),
     ('Access', 'Access'),
+    ('MQ', 'MQ'),
+    ('Consul', 'Consul'),
 }
