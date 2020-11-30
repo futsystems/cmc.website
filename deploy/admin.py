@@ -39,9 +39,12 @@ class ServerAdminForm(forms.ModelForm):
             self.fields['gateway'].queryset = ApiGateway.objects.filter(env=self.instance.env)
             self.fields['portal'].queryset = Portal.objects.filter(env=self.instance.env)
 
+class DeployAdmin(admin.ModelAdmin):
+    list_display = ('name', 'env', 'product_type', 'location', 'suffix')
+
 
 class ServerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'env', 'ip', 'location', 'function_title', 'salt_action')
+    list_display = ('name', 'env', 'ip', 'location', 'host_name', 'function_title', 'salt_action')
     filter_horizontal = ('installed_services', 'installed_services')
     form = ServerAdminForm
     def get_readonly_fields(self, request, obj=None):
@@ -126,6 +129,5 @@ class ServerAdmin(admin.ModelAdmin):
         previous_url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(previous_url)
 
-
-
 admin.site.register(models.Server, ServerAdmin)
+admin.site.register(models.Deploy, DeployAdmin)

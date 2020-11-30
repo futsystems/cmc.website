@@ -23,6 +23,9 @@ class Server(models.Model):
     env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
     node_type = models.CharField(max_length=20, choices=NODETYPE, default='Service')
 
+    deploy = models.ForeignKey('Deploy', verbose_name='Deploy', on_delete=models.SET_NULL, default=None,
+                                blank=True, null=True)
+
     #服务器安装服务
     installed_services = models.ManyToManyField(Service, verbose_name='Installed Services', blank=True)
 
@@ -50,6 +53,11 @@ class Server(models.Model):
     def __unicode__(self):
         return u'%s-%s' % (self.name, self.ip)
 
+    @property
+    def host_name(self):
+        if self.deploy is not None:
+            return '%s-%s-%s' % (self.node_type,self.deploy.product_type,self.deploy.suffix)
+        return self.name
 
     @property
     def function_title(self):

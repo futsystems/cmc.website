@@ -12,4 +12,11 @@ NODETYPE = {
     ('Access', 'Access'),
     ('MQ', 'MQ'),
     ('Consul', 'Consul'),
+    ('Portal', 'Portal'),
+    ('Mix', 'Mix'),
+}
+
+PRODUCTTYPE = {
+    ('WeiShop', 'WeiShop'),
+    ('WeiSite', 'WeiSite'),
 }
