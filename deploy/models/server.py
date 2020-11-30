@@ -60,7 +60,7 @@ class Server(models.Model):
 
     def save(self, *args, **kwargs):
         if self.deploy is not None:
-            self.name == self.host_name
+            self.name = self.host_name
 
         super(Server, self).save(*args, **kwargs)
 
