@@ -52,8 +52,8 @@ def diff_route(source='Staging',target='Development'):
     target_names = [item.name for item in target_items]
     source_names = [item.name for item in source_items]
 
-    add_items = list(set(source_names).difference(set(target_names)))
-    remove_items = list(set(target_names).difference(set(source_names)))
+    add_items = list(set(target_names).difference(set(source_names)))
+    remove_items = list(set(source_names).difference(set(target_names)))
     intersection_items = list(set(source_names).intersection(set(target_names)))
 
     diff = {
