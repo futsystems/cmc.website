@@ -28,6 +28,8 @@ def diff(request):
     else:
         env = request.GET.get("env")
         logger.info('get diff of env:%s' % (env))
+        if env == None:
+            env = 'Staging'
         try:
             if env == 'Staging':
                 source = 'Staging'
