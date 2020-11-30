@@ -44,7 +44,7 @@ class DeployAdmin(admin.ModelAdmin):
 
 
 class ServerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'env', 'ip', 'location', 'host_name', 'function_title', 'salt_action')
+    list_display = ('name', 'env', 'ip', 'location', 'host_name', 'node_type', 'function_title', 'salt_action')
     filter_horizontal = ('installed_services', 'installed_services')
     form = ServerAdminForm
     def get_readonly_fields(self, request, obj=None):

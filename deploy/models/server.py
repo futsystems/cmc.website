@@ -55,8 +55,12 @@ class Server(models.Model):
 
     @property
     def host_name(self):
+        if self.node_type == 'Mix':
+            return self.name
+
         if self.deploy is not None:
             return '%s-%s-%s' % (self.node_type,self.deploy.product_type,self.deploy.suffix)
+        
         return self.name
 
     @property
