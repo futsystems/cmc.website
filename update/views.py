@@ -129,25 +129,25 @@ def diff_service(source='Staging',target='Development'):
         new_item = target_items.get(name=item_name)
         old_item = source_items.get(name=item_name)
 
-        dif_item = {
+        diff_item = {
             'name': item_name,
             'used_services': diff_service_used_service(new_item, old_item)
         }
-        if len(dif_item['used_services']['add']) > 0 or len(dif_item['used_services']['remove']) > 0:
-            diff['diff'].append(dif_item)
+        if len(diff_item['used_services']['add']) > 0 or len(diff_item['used_services']['remove']) > 0:
+            diff['diff'].append(diff_item)
 
     return diff
 
 
-def diff_service_used_service(new_service,old_service):
+def diff_service_used_service(new_service, old_service):
     """
     检查依赖服务的变化
     """
     listA = [item.name for item in new_service.used_services.all()]
     listB = [item.name for item in old_service.used_services.all()]
 
-    remove = list(set(listA).difference(set(listB)))
-    add = list(set(listB).difference(set(listA)))
+    remove = list(set(listB).difference(set(listA)))
+    add = list(set(listA).difference(set(listB)))
     return {
         'remove': remove,
         'add': add,
