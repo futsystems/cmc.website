@@ -59,8 +59,8 @@ class Server(models.Model):
             return self.name
 
         if self.deploy is not None:
-            return '%s-%s-%s' % (self.node_type,self.deploy.product_type,self.deploy.suffix)
-        
+            return ('%s-%s-%s' % (self.node_type,self.deploy.product_type,self.deploy.suffix)).lower()
+
         return self.name
 
     @property
