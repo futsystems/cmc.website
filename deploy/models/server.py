@@ -57,6 +57,13 @@ class Server(models.Model):
     def __unicode__(self):
         return u'%s-%s' % (self.name, self.ip)
 
+
+    def save(self, *args, **kwargs):
+        if self.deploy is not None:
+            self.name == self.host_name
+
+        super(Server, self).save(*args, **kwargs)
+
     @property
     def host_name(self):
         if self.node_type == 'Mix':
