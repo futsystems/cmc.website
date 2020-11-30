@@ -21,7 +21,9 @@ class Portal(models.Model):
     merge_success = models.BooleanField('Merge Success', default=True)
     merge_message = models.CharField('Merge Message', max_length=500, default='', blank=True, null=True)
     partion_info_api_domain = models.CharField('PartionInfoDomain', max_length=1000, blank=True, default='test-www.marvelsystem.net')
-
+    admin_tag = models.CharField(max_length=20, default='v1.0.0')
+    console_tag = models.CharField(max_length=20, default='v1.0.0')
+    h5_tag = models.CharField(max_length=20, default='v1.0.0')
 
     class Meta:
         app_label = 'config'
@@ -59,4 +61,10 @@ class Portal(models.Model):
             dict['admin_pipeline_trigger'] = self.admin_pipeline_trigger
             dict['console_pipeline_trigger'] = self.console_pipeline_trigger
             dict['h5_pipeline_trigger'] = self.h5_pipeline_trigger
+
+        if self.env == 'Production':
+            dict['admin_tag'] = self.admin_tag
+            dict['console_tag'] = self.console_tag
+            dict['h5_tag'] = self.h5_tag
+
         return dict
