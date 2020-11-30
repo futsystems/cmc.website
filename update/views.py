@@ -33,7 +33,7 @@ def diff(request):
             service_diff= diff_service()
 
             # 检查路由变化
-            route_diff= diff_route()
+            route_diff= diff_route('Staging', 'Development')
 
             result={
                 'service_diff':service_diff,
@@ -46,15 +46,15 @@ def diff(request):
             logging.error(traceback.format_exc())
             return json_response(Error("get gateway ocelot config error"))
 
-def diff_route():
-    develop_items = config_models.Route.objects.filter(api_gateway__env='Development')
-    staging_items = config_models.Route.objects.filter(api_gateway__env='Staging')
-    develop_names = [item.name for item in develop_items]
-    staging_names = [item.name for item in staging_items]
+def diff_route(source='Staging',target='Development'):
+    target_items = config_models.Route.objects.filter(api_gateway__env=target)
+    source_items = config_models.Route.objects.filter(api_gateway__env=source)
+    target_names = [item.name for item in target_items]
+    source_names = [item.name for item in source_items]
 
-    add_items = list(set(staging_names).difference(set(develop_names)))
-    remove_items = list(set(develop_names).difference(set(staging_names)))
-    intersection_items = list(set(staging_names).intersection(set(develop_names)))
+    add_items = list(set(source_names).difference(set(target_names)))
+    remove_items = list(set(target_names).difference(set(source_names)))
+    intersection_items = list(set(source_names).intersection(set(target_names)))
 
     diff = {
         'add': add_items,
@@ -63,8 +63,8 @@ def diff_route():
     }
 
     for item_name in intersection_items:
-        new_item = develop_items.get(name=item_name)
-        old_item = staging_items.get(name=item_name)
+        new_item = target_items.get(name=item_name)
+        old_item = source_items.get(name=item_name)
 
         route_diff = diff_route_detail(new_item, old_item)
 
