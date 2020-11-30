@@ -26,6 +26,8 @@ class Server(models.Model):
     deploy = models.ForeignKey('Deploy', verbose_name='Deploy', on_delete=models.SET_NULL, default=None,
                                 blank=True, null=True)
 
+    index = models.CharField(max_length=20, default='01')
+
     #服务器安装服务
     installed_services = models.ManyToManyField(Service, verbose_name='Installed Services', blank=True)
 
@@ -35,6 +37,8 @@ class Server(models.Model):
 
     portal = models.ForeignKey(Portal, verbose_name='Portal', on_delete=models.SET_NULL, default=None,
                                          blank=True, null=True)
+
+
 
     #服务器部署portal 绑定的portal设置
     description = models.CharField('Description', max_length=1000, default='', blank=True)
@@ -59,7 +63,7 @@ class Server(models.Model):
             return self.name
 
         if self.deploy is not None:
-            return ('%s-%s-%s' % (self.node_type,self.deploy.product_type,self.deploy.suffix)).lower()
+            return ('%s-%s-%s-%s' % (self.node_type,self.deploy.product_type,self.deploy.suffix, self.index)).lower()
 
         return self.name
 
