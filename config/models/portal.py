@@ -20,6 +20,7 @@ class Portal(models.Model):
 
     merge_success = models.BooleanField('Merge Success', default=True)
     merge_message = models.CharField('Merge Message', max_length=500, default='', blank=True, null=True)
+    partion_info_api_domain = models.CharField('PartionInfoDomain', max_length=1000, blank=True, default='test-www.marvelsystem.net')
 
 
     class Meta:
@@ -51,6 +52,7 @@ class Portal(models.Model):
     def get_pillar(self):
         dict = {
             'domain_name': self.domain_name,
+            'partion_info_api_domain': self.partion_info_api_domain
         }
 
         if self.env != 'Production':
