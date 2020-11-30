@@ -29,11 +29,18 @@ def diff(request):
         env = request.GET.get("env")
         logger.info('get diff of env:%s' % (env))
         try:
+            if env == 'Staging':
+                source = 'Staging'
+                target = 'Development'
+            elif env == 'Production':
+                source = 'Production'
+                target = 'Staging'
+
             # 检查服务变化
-            service_diff= diff_service()
+            service_diff= diff_service(source, target)
 
             # 检查路由变化
-            route_diff= diff_route('Staging', 'Development')
+            route_diff= diff_route(source, target)
 
             result={
                 'service_diff':service_diff,
@@ -100,15 +107,15 @@ def diff_route_detail_service_name(route):
         return route.service.name
 
 
-def diff_service():
-    develop_items = config_models.Service.objects.filter(env='Development')
-    staging_items = config_models.Service.objects.filter(env='Staging')
-    develop_names = [item.name for item in develop_items]
-    staging_names = [item.name for item in staging_items]
+def diff_service(source='Staging',target='Development'):
+    target_items = config_models.Service.objects.filter(env='Development')
+    source_items = config_models.Service.objects.filter(env='Staging')
+    target_names = [item.name for item in target_items]
+    source_names = [item.name for item in source_items]
 
-    add_items = list(set(staging_names).difference(set(develop_names)))
-    remove_items = list(set(develop_names).difference(set(staging_names)))
-    intersection_items = list(set(staging_names).intersection(set(develop_names)))
+    add_items = list(set(target_names).difference(set(source_names)))
+    remove_items = list(set(source_names).difference(set(target_names)))
+    intersection_items = list(set(source_names).intersection(set(target_names)))
 
     diff = {
         'add': add_items,
@@ -117,8 +124,8 @@ def diff_service():
     }
 
     for item_name in intersection_items:
-        new_item = develop_items.get(name=item_name)
-        old_item = staging_items.get(name=item_name)
+        new_item = target_items.get(name=item_name)
+        old_item = source_items.get(name=item_name)
 
         dif_item = {
             'name': item_name,
