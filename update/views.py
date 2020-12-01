@@ -85,7 +85,9 @@ def diff_route(source='Staging',target='Development'):
     return diff
 
 def diff_route_detail(new_route,old_route):
-    diff ={ }
+    diff ={
+        'name':new_route.name
+    }
     if new_route.upstream_path_template != old_route.upstream_path_template:
         diff['upstream_path_template'] = '%s->%s' % (old_route.upstream_path_template, new_route.upstream_path_template)
 
@@ -336,8 +338,6 @@ def diff_permission(source='Staging',target='Development'):
             diff_item['name'] = '%s->%s' % (old_item.name, new_item.name)
         if new_item.page.key != old_item.page.key:
             diff_item['page'] = '%s->%s' % (old_item.page.key, new_item.page.key)
-
-
 
         if len(diff_item) > 2 or (len(diff_item['api_permission']['add']) > 0 or len(diff_item['api_permission']['remove']) > 0):
             diff['diff'].append(diff_item)
