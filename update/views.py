@@ -79,7 +79,7 @@ def diff_route(source='Staging',target='Development'):
 
         route_diff = diff_route_detail(new_item, old_item)
 
-        if len(route_diff) > 0:
+        if len(route_diff) > 1:
             diff['diff'].append(route_diff)
 
     return diff
