@@ -176,11 +176,12 @@ def acl_diff(request):
             api_permission_diff= diff_api_permission(source, target)
             group_diff = diff_group(source, target)
             page_diff = diff_page(source, target)
-
+            permission_diff = diff_permission(source, target)
             result={
                 'api_permission_diff': api_permission_diff,
                 'group_diff': group_diff,
                 'page_diff': page_diff,
+                'permission_diff': permission_diff
             }
 
             logger.info(result)
@@ -279,8 +280,6 @@ def diff_page(source='Staging',target='Development'):
         'add': add_items,
         'remove': remove_items,
         'diff': [],
-        'target':target_names,
-        'source':source_names,
     }
 
     for item_name in intersection_items:
@@ -306,3 +305,55 @@ def diff_page(source='Staging',target='Development'):
             diff['diff'].append(diff_item)
 
     return diff
+
+def diff_permission(source='Staging',target='Development'):
+    target_items = acl_models.Permission.objects.filter(env= target)
+    source_items = acl_models.Permission.objects.filter(env= source)
+    target_names = [item.key for item in target_items]
+    source_names = [item.key for item in source_items]
+
+    add_items = list(set(target_names).difference(set(source_names)))
+    remove_items = list(set(source_names).difference(set(target_names)))
+    intersection_items = list(set(source_names).intersection(set(target_names)))
+
+    diff = {
+        'add': add_items,
+        'remove': remove_items,
+        'diff': [],
+    }
+
+    for item_name in intersection_items:
+        new_item = target_items.get(key=item_name)
+        old_item = source_items.get(key=item_name)
+
+        diff_item = {
+            'key': item_name,
+            'api_permission': diff_permission_api_permission(new_item.api_permissions.all(),old_item.api_permissions.all())
+        }
+        if new_item.title != old_item.title:
+            diff_item['title'] = '%s->%s' % (old_item.title, new_item.title)
+        if new_item.name != old_item.name:
+            diff_item['name'] = '%s->%s' % (old_item.name, new_item.name)
+        if new_item.page.key != old_item.page.key:
+            diff_item['page'] = '%s->%s' % (old_item.page.key, new_item.page.key)
+
+
+
+        if len(diff_item) > 1:
+            diff['diff'].append(diff_item)
+
+    return diff
+
+def diff_permission_api_permission(new_api_permissions, old_api_permissions):
+    """
+    检查依赖服务的变化
+    """
+    listA = [item.name for item in new_api_permissions.used_services.all()]
+    listB = [item.name for item in old_api_permissions.used_services.all()]
+
+    remove = list(set(listB).difference(set(listA)))
+    add = list(set(listA).difference(set(listB)))
+    return {
+        'remove': remove,
+        'add': add,
+    }
