@@ -81,7 +81,7 @@ class APIPermissionAdmin(admin.ModelAdmin):
     list_display = ('code', 'name', 'title', 'group_name', 'description', 'service', 'env')
     list_filter = ('env', ServiceListFilter)
     ordering = ('code',)
-    actions = [copy_api_permission_staging]
+    actions = [copy_api_permission_staging,copy_api_permission_production ]
 
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
