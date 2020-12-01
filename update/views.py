@@ -8,6 +8,8 @@ from django.http import HttpResponse, HttpResponseNotFound, Http404 ,HttpRespons
 from django.views.generic import TemplateView, ListView, DetailView, CreateView
 from common import Response,Success,Error
 from config import  models as config_models
+from acl import  models as acl_models
+
 import hashlib
 from deploy.models import Server
 from common.request_helper import get_client_ip
@@ -152,3 +154,75 @@ def diff_service_used_service(new_service, old_service):
         'remove': remove,
         'add': add,
     }
+
+
+def acl_diff(request):
+    if request.method == "POST":
+        return HttpResponse("POST not support")
+    else:
+        env = request.GET.get("env")
+        logger.info('get diff of env:%s' % (env))
+        if env == None:
+            env = 'Staging'
+        try:
+            if env == 'Staging':
+                source = 'Staging'
+                target = 'Development'
+            elif env == 'Production':
+                source = 'Production'
+                target = 'Staging'
+
+            # 检查api permission变化
+            api_permission_diff= diff_api_permission(source, target)
+
+            result={
+                'api_permission_diff': api_permission_diff,
+            }
+
+            logger.info(result)
+            return json_response(result)
+        except Exception, e:
+            logging.error(traceback.format_exc())
+            return json_response(Error("get gateway ocelot config error"))
+
+
+
+def diff_api_permission(source='Staging',target='Development'):
+    target_items = acl_models.APIPermission.objects.filter(env='Development')
+    source_items = acl_models.APIPermission.objects.filter(env='Staging')
+    target_names = [item.name for item in target_items]
+    source_names = [item.name for item in source_items]
+
+    add_items = list(set(target_names).difference(set(source_names)))
+    remove_items = list(set(source_names).difference(set(target_names)))
+    intersection_items = list(set(source_names).intersection(set(target_names)))
+
+    diff = {
+        'add': add_items,
+        'remove': remove_items,
+        'diff': []
+    }
+
+    for item_name in intersection_items:
+        new_item = target_items.get(name=item_name)
+        old_item = source_items.get(name=item_name)
+
+        diff_item = {
+            'name': item_name,
+        }
+        if new_item.code != old_item.code:
+            diff_item['code']= '%s->%s' % (old_item.code, new_item.code)
+        if new_item.title != old_item.title:
+            diff_item['title'] = '%s->%s' % (old_item.title, new_item.title)
+        if new_item.group_name != old_item.group_name:
+            diff_item['group_name'] = '%s->%s' % (old_item.group_name, new_item.group_name)
+        if new_item.group_name != old_item.group_name:
+            diff_item['group_name'] = '%s->%s' % (old_item.group_name, new_item.group_name)
+        if new_item.service.name != old_item.service.name:
+            diff_item['service'] = '%s->%s' % (old_item.service.name, new_item.service.name)
+
+
+        if len(diff_item) > 1:
+            diff['diff'].append(diff_item)
+
+    return diff
