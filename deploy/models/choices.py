@@ -13,6 +13,7 @@ NODETYPE = {
     ('MQ', 'MQ'),
     ('Consul', 'Consul'),
     ('Portal', 'Portal'),
+    ('APM', 'APM'),
     ('Mix', 'Mix'),
 }
 

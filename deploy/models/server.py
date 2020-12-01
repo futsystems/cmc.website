@@ -91,21 +91,25 @@ class Server(models.Model):
             'ip': self.ip,
             'env': self.env,
             'node_type': self.node_type,
+            'net_core_support': False,
         }
 
         # Service Node
-        if self.installed_services.all().count()>0:
+        if self.installed_services.all().count() > 0:
+            data['net_core_support'] = True
             data['services'] = [item.get_pillar() for item in self.installed_services.all()]
             if self.installed_services.filter(name='CMS').count() > 0:
                 data['cms_screenshot'] = True
 
         # Gateway Node
         if self.gateway is not None:
+            data['net_core_support'] = True
             data['gateway'] = self.gateway.get_pillar()
 
         if self.portal is not None:
             data['portal'] = self.portal.get_pillar()
 
+        # development and staging env install gitlab runner
         if self.env == 'Development' or self.env == 'Staging':
             if self.gitlab_runner_id is not None:
                 runner = {}
