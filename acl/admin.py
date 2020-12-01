@@ -70,6 +70,13 @@ def copy_api_permission_staging(modeladmin, request, queryset):
         item.copy_to_env('Staging')
 copy_api_permission_staging.short_description = "Copy API Permission To Staging"
 
+
+def copy_api_permission_production(modeladmin, request, queryset):
+    for item in queryset.all():
+        item.copy_to_env('Production')
+copy_api_permission_production.short_description = "Copy API Permission To Production"
+
+
 class APIPermissionAdmin(admin.ModelAdmin):
     list_display = ('code', 'name', 'title', 'group_name', 'description', 'service', 'env')
     list_filter = ('env', ServiceListFilter)
@@ -126,6 +133,11 @@ def copy_page_staging(modeladmin, request, queryset):
         page.copy_to_env('Staging')
 copy_page_staging.short_description = "Copy Page To Staging"
 
+def copy_page_production(modeladmin, request, queryset):
+    for page in queryset.all():
+        page.copy_to_env('Production')
+copy_page_production.short_description = "Copy Page To Production"
+
 class PageAdminForm(forms.ModelForm):
     class Meta:
         model = models.Page
@@ -179,6 +191,11 @@ def copy_group_staging(modeladmin, request, queryset):
     for group in queryset.all():
         group.copy_to_env('Staging')
 copy_group_staging.short_description = "Copy Group To Staging"
+
+def copy_group_production(modeladmin, request, queryset):
+    for group in queryset.all():
+        group.copy_to_env('Production')
+copy_group_production.short_description = "Copy Group To Production"
 
 class GroupAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('title', 'name', 'enable', 'env')
@@ -247,7 +264,7 @@ class PermissionGroupListFilter(admin.SimpleListFilter):
         list = [(item.name, item.title) for item in models.Group.objects.all()]
         # 去重
         func = lambda x, y: x if y in x else x + [y]
-        return  reduce(func, [[], ] + list)
+        return reduce(func, [[], ] + list)
 
 
     def queryset(self, request, queryset):
@@ -266,6 +283,12 @@ def copy_permission_staging(modeladmin, request, queryset):
     for page in queryset.all():
         page.copy_to_env('Staging')
 copy_permission_staging.short_description = "Copy Permission To Staging"
+
+
+def copy_permission_production(modeladmin, request, queryset):
+    for page in queryset.all():
+        page.copy_to_env('Production')
+copy_permission_production.short_description = "Copy Permission To Production"
 
 
 class PermssionAdmin(SortableAdminMixin, admin.ModelAdmin):
