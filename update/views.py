@@ -112,8 +112,8 @@ def diff_route_detail_service_name(route):
 
 
 def diff_service(source='Staging',target='Development'):
-    target_items = config_models.Service.objects.filter(env='Development')
-    source_items = config_models.Service.objects.filter(env='Staging')
+    target_items = config_models.Service.objects.filter(env= target)
+    source_items = config_models.Service.objects.filter(env= source)
     target_names = [item.name for item in target_items]
     source_names = [item.name for item in source_items]
 
@@ -161,7 +161,7 @@ def acl_diff(request):
         return HttpResponse("POST not support")
     else:
         env = request.GET.get("env")
-        logger.info('get diff of env:%s' % (env))
+
         if env == None:
             env = 'Staging'
         try:
@@ -171,7 +171,7 @@ def acl_diff(request):
             elif env == 'Production':
                 source = 'Production'
                 target = 'Staging'
-
+            logger.info('get diff of env source:%s target:%s' % (source, target))
             # 检查api permission变化
             api_permission_diff= diff_api_permission(source, target)
 
@@ -188,8 +188,8 @@ def acl_diff(request):
 
 
 def diff_api_permission(source='Staging',target='Development'):
-    target_items = acl_models.APIPermission.objects.filter(env='Development')
-    source_items = acl_models.APIPermission.objects.filter(env='Staging')
+    target_items = acl_models.APIPermission.objects.filter(env= target)
+    source_items = acl_models.APIPermission.objects.filter(env= source)
     target_names = [item.name for item in target_items]
     source_names = [item.name for item in source_items]
 
