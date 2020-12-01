@@ -278,7 +278,9 @@ def diff_page(source='Staging',target='Development'):
     diff = {
         'add': add_items,
         'remove': remove_items,
-        'diff': []
+        'diff': [],
+        'target':target_names,
+        'source':source_names,
     }
 
     for item_name in intersection_items:
