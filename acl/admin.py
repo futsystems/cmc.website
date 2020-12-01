@@ -202,7 +202,7 @@ class GroupAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_filter = ('env',)
     ordering = ('sort',)
     change_list_template = 'acl/admin/change_list.html'
-    actions = [copy_group_staging]
+    actions = [copy_group_staging, copy_group_production]
 
     def get_urls(self):
         urls = super(GroupAdmin, self).get_urls()
