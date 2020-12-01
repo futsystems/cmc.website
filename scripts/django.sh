@@ -5,7 +5,7 @@ DJANGODIR=/opt/cmc.website/deploy                 # Django project directory
 SOCKFILE=/opt/cmc.website/tmp/cmc.website.sock                                                 # we will communicte using this unix socket
 USER=root                                      # the user to run as
 GROUP=root                                    # the group to run as
-NUM_WORKERS=1                                   # how many worker processes should Gunicorn spawn
+NUM_WORKERS=2                                   # how many worker processes should Gunicorn spawn
 DJANGO_SETTINGS_MODULE=cmc.settings            # which settings file should Django use
 DJANGO_WSGI_MODULE=cmc.wsgi                     # WSGI module name
 LOGFILE=/opt/cmc.website/logs/gunicorn.log
@@ -31,4 +31,4 @@ python manage.py collectstatic --noinput
 #python manage.py runserver 0.0.0.0:80
 
 
-exec gunicorn ${DJANGO_WSGI_MODULE}:application --name $NAME --workers $NUM_WORKERS --timeout $TIMEOUT --user=$USER --group=$GROUP --log-level=debug --bind=0.0.0.0:80 --log-file=$LOGFILE
+exec gunicorn ${DJANGO_WSGI_MODULE}:application --worker-class=gevent --name $NAME --workers $NUM_WORKERS --timeout $TIMEOUT --user=$USER --group=$GROUP --log-level=debug --bind=0.0.0.0:80 --log-file=$LOGFILE
