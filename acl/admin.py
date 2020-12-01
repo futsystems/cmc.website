@@ -153,7 +153,7 @@ class PageAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_filter = ('env', GropListFilter)
     ordering = ('sort',)
     inlines = (PermissionlInline,)
-    actions = [copy_page_staging]
+    actions = [copy_page_staging, copy_page_production]
     form = PageAdminForm
     #change_list_template = 'admin/list.html'
 

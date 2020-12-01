@@ -72,7 +72,7 @@ class Page(models.Model):
 
     def copy_to_env(self, env):
         try:
-            page = Page.objects.get(env=env, key = self.key)
+            page = Page.objects.get(env=env, key=self.key)
         except Page.DoesNotExist:
             page = Page()
 
