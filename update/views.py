@@ -328,7 +328,7 @@ def diff_permission(source='Staging',target='Development'):
 
         diff_item = {
             'key': item_name,
-            'api_permission': diff_permission_api_permission(new_item.api_permissions.all(),old_item.api_permissions.all())
+            'api_permission': diff_permission_api_permission(new_item, old_item)
         }
         if new_item.title != old_item.title:
             diff_item['title'] = '%s->%s' % (old_item.title, new_item.title)
@@ -344,12 +344,12 @@ def diff_permission(source='Staging',target='Development'):
 
     return diff
 
-def diff_permission_api_permission(new_api_permissions, old_api_permissions):
+def diff_permission_api_permission(new_permission, old_permission):
     """
     检查依赖服务的变化
     """
-    listA = [item.name for item in new_api_permissions.used_services.all()]
-    listB = [item.name for item in old_api_permissions.used_services.all()]
+    listA = [item.name for item in new_permission.api_permissions.all()]
+    listB = [item.name for item in old_permission.api_permissions.all()]
 
     remove = list(set(listB).difference(set(listA)))
     add = list(set(listA).difference(set(listB)))
