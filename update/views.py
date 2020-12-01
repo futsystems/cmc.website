@@ -339,7 +339,7 @@ def diff_permission(source='Staging',target='Development'):
 
 
 
-        if len(diff_item) > 1:
+        if len(diff_item) > 2 or (len(diff_item['api_permission']['add']) > 0 or len(diff_item['api_permission']['remove']) > 0):
             diff['diff'].append(diff_item)
 
     return diff
