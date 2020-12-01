@@ -298,7 +298,7 @@ class PermssionAdmin(SortableAdminMixin, admin.ModelAdmin):
     ordering = ('sort',)
     search_fields = ('key',)
     form = PermissionAdminForm
-    actions = [copy_page_staging]
+    actions = [copy_page_staging, copy_permission_production]
 
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
