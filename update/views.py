@@ -175,9 +175,12 @@ def acl_diff(request):
             # 检查api permission变化
             api_permission_diff= diff_api_permission(source, target)
             group_diff = diff_group(source, target)
+            page_diff = diff_page(source, target)
+
             result={
                 'api_permission_diff': api_permission_diff,
-                'group_diff': group_diff
+                'group_diff': group_diff,
+                'page_diff': page_diff,
             }
 
             logger.info(result)
@@ -255,6 +258,46 @@ def diff_group(source='Staging',target='Development'):
             diff_item['title'] = '%s->%s' % (old_item.title, new_item.title)
         if new_item.icon != old_item.icon:
             diff_item['icon'] = '%s->%s' % (old_item.icon, new_item.icon)
+
+
+        if len(diff_item) > 1:
+            diff['diff'].append(diff_item)
+
+    return diff
+
+def diff_page(source='Staging',target='Development'):
+    target_items = acl_models.Page.objects.filter(env= target)
+    source_items = acl_models.Page.objects.filter(env= source)
+    target_names = [item.key for item in target_items]
+    source_names = [item.key for item in source_items]
+
+    add_items = list(set(target_names).difference(set(source_names)))
+    remove_items = list(set(source_names).difference(set(target_names)))
+    intersection_items = list(set(source_names).intersection(set(target_names)))
+
+    diff = {
+        'add': add_items,
+        'remove': remove_items,
+        'diff': []
+    }
+
+    for item_name in intersection_items:
+        new_item = target_items.get(key=item_name)
+        old_item = source_items.get(key=item_name)
+
+        diff_item = {
+            'key': item_name,
+        }
+        if new_item.title != old_item.title:
+            diff_item['title'] = '%s->%s' % (old_item.title, new_item.title)
+        if new_item.name != old_item.name:
+            diff_item['name'] = '%s->%s' % (old_item.name, new_item.name)
+        if new_item.path != old_item.path:
+            diff_item['path'] = '%s->%s' % (old_item.path, new_item.path)
+        if new_item.group.name != old_item.group.name:
+            diff_item['group'] = '%s->%s' % (old_item.group.name, new_item.group.name)
+        if new_item.category != old_item.category:
+            diff_item['category'] = '%s->%s' % (old_item.category, new_item.category)
 
 
         if len(diff_item) > 1:
