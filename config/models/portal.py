@@ -21,6 +21,8 @@ class Portal(models.Model):
     merge_success = models.BooleanField('Merge Success', default=True)
     merge_message = models.CharField('Merge Message', max_length=500, default='', blank=True, null=True)
     partion_info_api_domain = models.CharField('PartionInfoDomain', max_length=1000, blank=True, default='test-www.marvelsystem.net')
+
+    api_gw_domain = models.CharField('API Gateway', max_length=1000, blank=True, default='dev-api-gw.marvelsystem.net')
     admin_tag = models.CharField(max_length=20, default='v1.0.0')
     console_tag = models.CharField(max_length=20, default='v1.0.0')
     h5_tag = models.CharField(max_length=20, default='v1.0.0')
@@ -54,7 +56,8 @@ class Portal(models.Model):
     def get_pillar(self):
         dict = {
             'domain_name': self.domain_name,
-            'partion_info_api_domain': self.partion_info_api_domain
+            'partion_info_api_domain': self.partion_info_api_domain,
+            'api_gw_domain': self.api_gw_domain
         }
 
         if self.env != 'Production':
