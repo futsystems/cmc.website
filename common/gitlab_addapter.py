@@ -60,8 +60,9 @@ class GitlabAPI(object):
         project = self.get_project_by_path(path)
         if project is None:
             return None
+        logger.info('path:%s source:%s taget:%s' % (path, source, target))
         diff = project.repository_compare(source, target)
-        #logger.info('path:%s diff:%s' % (path,diff))
+
         if diff['commit'] is None:
             return None
         return diff['commit']
