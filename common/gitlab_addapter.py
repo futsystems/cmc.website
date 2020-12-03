@@ -2,7 +2,7 @@
 #!/usr/bin/python
 
 import gitlab
-from gitlab import GitlabCreateError, GitlabMRClosedError
+from gitlab import GitlabCreateError, GitlabMRClosedError, GitlabGetError
 
 from settings import GITLAB_SETTING
 
@@ -61,11 +61,15 @@ class GitlabAPI(object):
         if project is None:
             return None
         logger.info('path:%s source:%s taget:%s' % (path, source, target))
-        diff = project.repository_compare(source, target)
 
-        if diff['commit'] is None:
-            return None
-        return diff['commit']
+        try:
+            diff = project.repository_compare(source, target)
+
+            if diff['commit'] is None:
+                return None
+            return diff['commit']
+        except GitlabGetError as e:
+            return e.message
 
     def merge_project(self, path):
         project = self.get_project_by_path(path)
