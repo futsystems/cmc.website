@@ -65,6 +65,10 @@ class Service(models.Model):
     def __unicode__(self):
         return u'Service-%s' % (self.name)
 
+    @property
+    def has_other_settings(self):
+        return self.other_settings.all().count() > 0
+
     def copy_to_env(self,env):
         service = Service()
         service.name = self.name
