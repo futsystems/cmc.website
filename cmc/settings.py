@@ -212,6 +212,12 @@ LOGGING = {
             'propagate': False
 
         },
+        'common': {
+            'handlers': ['tinyconsole', 'default'],
+            'level': 'DEBUG',
+            'propagate': False
+
+        },
         'basic': {
             'handlers': ['tinyconsole', 'default'],
             'level': 'DEBUG',

@@ -6,7 +6,7 @@ from django.shortcuts import render_to_response,render
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseNotFound, Http404 ,HttpResponseRedirect
 from django.views.generic import TemplateView, ListView, DetailView, CreateView
-from common import Response,Success,Error
+from common import Response,Success,Error, GitlabAPI
 from config import  models as config_models
 from acl import  models as acl_models
 
@@ -358,3 +358,65 @@ def diff_permission_api_permission(new_permission, old_permission):
         'remove': remove,
         'add': add,
     }
+
+
+def code_diff(request):
+    if request.method == "POST":
+        return HttpResponse("POST not support")
+    else:
+        env = request.GET.get("env")
+
+        if env == None:
+            env = 'Staging'
+        try:
+            if env == 'Staging':
+                source = 'Staging'
+                source_repo = 'master'
+                target = 'Development'
+                target_repo = 'develop'
+            elif env == 'Production':
+                source = 'Production'
+                source_repo = 'v1.0.0'
+                target = 'Staging'
+                target_repo = 'master'
+
+            logger.info('get diff of env source:%s target:%s' % (source, target))
+            # 检查api permission变化
+            api = GitlabAPI()
+
+            target_items = config_models.Service.objects.filter(env=target)
+            source_items = config_models.Service.objects.filter(env=source)
+            target_names = [item.name for item in target_items]
+            source_names = [item.name for item in source_items]
+
+            add_items = list(set(target_names).difference(set(source_names)))
+            remove_items = list(set(source_names).difference(set(target_names)))
+            intersection_items = list(set(source_names).intersection(set(target_names)))
+
+            diff = {
+                'add': add_items,
+                'remove': remove_items,
+                'diff': []
+            }
+
+
+            for item_name in intersection_items:
+                new_item = target_items.get(name=item_name)
+                old_item = source_items.get(name=item_name)
+
+                path = 'platform/srv.%s' % new_item.name.lower()
+                api = GitlabAPI()
+
+                if env == 'Production':
+                    source_repo = old_item.production_tag
+                ret = api.compare_repository(path, source_repo, target_repo)
+
+                if ret is not None:
+                    diff['diff'].append({
+                        'path':path,
+                        'commits':ret
+                    })
+            return json_response(diff)
+        except Exception, e:
+            logging.error(traceback.format_exc())
+            return json_response(Error("get gateway ocelot config error"))

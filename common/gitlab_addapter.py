@@ -56,6 +56,16 @@ class GitlabAPI(object):
 
         return None
 
+    def compare_repository(self, path, source, target):
+        project = self.get_project_by_path(path)
+        if project is None:
+            return None
+        diff = project.repository_compare(source, target)
+        #logger.info('path:%s diff:%s' % (path,diff))
+        if diff['commit'] is None:
+            return None
+        return diff['commit']
+
     def merge_project(self, path):
         project = self.get_project_by_path(path)
         if project is None:
