@@ -97,7 +97,7 @@ class Service(models.Model):
 
             # append event_bus,elastic_apm,service_provider of deploy
             if deploy.event_bus is not None:
-                dict['EventBus'] = deploy.to_dict()
+                dict['EventBus'] = deploy.event_bus.to_dict()
                 dict['EventBus']['SubscriptionClientName'] = self.name
 
             if deploy.elastic_apm is not None:
