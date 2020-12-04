@@ -13,6 +13,7 @@ from setting import SettingGroup
 from log_item import LogItemGroup
 import urlparse
 from common import GitlabAPI
+import logging
 logger = logging.getLogger(__name__)
 
 class ApiGateway(models.Model):
