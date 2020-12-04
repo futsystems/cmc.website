@@ -94,6 +94,7 @@ def register_node_info(request):
     import json
     if request.method == 'POST':
         data = json.loads(request.body)
+        logger.info(data)
         try:
             deploy_key = data['Deploy']
             node_service = data['Service']
@@ -136,6 +137,7 @@ def unregister_node_info(request):
     import json
     if request.method == 'POST':
         data = json.loads(request.body)
+        logger.info(data)
         try:
             deploy_key = data['Deploy']
             node_service = data['Service']
