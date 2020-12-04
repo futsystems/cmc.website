@@ -122,6 +122,7 @@ def service_list(request):
         return json_response(Error("get service list error"))
 
 def service(request):
+    """
     if request.method == "POST":
         return HttpResponse("POST not support")
     else:
@@ -144,8 +145,17 @@ def service(request):
         except Exception, e:
             logger.error(traceback.format_exc())
             return json_response(Error("get service config error"))
+    """
+    try:
+        config = _get_service_config(request)
+        return json_response(config)
+    except Exception:
+        logger.error(traceback.format_exc())
+        return json_response(Error("get service config error"))
+
 
 def service_hash(request):
+    """
     if request.method == "POST":
         return HttpResponse("POST not support")
     else:
@@ -172,9 +182,43 @@ def service_hash(request):
         except Exception,e:
             logger.error(traceback.format_exc())
             return json_response(Error("get service config has error"))
+    """
+    try:
+        config = _get_service_config(request)
+        md5 = _json_content_md5(config)
+        return HttpResponse(md5)
+    except Exception:
+        logger.error(traceback.format_exc())
+        return json_response(Error("get service config hash error"))
+
 
 def _get_service_config(request):
-    pass
+    """
+    get service config
+    :param request:
+    :return:
+    """
+    if request.method == "POST":
+        raise Exception("POST not support")
+    else:
+        client_ip = get_client_ip(request)
+        logger.info('request server config from ip:%s' % client_ip)
+        if not Server.objects.in_white_list(client_ip):
+            return Exception("ip is not allowed")
+
+        service_name = request.GET.get("name")
+        env = request.GET.get("env")
+        ip = request.GET.get("ip", None)
+        logger.info('get config of service:%s env:%s' % (service_name, env))
+
+        server = Server.objects.get(ip=ip)
+        service = Service.objects.filter(env__iexact=env, name=service_name).first()
+        if service is None:
+            return Exception("service:%s do not exist" % service_name)
+
+        return service.get_config(ip, server.deploy)
+
+
 
 
 
