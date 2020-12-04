@@ -133,6 +133,8 @@ class ApiGateway(models.Model):
         if server is not None:
             cfg['GlobalConfiguration']['ServiceDiscoveryProvider'] = server.deploy.service_provider.to_dict()
 
+        return cfg
+
     def get_config(self, server):
         dict={}
         deploy = server.deploy
