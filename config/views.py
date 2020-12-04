@@ -204,7 +204,7 @@ def _get_service_config(request):
         client_ip = get_client_ip(request)
         logger.info('request server config from ip:%s' % client_ip)
         if not Server.objects.in_white_list(client_ip):
-            return Exception("ip is not allowed")
+            raise Exception("ip is not allowed")
 
         service_name = request.GET.get("name")
         env = request.GET.get("env")
@@ -212,9 +212,12 @@ def _get_service_config(request):
         logger.info('get config of service:%s env:%s' % (service_name, env))
 
         server = Server.objects.get(ip=ip)
+        if server is None:
+            raise Exception("server:%s do not exist" % ip)
+
         service = Service.objects.filter(env__iexact=env, name=service_name).first()
         if service is None:
-            return Exception("service:%s do not exist" % service_name)
+            raise Exception("service:%s do not exist" % service_name)
 
         return service.get_config(ip, server.deploy)
 
