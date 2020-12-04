@@ -178,13 +178,19 @@ class ApiGateway(models.Model):
         dict['System'] = self.get_system_config()
         return dict
 
-    def get_pillar(self):
+    def get_pillar(self, server):
+        base_url = 'http://127.0.0.1'
+        doamin_name = 'localhost'
+        if server is not None and server.deploy is not None:
+            base_url = 'https://%s' % server.deploy.gateway_domain_name
+            doamin_name = server.deploy.gateway_domain_name
+
         return {
             'env': self.env,
             'name': self.name,
             'type': self.gw_type,
             'port': self.port,
-            'base_url': self.base_url,
-            'domain_name': urlparse.urlsplit(self.base_url).hostname,
+            'base_url': base_url,
+            'domain_name': doamin_name,
             'pipeline_trigger': self.pipeline_trigger
         }

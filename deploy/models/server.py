@@ -108,7 +108,7 @@ class Server(models.Model):
         # Gateway Node
         if self.gateway is not None:
             data['net_core_support'] = True
-            data['gateway'] = self.gateway.get_pillar()
+            data['gateway'] = self.gateway.get_pillar(self.deploy)
 
         if self.portal is not None:
             data['portal'] = self.portal.get_pillar()
