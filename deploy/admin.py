@@ -25,7 +25,8 @@ import models
 from eventbus import EventBublisher
 from eventbus import CMCGatewayConfigUpdate
 import hashlib
-from common import  salt_helper
+from common import salt_helper
+from config.models import ElastAPM, EventBus, Consul
 
 class ServerAdminForm(forms.ModelForm):
     class Meta:
@@ -135,9 +136,9 @@ class DeployAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         forms.ModelForm.__init__(self, *args, **kwargs)
         if self.instance.id > 0:
-            self.fields['service_provider'].queryset = Service.objects.filter(env=self.instance.env)
-            self.fields['elastic_apm'].queryset = ApiGateway.objects.filter(env=self.instance.env)
-            self.fields['event_bus'].queryset = Portal.objects.filter(env=self.instance.env)
+            self.fields['service_provider'].queryset = Consul.objects.filter(env=self.instance.env)
+            self.fields['elastic_apm'].queryset = ElastAPM.objects.filter(env=self.instance.env)
+            self.fields['event_bus'].queryset = EventBus.objects.filter(env=self.instance.env)
 
 class DeployAdmin(admin.ModelAdmin):
     list_display = ('name', 'env', 'product_type', 'location', 'suffix', 'key')
