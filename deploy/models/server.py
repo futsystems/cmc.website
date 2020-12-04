@@ -93,6 +93,11 @@ class Server(models.Model):
             'net_core_support': False,
         }
 
+        if self.deploy is None:
+            data['deploy'] = None
+        else:
+            data['deploy'] = self.deploy.key
+
         # Service Node
         if self.installed_services.all().count() > 0:
             data['net_core_support'] = True

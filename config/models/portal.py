@@ -69,5 +69,9 @@ class Portal(models.Model):
             dict['admin_tag'] = self.admin_tag
             dict['console_tag'] = self.console_tag
             dict['h5_tag'] = self.h5_tag
+        else:
+            dict['admin_tag'] = self.env
+            dict['console_tag'] = self.env
+            dict['h5_tag'] = self.env
 
         return dict
