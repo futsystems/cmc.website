@@ -140,9 +140,6 @@ def service(request):
             service = Service.objects.filter(env__iexact=env, name=service_name).first()
             if service is None:
                 return json_response(Error("gateway config do not exist"))
-
-            config = json.dumps(service.get_config(ip, server.deploy), indent=4)
-
             return json_response(service.get_config(ip, server.deploy))
         except Exception, e:
             logger.error(traceback.format_exc())
