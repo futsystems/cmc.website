@@ -66,12 +66,9 @@ class Server(models.Model):
 
     @property
     def host_name(self):
-        if self.node_type == 'Mix':
-            return self.name
-
         # 生产环境才通过deploy信息进行host_name生成
         if self.deploy is not None:
-            if self.deploy.env=='Production':
+            if self.deploy.env == 'Production':
                 return ('%s-%s-%s-%s' % (self.node_type,self.deploy.product_type,self.deploy.suffix, self.index)).lower()
 
         return self.name
