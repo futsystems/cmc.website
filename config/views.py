@@ -143,7 +143,7 @@ def service(request):
             ip = request.GET.get("ip", None)
             logger.info('get config of service:%s env:%s' % (service_name, env))
 
-            server = Server.objects.get(ip=client_ip)
+            server = Server.objects.get(ip=ip)
 
             service = Service.objects.filter(env__iexact=env, name=service_name).first()
             if service is None:
@@ -168,7 +168,7 @@ def service_hash(request):
             ip = request.GET.get("ip", None)
             logger.info('get config hash of service:%s env:%s' % (service_name, env))
 
-            server = Server.objects.get(ip=client_ip)
+            server = Server.objects.get(ip=ip)
 
             services = Service.objects.filter(env__iexact=env, name=service_name).first()
             if services is None:
