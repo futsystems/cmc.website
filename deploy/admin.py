@@ -40,7 +40,7 @@ class ServerAdminForm(forms.ModelForm):
             self.fields['portal'].queryset = Portal.objects.filter(env=self.instance.env)
 
 class DeployAdmin(admin.ModelAdmin):
-    list_display = ('name', 'env', 'product_type', 'location', 'suffix')
+    list_display = ('name', 'env', 'product_type', 'location', 'suffix', 'key')
 
 
 class ServerAdmin(admin.ModelAdmin):
