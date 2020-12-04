@@ -76,9 +76,6 @@ class ApiGatewayAdminForm(forms.ModelForm):
         forms.ModelForm.__init__(self, *args, **kwargs)
         self.fields['default_config'].queryset = models.ApiGatewayConfig.objects.filter(gateway=self.instance)
         self.fields['services'].queryset = models.Service.objects.filter(env=self.instance.env)
-        self.fields['service_provider'].queryset = models.Consul.objects.filter(env=self.instance.env)
-        self.fields['elastic_apm'].queryset = models.ElastAPM.objects.filter(env=self.instance.env)
-        self.fields['event_bus'].queryset = models.EventBus.objects.filter(env=self.instance.env)
 
 
 def merge_gateway_project(modeladmin, request, queryset):
@@ -87,7 +84,7 @@ def merge_gateway_project(modeladmin, request, queryset):
 merge_gateway_project.short_description = "Merge to master branch"
 
 class ApiGatewayAdmin(admin.ModelAdmin):
-    list_display = ('name', 'gw_type', 'env', 'base_url', 'default_config_title', 'config_action','merge_success', 'merge_message')
+    list_display = ('name', 'gw_type', 'env', 'default_config_title', 'config_action','merge_success', 'merge_message')
     filter_horizontal = ('services', 'other_settings')
     form = ApiGatewayAdminForm
     actions =[merge_gateway_project]

@@ -24,9 +24,9 @@ class ApiGateway(models.Model):
     name = models.CharField('Api Gateway Name', max_length=50, default='ApiGateway')
     env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
     gw_type = models.CharField(max_length=20, choices=GATEWAY_TYPE, default='gw.api')
-    base_url = models.CharField('Base Url', max_length=100, default='http://127.0.0.1')
-    service_provider = models.ForeignKey(Consul, verbose_name='Consul', on_delete=models.SET_NULL, default=None,
-                                         blank=True, null=True)
+    #base_url = models.CharField('Base Url', max_length=100, default='http://127.0.0.1')
+    #service_provider = models.ForeignKey(Consul, verbose_name='Consul', on_delete=models.SET_NULL, default=None,
+    #                                     blank=True, null=True)
     #is_default = models.BooleanField('Is Default', default=False)
     description = models.CharField('Description', max_length=1000, default='', blank=True)
     date_created = models.DateTimeField('created time', auto_now=True, blank=True, null=True)
@@ -34,15 +34,16 @@ class ApiGateway(models.Model):
                                          blank=True, null=True)
     port = models.IntegerField('Http Port', default=8080)
 
-    elastic_apm = models.ForeignKey(ElastAPM, verbose_name='ElasticAPM', on_delete=models.SET_NULL,
-                                    default=None,
-                                    blank=True, null=True)
-    event_bus = models.ForeignKey(EventBus, verbose_name='EventBus', on_delete=models.SET_NULL,
-                                  default=None,
-                                  blank=True, null=True)
+    #elastic_apm = models.ForeignKey(ElastAPM, verbose_name='ElasticAPM', on_delete=models.SET_NULL,
+    #                                default=None,
+    #                                blank=True, null=True)
+    #event_bus = models.ForeignKey(EventBus, verbose_name='EventBus', on_delete=models.SET_NULL,
+    #                              default=None,
+    #                              blank=True, null=True)
 
     services = models.ManyToManyField('Service', verbose_name='Used Services',
                                            blank=True)
+
     log_level = models.ForeignKey(LogItemGroup, verbose_name='LogLevel', on_delete=models.SET_NULL,default=None,
                                   blank=True, null=True)
 
@@ -131,9 +132,8 @@ class ApiGateway(models.Model):
         else:
             cfg = json.loads(self.default_config.config)
 
+        # use server info to fill ocelot config
         if server is not None:
-            logger.info(server.deploy.service_provider)
-            logger.info(server.deploy.service_provider.host)
             cfg['GlobalConfiguration']['ServiceDiscoveryProvider'] = server.deploy.service_provider.to_dict()
             cfg['GlobalConfiguration']['BaseUrl'] = 'https://%s' % server.deploy.gateway_domain_name
 
