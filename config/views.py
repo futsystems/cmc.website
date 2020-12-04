@@ -75,6 +75,7 @@ def _get_gateway_config_dotnet(request):
         raise Exception("POST not support")
     else:
         gw_type = request.GET.get("type")
+        ip = request.GET.get("ip", None)
         env = request.GET.get("env")
         logger.info('get gateway config of type:%s env:%s' % (gw_type, env))
 
@@ -83,11 +84,19 @@ def _get_gateway_config_dotnet(request):
         if not Server.objects.in_white_list(client_ip):
             raise Exception("ip is not allowed")
 
+        # get server from ip
         try:
-            gw = ApiGateway.objects.filter(env=env, gw_type=gw_type).first()
-            return gw.get_config()
-        except ApiGateway.DoesNotExist:
-            raise Exception('gateway:%s do not exist' % gw_type)
+            server = Server.objects.get(ip=ip)
+        except Server.DoesNotExist:
+            raise Exception('server:%s do not exist' % ip)
+
+        if server.deploy is None:
+            raise Exception("server:%s do not bind deploy info" % ip)
+
+        if server.gateway is None:
+            raise Exception("server:%s do not bind gateway info" % ip)
+
+        return server.gateway.get_config()
 
 
 def service_list(request):
@@ -149,9 +158,6 @@ def _get_service_config(request):
             raise Exception("service:%s do not exist" % service_name)
 
         return service.get_config(server)
-
-
-
 
 
 def used_services(request):
