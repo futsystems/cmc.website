@@ -109,7 +109,7 @@ class ApiGateway(models.Model):
 
     def generate_ocelot_config(self):
         global_cfg = {
-            'BaseUrl':self.base_url,
+            'BaseUrl': 'http://127.0.0.1',
         }
 
         #if self.service_provider != None:
@@ -126,12 +126,12 @@ class ApiGateway(models.Model):
 
         if self.default_config is None:
             cfg = self.generate_ocelot_config()
-            cfg['GlobalConfiguration']['ServiceDiscoveryProvider']=server.deploy.service_provider.to_dict()
         else:
             cfg = json.loads(self.default_config.config)
 
         if server is not None:
             cfg['GlobalConfiguration']['ServiceDiscoveryProvider'] = server.deploy.service_provider.to_dict()
+            cfg['GlobalConfiguration']['BaseUrl'] = 'https://%s' % server.deploy.gateway_domain_name
 
         return cfg
 
