@@ -112,8 +112,8 @@ class ApiGateway(models.Model):
             'BaseUrl':self.base_url,
         }
 
-        if self.service_provider != None:
-            global_cfg['ServiceDiscoveryProvider'] = self.service_provider.to_dict()
+        #if self.service_provider != None:
+        global_cfg['ServiceDiscoveryProvider'] = None#self.service_provider.to_dict()
 
         config = {
             'Routes': [item.to_dict() for item in self.routes.all().order_by('name')],
@@ -122,12 +122,16 @@ class ApiGateway(models.Model):
 
         return config
 
-    def get_ocelot_config(self):
+    def get_ocelot_config(self, server):
 
         if self.default_config is None:
-            return self.generate_ocelot_config()
+            cfg = self.generate_ocelot_config()
+            cfg['GlobalConfiguration']['ServiceDiscoveryProvider']=server.deploy.service_provider.to_dict()
         else:
-            return json.loads(self.default_config.config)
+            cfg = json.loads(self.default_config.config)
+
+        if server is not None:
+            cfg['GlobalConfiguration']['ServiceDiscoveryProvider'] = server.deploy.service_provider.to_dict()
 
     def get_config(self, server):
         dict={}

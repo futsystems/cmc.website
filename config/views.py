@@ -54,7 +54,7 @@ def _get_gateway_config_ocelot(request):
         if server.gateway is None:
             raise Exception("server:%s do not bind gateway info" % ip)
 
-        return server.gateway.get_ocelot_config()
+        return server.gateway.get_ocelot_config(server)
 
 
 def gatwway_config_dotnet(request):
