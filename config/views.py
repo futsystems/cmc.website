@@ -62,56 +62,44 @@ def config_gateway_hash(request):
             return json_response(Error("get gateway config list error"))
 
 
-def config_gatwway_dotnet(request):
-    if request.method == "POST":
-        return HttpResponse("POST not support")
-    else:
-        gw_type = request.GET.get("type")
-        env = request.GET.get("env")
-        logger.info('get config of node:%s env:%s' % (gw_type, env))
-
-        client_ip = get_client_ip(request)
-        logger.info('request server config from ip:%s' % client_ip)
-        if not Server.objects.in_white_list(client_ip):
-            return json_response(Error("ip is not allowed"))
+def gatwway_config_dotnet(request):
         try:
-            gw = ApiGateway.objects.filter(env=env, gw_type=gw_type).first()
-            if gw is None:
-                return json_response(Error("gateway config do not exist"))
-
-            return json_response(gw.get_config())
+            config = _get_gateway_config_dotnet(request)
+            return json_response(config)
         except Exception, e:
             logger.error(traceback.format_exc())
-            return json_response(Error("get gateway config list error"))
+            return json_response(e.message)
 
-def config_gatwway_dotnet_hash(request):
+def gatwway_config_dotnet_hash(request):
+    try:
+        config = _get_gateway_config_dotnet(request)
+        md5 = _json_content_md5(config)
+        return HttpResponse(md5)
+    except Exception, e:
+        logger.error(traceback.format_exc())
+        return json_response(e.message)
+
+
+def _get_gateway_config_dotnet(request):
     if request.method == "POST":
-        return HttpResponse("POST not support")
+        raise Exception("POST not support")
     else:
         gw_type = request.GET.get("type")
         env = request.GET.get("env")
-        logger.info('get config of node:%s env:%s' % (gw_type, env))
+        logger.info('get gateway config of type:%s env:%s' % (gw_type, env))
 
         client_ip = get_client_ip(request)
         logger.info('request server config from ip:%s' % client_ip)
         if not Server.objects.in_white_list(client_ip):
-            return json_response(Error("ip is not allowed"))
+            raise Exception("ip is not allowed")
+
         try:
             gw = ApiGateway.objects.filter(env=env, gw_type=gw_type).first()
-            if gw is None:
-                return json_response(Error("gateway config do not exist"))
+            return gw.get_config()
+        except ApiGateway.DoesNotExist:
+            raise Exception('gateway:%s do not exist' % gw_type)
 
-            config = _json_content(gw.get_config())
-            logging.info('config:%s' % config)
 
-            m = hashlib.md5()
-            m.update(config)
-            md5 = m.hexdigest()
-
-            return HttpResponse(md5)
-        except Exception,e:
-            logger.error(traceback.format_exc())
-            return json_response(Error("get gateway config list error"))
 
 def service_list(request):
     try:
