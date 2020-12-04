@@ -74,15 +74,12 @@ def _get_gateway_config_dotnet(request):
     if request.method == "POST":
         raise Exception("POST not support")
     else:
-        gw_type = request.GET.get("type")
         ip = request.GET.get("ip", None)
-        env = request.GET.get("env")
-        logger.info('get gateway config of type:%s env:%s' % (gw_type, env))
-
         client_ip = get_client_ip(request)
-        logger.info('request server config from ip:%s' % client_ip)
         if not Server.objects.in_white_list(client_ip):
             raise Exception("ip is not allowed")
+
+        logger.info('get gateway dotnet config of server:% from ip:%s' % (ip, client_ip))
 
         # get server from ip
         try:
@@ -142,7 +139,7 @@ def _get_service_config(request):
 
         service_name = request.GET.get("name")
         ip = request.GET.get("ip", None)
-        logger.info('get config of service:%s for ip:%s from ip:%s' % (service_name, ip, client_ip))
+        logger.info('get config of service:%s in server:%s from ip:%s' % (service_name, ip, client_ip))
 
         # get server from ip
         try:
