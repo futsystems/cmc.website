@@ -133,15 +133,17 @@ def _get_service_config(request):
             raise Exception("ip is not allowed")
 
         service_name = request.GET.get("name")
-        env = request.GET.get("env")
         ip = request.GET.get("ip", None)
-        logger.info('get config of service:%s env:%s' % (service_name, env))
+        logger.info('get config of service:%s for ip:%s' % (service_name, ip))
+
         # get server from ip
         server = Server.objects.get(ip=ip)
         if server is None:
             raise Exception("server:%s do not exist" % ip)
+        if server.deploy is None:
+            raise Exception("server:%s do not bind deploy info" % ip)
 
-        service = Service.objects.filter(env__iexact=env, name=service_name).first()
+        service = Service.objects.filter(env__iexact=server.deploy.env, name=service_name).first()
         if service is None:
             raise Exception("service:%s do not exist" % service_name)
 
