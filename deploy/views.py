@@ -136,13 +136,17 @@ def get_health_result(health_result,service_name):
             result.append({
                 'service_name':api_name,
                 'status': item['Status'],
-                'output': item['Output']
+                'output': item['Output'],
+                'type': item['Type'],
+                'notes': item['Notes'],
             })
         if item['ServiceName'] == rpc_name:
             result.append({
                 'service_name': item['ServiceName'],
                 'status': item['Status'],
-                'output': item['Output']
+                'output': item['Output'],
+                'type': item['Type'],
+                'notes': item['Notes'],
             })
     return result
 
