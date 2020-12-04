@@ -13,6 +13,7 @@ from setting import SettingGroup
 from log_item import LogItemGroup
 import urlparse
 from common import GitlabAPI
+logger = logging.getLogger(__name__)
 
 class ApiGateway(models.Model):
     """
@@ -130,6 +131,8 @@ class ApiGateway(models.Model):
             cfg = json.loads(self.default_config.config)
 
         if server is not None:
+            logger.info(server.deploy.service_provider)
+            logger.info(server.deploy.service_provider.host)
             cfg['GlobalConfiguration']['ServiceDiscoveryProvider'] = server.deploy.service_provider.to_dict()
             cfg['GlobalConfiguration']['BaseUrl'] = 'https://%s' % server.deploy.gateway_domain_name
 
