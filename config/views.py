@@ -162,7 +162,7 @@ def used_services(request):
         return HttpResponse("POST not support")
     else:
         client_ip = get_client_ip(request)
-        logger.info('request server config from ip:%s' % client_ip)
+        logger.info('request server used services config from ip:%s' % client_ip)
         if not Server.objects.in_white_list(client_ip):
             return json_response(Error("ip is not allowed"))
         try:

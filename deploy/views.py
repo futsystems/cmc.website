@@ -29,12 +29,11 @@ def salt_pillar(request):
         return HttpResponse("POST not support")
     else:
         client_ip = get_client_ip(request)
-        logger.info('request server config from ip:%s' % client_ip)
         if not Server.objects.in_white_list(client_ip):
             return json_response(Error("ip is not allowed"))
         try:
             minion_id = request.GET.get("minion_id")
-            logger.info('get pillar of minion id:%s' % minion_id)
+            logger.info('get pillar of minion id:%s from ip:%s' % (minion_id, client_ip))
 
             server = Server.objects.get(name__iexact=minion_id)
             if server is None:
