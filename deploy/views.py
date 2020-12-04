@@ -23,7 +23,6 @@ def json_response(obj):
     return HttpResponse(json.dumps(obj, indent=4), content_type="application/json")
 
 
-
 def salt_pillar(request):
     if request.method == "POST":
         return HttpResponse("POST not support")
@@ -35,13 +34,13 @@ def salt_pillar(request):
             minion_id = request.GET.get("minion_id")
             logger.info('get pillar of minion id:%s from ip:%s' % (minion_id, client_ip))
 
-            server = Server.objects.get(name__iexact=minion_id)
-            if server is None:
-                return json_response(Error("minion do not exist"))
-
+            try:
+                server = Server.objects.get(name__iexact=minion_id)
+            except Server.DoesNotExist:
+                return json_response(Error("minion:%s do not exist" % minion_id))
             return json_response(server.get_pillar())
-        except Exception,e:
-            logging.error(traceback.format_exc())
+        except Exception, e:
+            logger.error(traceback.format_exc())
             return json_response(Error("get service list error"))
 
 
