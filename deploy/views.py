@@ -94,21 +94,23 @@ def register_node_info(request):
     import json
     if request.method == 'POST':
         data = json.loads(request.body)
-        logger.info(data)
+        try:
+            deploy_key = data['Deploy']
+            node_service = data['Service']
+            ip = get_client_ip(request)
 
-        deploy_key = data['Deploy']
-        node_service = data['Service']
-        ip = get_client_ip(request)
-
-        product_type = data['Product']
-        env = data['Env']
-        version = data['Version']
-        framework = data['Framework']
+            product_type = data['Product']
+            env = data['Env']
+            version = data['Version']
+            framework = data['Framework']
+        except Exception:
+            logger.warn('bad register data:%s' % data)
 
         try:
             deploy = Deploy.objects.get(key=deploy_key)
         except Deploy.DoesNotExist:
             deploy = None
+            logger.warn('deploy:%s do not exist' % deploy_key)
 
         if deploy is not None:
             try:
@@ -123,11 +125,53 @@ def register_node_info(request):
             node_info.env = env
             node_info.version = version
             node_info.framework = json.dumps(framework)
-
             node_info.save()
+
+            logger.warn('service:%s of product:%s in deploy:%s up ' % (node_service, product_type, deploy_key))
 
     return json_response(Success("success"))
 
+@csrf_exempt
+def unregister_node_info(request):
+    import json
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        try:
+            deploy_key = data['Deploy']
+            node_service = data['Service']
+            ip = get_client_ip(request)
+
+            product_type = data['Product']
+            env = data['Env']
+            version = data['Version']
+            framework = data['Framework']
+        except Exception:
+            logger.warn('bad unregister data:%s' % data)
+
+        try:
+            deploy = Deploy.objects.get(key=deploy_key)
+        except Deploy.DoesNotExist:
+            deploy = None
+            logger.warn('deploy:%s do not exist' % deploy_key)
+
+        if deploy is not None:
+            try:
+                node_info = NodeInfo.objects.get(deploy=deploy,node_service=node_service, ip=ip)
+            except NodeInfo.DoesNotExist:
+                node_info = NodeInfo()
+                node_info.node_service = node_service
+                node_info.deploy = deploy
+                node_info.ip = ip
+
+            node_info.product_type = product_type
+            node_info.env = env
+            node_info.version = version
+            node_info.framework = json.dumps(framework)
+            node_info.save()
+
+            logger.warn('service:%s of product:%s in deploy:%s down ' % (node_service, product_type, deploy_key))
+
+    return json_response(Success("success"))
 
 @csrf_exempt
 def update_node_info(request):
