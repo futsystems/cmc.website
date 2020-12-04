@@ -281,10 +281,10 @@ class ServiceAdminForm(forms.ModelForm):
         forms.ModelForm.__init__(self, *args, **kwargs)
         if self.instance.id > 0:
             self.fields['used_services'].queryset = models.Service.objects.filter(env=self.instance.env).exclude(id=self.instance.id)
-            self.fields['service_provider'].queryset = models.Consul.objects.filter(env=self.instance.env)
+            #self.fields['service_provider'].queryset = models.Consul.objects.filter(env=self.instance.env)
             self.fields['mysql_connections'].queryset = models.MySqlConnection.objects.filter(env=self.instance.env)
-            self.fields['elastic_apm'].queryset = models.ElastAPM.objects.filter(env=self.instance.env)
-            self.fields['event_bus'].queryset = models.EventBus.objects.filter(env=self.instance.env)
+            #self.fields['elastic_apm'].queryset = models.ElastAPM.objects.filter(env=self.instance.env)
+            #self.fields['event_bus'].queryset = models.EventBus.objects.filter(env=self.instance.env)
             self.fields['log_level'].queryset = models.LogItemGroup.objects.filter(env=self.instance.env)
             self.fields['other_settings'].queryset = models.SettingGroup.objects.filter(env=self.instance.env)
 
@@ -310,7 +310,7 @@ copy_service_production.short_description = "Copy Service To Production"
 
 
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'env', 'service_provider', 'event_bus', 'elastic_apm', 'has_other_settings', 'support_rpc', 'rpc_port', 'support_api', 'api_port', 'merge_success', 'merge_message')
+    list_display = ('name', 'env', 'has_other_settings', 'support_rpc', 'rpc_port', 'support_api', 'api_port', 'merge_success', 'merge_message')
     ordering = ('name',)
     search_fields = ['name']
     filter_horizontal = ('used_services', 'mysql_connections', 'other_settings')
@@ -348,7 +348,7 @@ class ServiceAdmin(admin.ModelAdmin):
 
             ("Service Discovery", {
                 "fields": [
-                    "discovery_scheme", "service_provider", "host", "support_rpc", "rpc_port", "support_api", "api_port"
+                    "discovery_scheme", "host", "support_rpc", "rpc_port", "support_api", "api_port"
                 ]
             }),
 
@@ -358,15 +358,10 @@ class ServiceAdmin(admin.ModelAdmin):
                 ]
             }),
 
-            ("Event", {
-                "fields": [
-                    "event_bus"
-                ]
-            }),
 
-            ("Log&Report", {
+            ("Log", {
                 "fields": [
-                    "elastic_apm", "log_level"
+                    "log_level"
                 ]
             }),
 

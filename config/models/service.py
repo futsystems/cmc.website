@@ -21,8 +21,8 @@ class Service(models.Model):
     used_services = models.ManyToManyField('Service', related_name='used_by_services', verbose_name='Used Services',
                                            blank=True)
 
-    service_provider = models.ForeignKey(Consul, verbose_name='Consul', on_delete=models.SET_NULL, default=None,
-                                         blank=True, null=True)
+    #service_provider = models.ForeignKey(Consul, verbose_name='Consul', on_delete=models.SET_NULL, default=None,
+    #                                     blank=True, null=True)
     discovery_scheme = models.CharField('Discovery Scheme', max_length=20, choices=SERVICE_DISCOVERY_SCHEME, default='Consul')
 
     host = models.CharField('Host', max_length=255, default='dev-api.marvelsystem.net', blank=True, null=True)
@@ -30,12 +30,12 @@ class Service(models.Model):
 
     mysql_connections = models.ManyToManyField(MySqlConnection, verbose_name='MySql Connections', blank=True)
 
-    elastic_apm = models.ForeignKey(ElastAPM, verbose_name='ElasticAPM', on_delete=models.SET_NULL,
-                                  default=None,
-                                  blank=True, null=True)
-    event_bus = models.ForeignKey(EventBus, verbose_name='EventBus', on_delete=models.SET_NULL,
-                                          default=None,
-                                          blank=True, null=True)
+    #elastic_apm = models.ForeignKey(ElastAPM, verbose_name='ElasticAPM', on_delete=models.SET_NULL,
+    #                              default=None,
+    #                              blank=True, null=True)
+    #event_bus = models.ForeignKey(EventBus, verbose_name='EventBus', on_delete=models.SET_NULL,
+    #                                      default=None,
+    #                                      blank=True, null=True)
 
     support_rpc = models.BooleanField('RPC Support', default=True)
     rpc_port = models.IntegerField('RPC Port', default=91)
@@ -82,10 +82,15 @@ class Service(models.Model):
 
     def get_config(self, ip=None, deploy=None):
         dict={}
+
         ex_ip = 'localhost'
-        dict['AllowedHosts'] = "*"
         if ip is not None:
             ex_ip = ip
+
+        # allowed hosts
+        dict['AllowedHosts'] = "*"
+
+        # log
         if self.log_level is not None:
             dict['Logging'] = self.log_level.to_dict()
 
