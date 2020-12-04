@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import json
 from django.shortcuts import render_to_response,render
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseNotFound, Http404 ,HttpResponseRedirect
@@ -33,7 +32,7 @@ def config_gateway(request):
 
             return json_response(gw.get_ocelot_config())
         except Exception, e:
-            logging.error(traceback.format_exc())
+            logger.error(traceback.format_exc())
             return json_response(Error("get gateway ocelot config error"))
 
 def config_gateway_hash(request):
@@ -59,7 +58,7 @@ def config_gateway_hash(request):
 
             return HttpResponse(md5)
         except Exception ,e:
-            logging.error(traceback.format_exc())
+            logger.error(traceback.format_exc())
             return json_response(Error("get gateway config list error"))
 
 
@@ -82,7 +81,7 @@ def config_gatwway_dotnet(request):
 
             return json_response(gw.get_config())
         except Exception, e:
-            logging.error(traceback.format_exc())
+            logger.error(traceback.format_exc())
             return json_response(Error("get gateway config list error"))
 
 def config_gatwway_dotnet_hash(request):
@@ -111,7 +110,7 @@ def config_gatwway_dotnet_hash(request):
 
             return HttpResponse(md5)
         except Exception,e:
-            logging.error(traceback.format_exc())
+            logger.error(traceback.format_exc())
             return json_response(Error("get gateway config list error"))
 
 def service_list(request):
@@ -146,7 +145,7 @@ def service(request):
 
             return json_response(service.get_config(ip, server.deploy))
         except Exception, e:
-            logging.error(traceback.format_exc())
+            logger.error(traceback.format_exc())
             return json_response(Error("get service config error"))
 
 def service_hash(request):
@@ -179,8 +178,8 @@ def service_hash(request):
             return HttpResponse(md5)
 
         except Exception,e:
-            logging.error(traceback.format_exc())
-            return json_response(Error("get service list error"))
+            logger.error(traceback.format_exc())
+            return json_response(Error("get service config has error"))
 
 
 def used_services(request):
@@ -202,5 +201,5 @@ def used_services(request):
             data['services'] = items
             return json_response(data)
         except Exception, e:
-            logging.error(traceback.format_exc())
+            logger.error(traceback.format_exc())
             return json_response(Error("get service config error"))
