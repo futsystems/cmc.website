@@ -90,30 +90,34 @@ class Service(models.Model):
             dict['Logging'] = self.log_level.to_dict()
 
         dict['System'] = self.get_system_config()
+
         if deploy is not None:
             dict['System']['Deploy'] = deploy.key
             dict['System']['Product'] = deploy.product_type
 
+            # append event_bus,elastic_apm,service_provider of deploy
+            if deploy.event_bus is not None:
+                dict['EventBus'] = deploy.to_dict()
+                dict['EventBus']['SubscriptionClientName'] = self.name
 
-        if self.event_bus is not None:
-            dict['EventBus'] = self.event_bus.to_dict()
-            dict['EventBus']['SubscriptionClientName'] = self.name
+            if deploy.elastic_apm is not None:
+                apm = deploy.elastic_apm.to_dict()
+                apm['ServiceName'] = self.name
+                dict['ElasticAPM'] = apm
 
-        if self.elastic_apm is not None:
-            apm = self.elastic_apm.to_dict()
-            apm['ServiceName'] = self.name
-            dict['ElasticAPM'] = apm
+            if deploy.service_provider is not None:
+                dict['ConsulServer'] = deploy.service_provider.to_dict()
 
-        if self.mysql_connections.all().count()>0:
-            dict['DBConfig']= [item.to_dict() for item in self.mysql_connections.all()]
+        # mysql connection
+        if self.mysql_connections.all().count() > 0:
+            dict['DBConfig'] = [item.to_dict() for item in self.mysql_connections.all()]
 
-        if self.service_provider is not None:
-            dict['ConsulServer'] = self.service_provider.to_dict()
-
+        # used services
         for service in self.used_services.all():
             key = 'Srv%sClient' % service.name
             dict[key] = service.get_rpc_discovery_config();
 
+        # api,rpc support
         if self.support_api:
             dict['APIServer'] ={
                 'Name': '%sAPI' % self.name,
@@ -130,6 +134,7 @@ class Service(models.Model):
                 'Port': self.rpc_port
             }
 
+        # setting
         for setting_group in self.other_settings.all():
             dict[setting_group.group_name] = setting_group.to_dict()
         return dict

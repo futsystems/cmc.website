@@ -1,14 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from django.shortcuts import render_to_response,render
-from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse, HttpResponseNotFound, Http404 ,HttpResponseRedirect
-from django.views.generic import TemplateView, ListView, DetailView, CreateView
+from django.http import HttpResponse
 
 from models import ApiGateway,Service
-from common import Response,Success,Error,json_response, _json_content, _json_content_md5
-import hashlib
+from common import Success, Error, json_response, _json_content_md5
 from deploy.models import Server
 from common.request_helper import get_client_ip
 import logging, traceback
