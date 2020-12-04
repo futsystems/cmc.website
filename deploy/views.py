@@ -60,10 +60,9 @@ def minion_valid(request, **kwargs):
 
 
 def node_info(request):
-    import requests
-    deploy = Deploy.objects.get(id=1)
-    url = "http://consul.marvelsystem.net:8500/v1/agent/services"
 
+    """
+    url = "http://consul.marvelsystem.net:8500/v1/agent/services"
     result = requests.get(url=url)
     # extracting data in json format
     data = result.json()
@@ -82,12 +81,19 @@ def node_info(request):
                     'result':result.content
                 }
             )
+    """
 
+    if request.method == "POST":
+        return HttpResponse("POST not support")
+    else:
+        deploy_key = request.GET.get("deploy")
+        logger.info('get deploy:%s info' % deploy_key)
 
-
-    return json_response(Success(list))
-
-
+        try:
+            deploy = Deploy.objects.get(key=deploy_key)
+            return json_response(Success(deploy.to_info_dict()))
+        except Deploy.DoesNotExist:
+            return json_response(Error('Deploy do not exist'))
 
 @csrf_exempt
 def register_node_info(request):

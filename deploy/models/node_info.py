@@ -8,6 +8,7 @@ from choices import LOCATION, NODETYPE, PRODUCTTYPE
 from config.models.choices import ENV_STAGE
 from config.models import Consul
 from deploy import Deploy
+import json
 
 
 
@@ -34,4 +35,18 @@ class NodeInfo(models.Model):
         app_label = 'deploy'
 
     def __unicode__(self):
-        return u'%s-%s' % (self.deploy, self.node_type)
+        return u'%s-%s' % (self.deploy, self.node_service)
+
+
+    def to_dict(self):
+        dict = {
+            "service": self.node_service,
+            'ip': self.ip,
+            'product': self.product_type,
+            'env': self.env,
+            'version': self.version,
+            'framework': json.loads(self.framework),
+            'up_time': self.up_time.strftime("%Y-%m-%d %H:%M:%S"),
+            'last_active_time': self.last_active_time.strftime("%Y-%m-%d %H:%M:%S"),
+        }
+        return dict

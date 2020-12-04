@@ -38,3 +38,14 @@ class Deploy(models.Model):
         super(Deploy, self).save(*args, **kwargs)
 
 
+    def to_info_dict(self):
+        dict = {
+            'product': self.product_type,
+            'deploy': self.key,
+            'name': self.name,
+            'env': self.env,
+            'nodes': [node.to_dict() for node in self.nodes.all()]
+        }
+        return dict
+
+
