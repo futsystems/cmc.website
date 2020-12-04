@@ -129,24 +129,30 @@ class ApiGateway(models.Model):
         else:
             return json.loads(self.default_config.config)
 
-    def get_config(self):
+    def get_config(self, server):
         dict={}
+        deploy = server.deploy
+        ext_ip = server.ip
+
         dict['AllowedHosts'] = "*"
         if self.log_level is not None:
             dict['Logging'] = self.log_level.to_dict()
 
-        if self.event_bus is not None:
-            dict['EventBus'] = self.event_bus.to_dict()
-            dict['EventBus']['SubscriptionClientName'] = self.gw_type
+        # event_bus,elastic_apm,service_provider of deploy
+        if deploy is not None:
+            if deploy.event_bus is not None:
+                dict['EventBus'] = deploy.event_bus.to_dict()
+                dict['EventBus']['SubscriptionClientName'] = self.gw_type
 
-        if self.elastic_apm is not None:
-            apm = self.elastic_apm.to_dict()
-            apm['ServiceName'] = self.gw_type
-            dict['ElasticAPM'] = apm
+            if deploy.elastic_apm is not None:
+                apm = deploy.elastic_apm.to_dict()
+                apm['ServiceName'] = self.gw_type
+                dict['ElasticAPM'] = apm
 
-        if self.service_provider is not None:
-            dict['ConsulServer'] = self.service_provider.to_dict()
+            if deploy.service_provider is not None:
+                dict['ConsulServer'] = deploy.service_provider.to_dict()
 
+        # services
         for service in self.services.all():
             key = 'Srv%sClient' % service.name
             dict[key] = {
@@ -154,15 +160,17 @@ class ApiGateway(models.Model):
                 'MaxRetry': 3,
                 'Discovery': {
                     'Consul': {
-                        'Host': service.service_provider.host if service.service_provider is not None else 'localhost',
-                        'Port': service.service_provider.port if service.service_provider is not None else 8500
+                        'Host': deploy.service_provider.host if deploy.service_provider is not None else 'localhost',
+                        'Port': deploy.service_provider.port if deploy.service_provider is not None else 8500
                     }
                 }
             }
 
+        # setting
         for setting_group in self.other_settings.all():
             dict[setting_group.group_name] = setting_group.to_dict()
 
+        # cmc gateway
         dict['CMCGatewayConfig']={
             "Type": "gw.api",
             "Url": "http://cmc.marvelsystem.net",

@@ -96,7 +96,7 @@ def _get_gateway_config_dotnet(request):
         if server.gateway is None:
             raise Exception("server:%s do not bind gateway info" % ip)
 
-        return server.gateway.get_config()
+        return server.gateway.get_config(server)
 
 
 def service_list(request):
