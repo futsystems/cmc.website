@@ -171,7 +171,7 @@ class ApiGateway(models.Model):
 
         # cmc gateway
         dict['CMCGatewayConfig'] = {
-            "APIGateWayIP": server.ip if server is not None else 'localhost',
+            "GatewayIP": server.ip if server is not None else 'localhost',
             "Url": "http://cmc.marvelsystem.net",
         }
 
