@@ -136,7 +136,7 @@ def _get_service_config(request):
         env = request.GET.get("env")
         ip = request.GET.get("ip", None)
         logger.info('get config of service:%s env:%s' % (service_name, env))
-
+        # get server from ip
         server = Server.objects.get(ip=ip)
         if server is None:
             raise Exception("server:%s do not exist" % ip)
@@ -145,7 +145,7 @@ def _get_service_config(request):
         if service is None:
             raise Exception("service:%s do not exist" % service_name)
 
-        return service.get_config(ip, server.deploy)
+        return service.get_config(server)
 
 
 
