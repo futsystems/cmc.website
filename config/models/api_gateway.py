@@ -26,10 +26,8 @@ class ApiGateway(models.Model):
     gw_type = models.CharField(max_length=20, choices=GATEWAY_TYPE, default='gw.api')
     description = models.CharField('Description', max_length=1000, default='', blank=True)
     date_created = models.DateTimeField('created time', auto_now=True, blank=True, null=True)
-    default_config = models.ForeignKey('ApiGatewayConfig', verbose_name='Default Config', on_delete=models.SET_NULL, default=None,
-                                         blank=True, null=True)
-    port = models.IntegerField('Http Port', default=8080)
-
+    default_config = models.ForeignKey('ApiGatewayConfig', verbose_name='Default Config', on_delete=models.SET_NULL,
+                                       default=None, blank=True, null=True)
     services = models.ManyToManyField('Service', verbose_name='Used Services',
                                            blank=True)
 
@@ -39,7 +37,6 @@ class ApiGateway(models.Model):
     other_settings = models.ManyToManyField(SettingGroup, verbose_name='Other Settings', blank=True)
 
     pipeline_trigger = models.CharField('Pipeline Trigger', max_length=1000, default='', blank=True)
-
     merge_success = models.BooleanField('Merge Success', default=True)
     merge_message = models.CharField('Merge Message', max_length=500, default='', blank=True, null=True)
 
