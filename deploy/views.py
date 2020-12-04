@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from deploy.models import Server,Deploy,NodeInfo
 from common import Response,Success,Error
 from common.request_helper import get_client_ip
+import requests
 
 
 import logging, traceback
@@ -59,6 +60,24 @@ def minion_valid(request, **kwargs):
     return json_response(Success('success'))
 
 
+def node_info2(request):
+    if request.method == "POST":
+        return HttpResponse("POST not support")
+    else:
+        deploy_key = request.GET.get("deploy")
+        logger.info('get deploy:%s info' % deploy_key)
+
+        try:
+            deploy = Deploy.objects.get(key=deploy_key)
+            #url = "http://%s:8500/v1/agent/services" % deploy.service_provider.host
+            url2 = 'http://%s:8500/v1/health/node/consul-%s' % (deploy.service_provider.host, deploy.key)
+            logger.info('url:%s' % url2)
+            result = requests.get(url=url2)
+
+            return json_response(Success(result.json()))
+        except Deploy.DoesNotExist:
+            return json_response(Error('Deploy do not exist'))
+
 def node_info(request):
 
     """
@@ -91,9 +110,41 @@ def node_info(request):
 
         try:
             deploy = Deploy.objects.get(key=deploy_key)
-            return json_response(Success(deploy.to_info_dict()))
+            data = deploy.to_info_dict()
+
+            try:
+                url2 = 'http://%s:8500/v1/health/node/consul-%s' % (deploy.service_provider.host, deploy.key)
+                logger.info('url:%s' % url2)
+                health_result = requests.get(url=url2).json()
+
+                for node in data['nodes']:
+                    node['healths'] = get_health_result(health_result, node['service'])
+            except Exception:
+                logging.error(traceback.format_exc())
+            return json_response(Success(data))
         except Deploy.DoesNotExist:
             return json_response(Error('Deploy do not exist'))
+
+def get_health_result(health_result,service_name):
+    api_name = '%sAPI' % service_name
+    rpc_name = '%sAPI' % service_name
+    result = []
+    for item in health_result:
+        #logger.info(item)
+        #logger.info(item['ServiceName'])
+        if item['ServiceName'] == api_name:
+            result.append({
+                'service_name':api_name,
+                'status': item['Status'],
+                'output': item['Output']
+            })
+        if item['ServiceName'] == rpc_name:
+            result.append({
+                'service_name': item['ServiceName'],
+                'status': item['Status'],
+                'output': item['Output']
+            })
+    return result
 
 @csrf_exempt
 def register_node_info(request):
@@ -132,6 +183,7 @@ def register_node_info(request):
             node_info.env = env
             node_info.version = version
             node_info.framework = json.dumps(framework)
+            node_info.up = True
             node_info.save()
 
             logger.warn('service:%s of product:%s in deploy:%s up ' % (node_service, product_type, deploy_key))
@@ -175,6 +227,7 @@ def unregister_node_info(request):
             node_info.env = env
             node_info.version = version
             node_info.framework = json.dumps(framework)
+            node_info.up = False
             node_info.save()
 
             logger.warn('service:%s of product:%s in deploy:%s down ' % (node_service, product_type, deploy_key))
