@@ -16,50 +16,43 @@ from collections import OrderedDict
 logger = logging.getLogger(__name__)
 
 
-def config_gateway(request):
+def gateway_config_ocelot(request):
+    try:
+        config = _get_gateway_config_ocelot(request)
+        return json_response(config)
+    except Exception, e:
+        logger.error(traceback.format_exc())
+        return json_response(e.message)
+
+
+def gateway_config_ocelot_hash(request):
+    try:
+        config = _get_gateway_config_ocelot(request)
+        md5 = _json_content_md5(config)
+        return HttpResponse(md5)
+    except Exception, e:
+        logger.error(traceback.format_exc())
+        return json_response(e.message)
+
+
+def _get_gateway_config_ocelot(request):
     if request.method == "POST":
-        return HttpResponse("POST not support")
+        raise Exception("POST not support")
     else:
         gw_type = request.GET.get("type")
         env = request.GET.get("env")
-        logger.info('get config of gateway type:%s env:%s' % (gw_type, env))
+        logger.info('get gateway ocelot config of type:%s env:%s' % (gw_type, env))
 
-
-        try:
-            gw = ApiGateway.objects.filter(env=env, gw_type=gw_type).first()
-            if gw is None:
-                return json_response(Error("gateway config do not exist"))
-
-            return json_response(gw.get_ocelot_config())
-        except Exception, e:
-            logger.error(traceback.format_exc())
-            return json_response(Error("get gateway ocelot config error"))
-
-def config_gateway_hash(request):
-    if request.method == "POST":
-        return HttpResponse("POST not support")
-    else:
-        gw_type = request.GET.get("type")
-        env = request.GET.get("env")
-        logger.info('get config of node:%s env:%s' % (gw_type, env))
-
+        client_ip = get_client_ip(request)
+        logger.info('request server ocelot config from ip:%s' % client_ip)
+        if not Server.objects.in_white_list(client_ip):
+            raise Exception("ip is not allowed")
 
         try:
             gw = ApiGateway.objects.filter(env=env, gw_type=gw_type).first()
-            if gw is None:
-                return json_response(Error("gateway config do not exist"))
-
-            config = _json_content(gw.get_ocelot_config())
-            logging.info('config:%s' % config)
-
-            m = hashlib.md5()
-            m.update(config)
-            md5 = m.hexdigest()
-
-            return HttpResponse(md5)
-        except Exception ,e:
-            logger.error(traceback.format_exc())
-            return json_response(Error("get gateway config list error"))
+            return gw.get_ocelot_config()
+        except ApiGateway.DoesNotExist:
+            raise Exception('gateway:%s do not exist' % gw_type)
 
 
 def gatwway_config_dotnet(request):
@@ -69,6 +62,7 @@ def gatwway_config_dotnet(request):
         except Exception, e:
             logger.error(traceback.format_exc())
             return json_response(e.message)
+
 
 def gatwway_config_dotnet_hash(request):
     try:
@@ -98,7 +92,6 @@ def _get_gateway_config_dotnet(request):
             return gw.get_config()
         except ApiGateway.DoesNotExist:
             raise Exception('gateway:%s do not exist' % gw_type)
-
 
 
 def service_list(request):
