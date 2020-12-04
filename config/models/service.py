@@ -80,7 +80,7 @@ class Service(models.Model):
         service.pipeline_trigger = self.pipeline_trigger
         service.save()
 
-    def get_config(self, ip=None):
+    def get_config(self, ip=None, deploy=None):
         dict={}
         ex_ip = 'localhost'
         dict['AllowedHosts'] = "*"
@@ -90,6 +90,10 @@ class Service(models.Model):
             dict['Logging'] = self.log_level.to_dict()
 
         dict['System'] = self.get_system_config()
+        if deploy is not None:
+            dict['System']['Deploy'] = deploy.key
+            dict['System']['Product'] = deploy.product_type
+            
 
         if self.event_bus is not None:
             dict['EventBus'] = self.event_bus.to_dict()
@@ -132,10 +136,11 @@ class Service(models.Model):
 
     def get_system_config(self):
         return {
-            'Product': 'WeiShop',
+
+            'Product': 'NotSet',
             'Service': self.name,
-            'Stage': self.env,
-            'Version': '1.0',
+            'Env': self.env,
+            #'Version': '1.0',
         }
 
     def get_rpc_discovery_config(self):
