@@ -79,7 +79,7 @@ def _get_gateway_config_dotnet(request):
         if not Server.objects.in_white_list(client_ip):
             raise Exception("ip is not allowed")
 
-        logger.info('get gateway dotnet config of server:% from ip:%s' % (ip, client_ip))
+        logger.info('get gateway dotnet config of server:%s from ip:%s' % (ip, client_ip))
 
         # get server from ip
         try:
