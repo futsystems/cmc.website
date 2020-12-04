@@ -120,7 +120,7 @@ class Service(models.Model):
         # used services
         for service in self.used_services.all():
             key = 'Srv%sClient' % service.name
-            dict[key] = service.get_rpc_discovery_config();
+            dict[key] = service.get_rpc_discovery_config(deploy)
 
         # api,rpc support
         if self.support_api:
@@ -153,16 +153,15 @@ class Service(models.Model):
             #'Version': '1.0',
         }
 
-    def get_rpc_discovery_config(self):
-
+    def get_rpc_discovery_config(self, deploy):
         if self.discovery_scheme == 'Consul':
             return {
                 'Name': '%sRPC' % self.name,
                 'MaxRetry': 3,
                 'Discovery': {
                     'Consul': {
-                        'Host': self.service_provider.host if self.service_provider is not None else 'localhost',
-                        'Port': self.service_provider.port if self.service_provider is not None else 8500
+                        'Host': deploy.service_provider.host if deploy.service_provider is not None else 'localhost',
+                        'Port': deploy.service_provider.port if deploy.service_provider is not None else 8500
                     }
                 }
             }
