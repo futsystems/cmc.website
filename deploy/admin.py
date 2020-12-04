@@ -141,7 +141,7 @@ class DeployAdminForm(forms.ModelForm):
             self.fields['event_bus'].queryset = EventBus.objects.filter(env=self.instance.env)
 
 class DeployAdmin(admin.ModelAdmin):
-    list_display = ('name', 'env', 'product_type', 'location', 'suffix', 'service_provider', 'elastic_apm', 'event_bus', 'key')
+    list_display = ('name', 'env', 'product_type', 'location', 'suffix', 'gateway_domain_name', 'service_provider', 'elastic_apm', 'event_bus', 'key')
     form = DeployAdminForm
 
 admin.site.register(models.Server, ServerAdmin)

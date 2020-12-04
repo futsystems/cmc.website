@@ -19,6 +19,8 @@ class Deploy(models.Model):
     env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
     suffix = models.CharField('Suffix', max_length=100, default='suffix', unique=True)
 
+    gateway_domain_name = models.CharField('Gateway DomainName', max_length=100, default='gateway.marvelsystem.net')
+
     service_provider = models.ForeignKey(Consul, verbose_name='Consul', on_delete=models.SET_NULL, default=None,
                                          blank=True, null=True)
 
