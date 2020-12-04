@@ -149,7 +149,7 @@ def service(request):
             if service is None:
                 return json_response(Error("gateway config do not exist"))
 
-            return json_response(service.get_config(client_ip, server.deploy))
+            return json_response(service.get_config(ip, server.deploy))
         except Exception, e:
             logging.error(traceback.format_exc())
             return json_response(Error("get service config error"))
@@ -168,11 +168,13 @@ def service_hash(request):
             ip = request.GET.get("ip", None)
             logger.info('get config hash of service:%s env:%s' % (service_name, env))
 
+            server = Server.objects.get(ip=client_ip)
+
             services = Service.objects.filter(env__iexact=env, name=service_name).first()
             if services is None:
                 return json_response(Error("gateway config do not exist"))
 
-            config = json.dumps(services.get_config(ip), indent=4)
+            config = json.dumps(services.get_config(ip, server.deploy), indent=4)
             logging.info('config:%s' % config)
 
             m = hashlib.md5()

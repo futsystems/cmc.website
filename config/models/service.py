@@ -93,7 +93,7 @@ class Service(models.Model):
         if deploy is not None:
             dict['System']['Deploy'] = deploy.key
             dict['System']['Product'] = deploy.product_type
-            
+
 
         if self.event_bus is not None:
             dict['EventBus'] = self.event_bus.to_dict()
