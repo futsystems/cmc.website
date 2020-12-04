@@ -37,12 +37,12 @@ def _get_gateway_config_ocelot(request):
     else:
         gw_type = request.GET.get("type")
         env = request.GET.get("env")
-        logger.info('get gateway ocelot config of type:%s env:%s' % (gw_type, env))
 
         client_ip = get_client_ip(request)
-        logger.info('request server ocelot config from ip:%s' % client_ip)
         if not Server.objects.in_white_list(client_ip):
             raise Exception("ip is not allowed")
+
+        logger.info('get gateway ocelot config of type:%s env:%s from ip:%s' % (gw_type, env, client_ip))
 
         try:
             gw = ApiGateway.objects.filter(env=env, gw_type=gw_type).first()
