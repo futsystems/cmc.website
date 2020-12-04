@@ -128,13 +128,12 @@ def _get_service_config(request):
         raise Exception("POST not support")
     else:
         client_ip = get_client_ip(request)
-        logger.info('request server config from ip:%s' % client_ip)
         if not Server.objects.in_white_list(client_ip):
-            raise Exception("ip is not allowed")
+            raise Exception("ip:%s is not allowed" % client_ip)
 
         service_name = request.GET.get("name")
         ip = request.GET.get("ip", None)
-        logger.info('get config of service:%s for ip:%s' % (service_name, ip))
+        logger.info('get config of service:%s for ip:%s from ip:%s' % (service_name, ip, client_ip))
 
         # get server from ip
         server = Server.objects.get(ip=ip)
