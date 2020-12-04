@@ -136,9 +136,11 @@ def _get_service_config(request):
         logger.info('get config of service:%s for ip:%s from ip:%s' % (service_name, ip, client_ip))
 
         # get server from ip
-        server = Server.objects.get(ip=ip)
-        if server is None:
-            raise Exception("server:%s do not exist" % ip)
+        try:
+            server = Server.objects.get(ip=ip)
+        except Server.DoesNotExist:
+            raise Exception('server:%s do not exist' % ip)
+
         if server.deploy is None:
             raise Exception("server:%s do not bind deploy info" % ip)
 
