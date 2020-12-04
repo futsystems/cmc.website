@@ -7,7 +7,7 @@ from django.http import HttpResponse, HttpResponseNotFound, Http404 ,HttpRespons
 from django.views.generic import TemplateView, ListView, DetailView, CreateView
 
 from models import ApiGateway,Service
-from common import Response,Success,Error,json_response,_json_content
+from common import Response,Success,Error,json_response, _json_content, _json_content_md5
 import hashlib
 from deploy.models import Server
 from common.request_helper import get_client_ip
@@ -165,18 +165,17 @@ def service_hash(request):
             if service is None:
                 return json_response(Error("gateway config do not exist"))
 
-            config = _json_content(service.get_config(ip, server.deploy))
-            logging.info('config:%s' % config)
-
-            m = hashlib.md5()
-            m.update(config)
-            md5 = m.hexdigest()
+            md5 = _json_content_md5(service.get_config(ip, server.deploy))
 
             return HttpResponse(md5)
 
         except Exception,e:
             logger.error(traceback.format_exc())
             return json_response(Error("get service config has error"))
+
+def _get_service_config(request):
+    pass
+
 
 
 def used_services(request):
