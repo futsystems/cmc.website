@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 
 def json_response(obj):
     if issubclass(obj.__class__, Response):
-        return HttpResponse(json.dumps(obj.to_dict()), content_type="application/json")
-    return HttpResponse(json.dumps(obj, indent=4), content_type="application/json")
+        return HttpResponse(json.dumps(obj.to_dict(), ensure_ascii=False), content_type="application/json")
+    return HttpResponse(json.dumps(obj, ensure_ascii=False, indent=4), content_type="application/json")
 
 
 
