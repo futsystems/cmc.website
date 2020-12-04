@@ -125,7 +125,7 @@ class ApiGateway(models.Model):
     def get_ocelot_config(self):
 
         if self.default_config is None:
-            return  self.generate_ocelot_config()
+            return self.generate_ocelot_config()
         else:
             return json.loads(self.default_config.config)
 
@@ -171,8 +171,9 @@ class ApiGateway(models.Model):
             dict[setting_group.group_name] = setting_group.to_dict()
 
         # cmc gateway
-        dict['CMCGatewayConfig']={
+        dict['CMCGatewayConfig'] = {
             "Type": "gw.api",
+            "GateWayIP": server.ip if server is not None else 'localhost',
             "Url": "http://cmc.marvelsystem.net",
             "Token": "222"
         }

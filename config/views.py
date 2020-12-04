@@ -35,20 +35,26 @@ def _get_gateway_config_ocelot(request):
     if request.method == "POST":
         raise Exception("POST not support")
     else:
-        gw_type = request.GET.get("type")
-        env = request.GET.get("env")
-
+        ip = request.GET.get("ip", None)
         client_ip = get_client_ip(request)
         if not Server.objects.in_white_list(client_ip):
             raise Exception("ip is not allowed")
 
-        logger.info('get gateway ocelot config of type:%s env:%s from ip:%s' % (gw_type, env, client_ip))
+        logger.info('get gateway ocelot config of server:%s from ip:%s' % (ip, client_ip))
 
+        # get server from ip
         try:
-            gw = ApiGateway.objects.filter(env=env, gw_type=gw_type).first()
-            return gw.get_ocelot_config()
-        except ApiGateway.DoesNotExist:
-            raise Exception('gateway:%s do not exist' % gw_type)
+            server = Server.objects.get(ip=ip)
+        except Server.DoesNotExist:
+            raise Exception('server:%s do not exist' % ip)
+
+        if server.deploy is None:
+            raise Exception("server:%s do not bind deploy info" % ip)
+
+        if server.gateway is None:
+            raise Exception("server:%s do not bind gateway info" % ip)
+
+        return server.gateway.get_ocelot_config()
 
 
 def gatwway_config_dotnet(request):
