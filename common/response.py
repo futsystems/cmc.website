@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from django.http import HttpResponse
+import  json
 
 class Response(object):
     def __init__(self, code, msg, data):
@@ -26,3 +28,13 @@ class Error(Response):
 class Success(Response):
     def __init__(self, data=None, msg='success',):
         super(Success, self).__init__(0, msg, data)
+
+
+def json_response(obj):
+    return HttpResponse(_json_content(obj), content_type="application/json", charset='utf-8')
+
+
+def _json_content(obj):
+    if issubclass(obj.__class__, Response):
+        return json.dumps(obj.to_dict(), ensure_ascii=False)
+    return json.dumps(obj, ensure_ascii=False, indent=4)

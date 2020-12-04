@@ -8,20 +8,13 @@ from django.http import HttpResponse, HttpResponseNotFound, Http404 ,HttpRespons
 from django.views.generic import TemplateView, ListView, DetailView, CreateView
 
 from models import ApiGateway,Service
-from common import Response,Success,Error
+from common import Response,Success,Error,json_response,_json_content
 import hashlib
 from deploy.models import Server
 from common.request_helper import get_client_ip
 import logging, traceback
 from collections import OrderedDict
 logger = logging.getLogger(__name__)
-
-
-def json_response(obj):
-    if issubclass(obj.__class__, Response):
-        return HttpResponse(json.dumps(obj.to_dict(), ensure_ascii=False, encoding='utf-8').encode('utf-8').decode('unicode_escape'), content_type="application/json")
-    return HttpResponse(json.dumps(obj, ensure_ascii=False, indent=4, encoding='utf-8').encode('utf-8').decode('unicode_escape'), content_type="application/json")
-
 
 
 def config_gateway(request):
@@ -57,7 +50,7 @@ def config_gateway_hash(request):
             if gw is None:
                 return json_response(Error("gateway config do not exist"))
 
-            config = json.dumps(gw.get_ocelot_config(), indent=4)
+            config = _json_content(gw.get_ocelot_config())
             logging.info('config:%s' % config)
 
             m = hashlib.md5()
@@ -109,7 +102,7 @@ def config_gatwway_dotnet_hash(request):
             if gw is None:
                 return json_response(Error("gateway config do not exist"))
 
-            config = json.dumps(gw.get_config(), indent=4)
+            config = _json_content(gw.get_config())
             logging.info('config:%s' % config)
 
             m = hashlib.md5()
@@ -176,7 +169,7 @@ def service_hash(request):
             if service is None:
                 return json_response(Error("gateway config do not exist"))
 
-            config = json.dumps(service.get_config(ip, server.deploy), indent=4, encoding='utf-8').encode('utf-8').decode('unicode_escape')
+            config = _json_content(service.get_config(ip, server.deploy))
             logging.info('config:%s' % config)
 
             m = hashlib.md5()
