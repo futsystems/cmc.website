@@ -127,7 +127,7 @@ def node_info(request):
 
 def get_health_result(health_result,service_name):
     api_name = '%sAPI' % service_name
-    rpc_name = '%sAPI' % service_name
+    rpc_name = '%sRPC' % service_name
     result = []
     for item in health_result:
         #logger.info(item)
