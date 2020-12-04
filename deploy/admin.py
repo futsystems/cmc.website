@@ -39,10 +39,6 @@ class ServerAdminForm(forms.ModelForm):
             self.fields['gateway'].queryset = ApiGateway.objects.filter(env=self.instance.env)
             self.fields['portal'].queryset = Portal.objects.filter(env=self.instance.env)
 
-class DeployAdmin(admin.ModelAdmin):
-    list_display = ('name', 'env', 'product_type', 'location', 'suffix', 'key')
-
-
 class ServerAdmin(admin.ModelAdmin):
     list_display = ('name', 'env', 'deploy', 'node_type', 'ip', 'location', 'host_name', 'function_title', 'salt_action')
     filter_horizontal = ('installed_services', 'installed_services')
@@ -129,6 +125,23 @@ class ServerAdmin(admin.ModelAdmin):
         salt_helper.reboot(server)
         previous_url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(previous_url)
+
+
+class DeployAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.Server
+        exclude = []
+
+    def __init__(self, *args, **kwargs):
+        forms.ModelForm.__init__(self, *args, **kwargs)
+        if self.instance.id > 0:
+            self.fields['service_provider'].queryset = Service.objects.filter(env=self.instance.env)
+            self.fields['elastic_apm'].queryset = ApiGateway.objects.filter(env=self.instance.env)
+            self.fields['event_bus'].queryset = Portal.objects.filter(env=self.instance.env)
+
+class DeployAdmin(admin.ModelAdmin):
+    list_display = ('name', 'env', 'product_type', 'location', 'suffix', 'key')
+    form = DeployAdminForm
 
 admin.site.register(models.Server, ServerAdmin)
 admin.site.register(models.Deploy, DeployAdmin)

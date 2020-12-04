@@ -7,7 +7,7 @@ from config.models import Service, ApiGateway, Portal
 from choices import LOCATION, NODETYPE, PRODUCTTYPE
 from config.models.choices import ENV_STAGE
 from config.models import Consul
-
+from config.models import EventBus, ElastAPM
 
 class Deploy(models.Model):
     """
@@ -21,6 +21,14 @@ class Deploy(models.Model):
 
     service_provider = models.ForeignKey(Consul, verbose_name='Consul', on_delete=models.SET_NULL, default=None,
                                          blank=True, null=True)
+
+    elastic_apm = models.ForeignKey(ElastAPM, verbose_name='ElasticAPM', on_delete=models.SET_NULL,
+                                  default=None,
+                                  blank=True, null=True)
+
+    event_bus = models.ForeignKey(EventBus, verbose_name='EventBus', on_delete=models.SET_NULL,
+                                          default=None,
+                                          blank=True, null=True)
 
     key = models.CharField('Key', max_length=100, default='', blank=True)
 
