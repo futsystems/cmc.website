@@ -12,7 +12,7 @@ urlpatterns = [
     url(r'^node/update/$', views.update_node_info, name='update_node_info'),
     url(r'^node/up/$', views.register_node_info, name='update_node_info'),
     url(r'^node/down/$', views.unregister_node_info, name='update_node_info'),
-    url(r'^node/info/$', views.node_info, name='node_info'),
+    url(r'^info/$', views.node_info, name='node_info'),
     url(r'^server/pillar/$', views.salt_pillar, name='server_pillar'),
     url(r'^minion/valid/(?P<minion_id>[a-zA-Z0-9_.-]+)', views.minion_valid,
         name='server_minion_valid'),
