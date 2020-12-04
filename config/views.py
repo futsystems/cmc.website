@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 
 def json_response(obj):
     if issubclass(obj.__class__, Response):
-        return HttpResponse(json.dumps(obj.to_dict(), ensure_ascii=False, encoding='utf-8'), content_type="application/json")
-    return HttpResponse(json.dumps(obj, ensure_ascii=False, indent=4, encoding='utf-8'), content_type="application/json")
+        return HttpResponse(json.dumps(obj.to_dict(), ensure_ascii=False, encoding='utf-8').encode('utf-8').decode('unicode_escape'), content_type="application/json")
+    return HttpResponse(json.dumps(obj, ensure_ascii=False, indent=4, encoding='utf-8').encode('utf-8').decode('unicode_escape'), content_type="application/json")
 
 
 
@@ -149,6 +149,8 @@ def service(request):
             if service is None:
                 return json_response(Error("gateway config do not exist"))
 
+            config = json.dumps(service.get_config(ip, server.deploy), indent=4)
+
             return json_response(service.get_config(ip, server.deploy))
         except Exception, e:
             logging.error(traceback.format_exc())
@@ -170,11 +172,11 @@ def service_hash(request):
 
             server = Server.objects.get(ip=ip)
 
-            services = Service.objects.filter(env__iexact=env, name=service_name).first()
-            if services is None:
+            service = Service.objects.filter(env__iexact=env, name=service_name).first()
+            if service is None:
                 return json_response(Error("gateway config do not exist"))
 
-            config = json.dumps(services.get_config(ip, server.deploy), indent=4)
+            config = json.dumps(service.get_config(ip, server.deploy), indent=4, encoding='utf-8').encode('utf-8').decode('unicode_escape')
             logging.info('config:%s' % config)
 
             m = hashlib.md5()
