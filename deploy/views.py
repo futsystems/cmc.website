@@ -101,7 +101,7 @@ def register_node_info(request):
         ip = get_client_ip(request)
 
         product_type = data['Product']
-        env = data['Stage']
+        env = data['Env']
         version = data['Version']
         framework = data['Framework']
 
