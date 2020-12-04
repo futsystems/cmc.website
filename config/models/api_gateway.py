@@ -24,22 +24,11 @@ class ApiGateway(models.Model):
     name = models.CharField('Api Gateway Name', max_length=50, default='ApiGateway')
     env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
     gw_type = models.CharField(max_length=20, choices=GATEWAY_TYPE, default='gw.api')
-    #base_url = models.CharField('Base Url', max_length=100, default='http://127.0.0.1')
-    #service_provider = models.ForeignKey(Consul, verbose_name='Consul', on_delete=models.SET_NULL, default=None,
-    #                                     blank=True, null=True)
-    #is_default = models.BooleanField('Is Default', default=False)
     description = models.CharField('Description', max_length=1000, default='', blank=True)
     date_created = models.DateTimeField('created time', auto_now=True, blank=True, null=True)
     default_config = models.ForeignKey('ApiGatewayConfig', verbose_name='Default Config', on_delete=models.SET_NULL, default=None,
                                          blank=True, null=True)
     port = models.IntegerField('Http Port', default=8080)
-
-    #elastic_apm = models.ForeignKey(ElastAPM, verbose_name='ElasticAPM', on_delete=models.SET_NULL,
-    #                                default=None,
-    #                                blank=True, null=True)
-    #event_bus = models.ForeignKey(EventBus, verbose_name='EventBus', on_delete=models.SET_NULL,
-    #                              default=None,
-    #                              blank=True, null=True)
 
     services = models.ManyToManyField('Service', verbose_name='Used Services',
                                            blank=True)
@@ -116,7 +105,7 @@ class ApiGateway(models.Model):
         }
 
         #if self.service_provider != None:
-        global_cfg['ServiceDiscoveryProvider'] = None#self.service_provider.to_dict()
+        global_cfg['ServiceDiscoveryProvider'] = None
 
         config = {
             'Routes': [item.to_dict() for item in self.routes.all().order_by('name')],
@@ -182,10 +171,8 @@ class ApiGateway(models.Model):
 
         # cmc gateway
         dict['CMCGatewayConfig'] = {
-            "Type": "gw.api",
-            "GateWayIP": server.ip if server is not None else 'localhost',
+            "APIGateWayIP": server.ip if server is not None else 'localhost',
             "Url": "http://cmc.marvelsystem.net",
-            "Token": "222"
         }
 
         dict['System'] = self.get_system_config()
