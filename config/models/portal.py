@@ -26,7 +26,7 @@ class Portal(models.Model):
         app_label = 'config'
 
     def __unicode__(self):
-        return u'portal-%s %s' % (self.domain_name, self.env)
+        return u'portal-%s' % self.env
 
     def merge_project(self):
         import time
