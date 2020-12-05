@@ -22,10 +22,6 @@ class Portal(models.Model):
     merge_success = models.BooleanField('Merge Success', default=True)
     merge_message = models.CharField('Merge Message', max_length=500, default='', blank=True, null=True)
 
-    admin_tag = models.CharField(max_length=20, default='v1.0.0')
-    console_tag = models.CharField(max_length=20, default='v1.0.0')
-    h5_tag = models.CharField(max_length=20, default='v1.0.0')
-
     class Meta:
         app_label = 'config'
 
