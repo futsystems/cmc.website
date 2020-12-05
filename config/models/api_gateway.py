@@ -61,14 +61,6 @@ class ApiGateway(models.Model):
         unique_together = ('gw_type', 'env',)
         app_label = 'config'
 
-    def get_system_config(self):
-        return {
-            'Product': 'WeiShop',
-            'Service': 'APIGateway',
-            'Stage': self.env,
-            'Version': '1.0',
-        }
-
     @property
     def gateway_schema(self):
         return u'%s-%s' % (self.gw_type.lower(), self.env.lower())
@@ -131,8 +123,17 @@ class ApiGateway(models.Model):
         ext_ip = server.ip
 
         dict['AllowedHosts'] = "*"
+
         if self.log_level is not None:
             dict['Logging'] = self.log_level.to_dict()
+
+        # system
+        dict['System'] = {
+            'Deploy': server.deploy.key,
+            'Product': server.deploy.product_type,
+            'Service': 'APIGateway',
+            'Env': self.env,
+        }
 
         # event_bus,elastic_apm,service_provider of deploy
         if deploy is not None:
@@ -174,21 +175,20 @@ class ApiGateway(models.Model):
             "Env": self.env
         }
 
-        dict['System'] = self.get_system_config()
         return dict
 
     def get_pillar(self, deploy):
         base_url = 'http://127.0.0.1'
-        doamin_name = 'localhost'
+        domain_name = 'localhost'
         if deploy is not None:
             base_url = 'https://%s' % deploy.gateway_domain_name
-            doamin_name = deploy.gateway_domain_name
+            domain_name = deploy.gateway_domain_name
 
         return {
             'env': self.env,
             'name': self.name,
             'type': self.gw_type,
             'base_url': base_url,
-            'domain_name': doamin_name,
+            'domain_name': domain_name,
             'pipeline_trigger': self.pipeline_trigger
         }
