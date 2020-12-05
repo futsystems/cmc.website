@@ -41,9 +41,12 @@ def _json_content(obj):
     return json.dumps(obj, ensure_ascii=False, indent=4)
 
 
-def _json_content_md5(obj):
-    content = _json_content(obj)
+def _calc_md5(content):
     m = hashlib.md5()
     m.update(content.encode('utf-8'))
     md5 = m.hexdigest()
     return md5
+
+def _json_content_md5(obj):
+    content = _json_content(obj)
+    return  _calc_md5(content)

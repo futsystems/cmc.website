@@ -17,6 +17,7 @@ from django import forms
 from django.shortcuts import render_to_response
 from django.db.models import Max
 from collections import OrderedDict
+from common import _json_content, _calc_md5
 import logging,traceback,json
 logger = logging.getLogger(__name__)
 
@@ -100,18 +101,13 @@ class ApiGatewayAdmin(admin.ModelAdmin):
 
         """
         return format_html(
-            '<a class="button" href="{}">Update</a>&nbsp;'
             '<a class="button" href="{}">Download Draft</a>&nbsp;'
-            '<a class="button" href="{}">Services Dependency</a>&nbsp;'
-            '<a class="button" href="{}">UploadPermission</a>&nbsp;'
-            '<a class="button" href="{}">UploadRole</a>&nbsp;'
-            '<a class="button" href="{}">ConfigSnapshot</a>&nbsp;',
-            reverse('admin:config-update', args=[obj.pk]),
+            '<a class="button" href="{}">ConfigSnapshot</a>&nbsp;'
+            '<a class="button" href="{}">Services Dependency</a>&nbsp;',
+
             reverse('admin:config-download-draft', args=[obj.pk]),
-            reverse('admin:config-service-dependency', args=[obj.pk]),
-            reverse('admin:config-upload-permission', args=[obj.pk]),
-            reverse('admin:config-upload-role', args=[obj.pk]),
             reverse('admin:config-snapshot', args=[obj.pk]),
+            reverse('admin:config-service-dependency', args=[obj.pk]),
         )
 
     config_action.allow_tags = True
@@ -121,12 +117,6 @@ class ApiGatewayAdmin(admin.ModelAdmin):
         # use get_urls for easy adding of views to the admin
         urls = super(ApiGatewayAdmin, self).get_urls()
         my_urls = [
-            url(
-                r'^(?P<gw_id>.+)/update/$',
-                self.admin_site.admin_view(self.update_config),
-                name='config-update',
-            ),
-
             url(
                 r'^(?P<gw_id>.+)/download/draft/$',
                 self.admin_site.admin_view(self.download_draft),
@@ -138,16 +128,6 @@ class ApiGatewayAdmin(admin.ModelAdmin):
                 name='config-snapshot',
             ),
             url(
-                r'^(?P<gw_id>.+)/upload_permission/$',
-                self.admin_site.admin_view(self.upload_permission),
-                name='config-upload-permission',
-            ),
-            url(
-                r'^(?P<gw_id>.+)/upload_role/$',
-                self.admin_site.admin_view(self.upload_role),
-                name='config-upload-role',
-            ),
-            url(
                 r'^(?P<gw_id>.+)/service-dependency/$',
                 self.admin_site.admin_view(self.service_dependency),
                 name='config-service-dependency',
@@ -156,79 +136,44 @@ class ApiGatewayAdmin(admin.ModelAdmin):
 
         return my_urls + urls
 
-    def update_config(self, request, gw_id):
-        gw = models.ApiGateway.objects.get(id= gw_id)
-        ev = CMCGatewayConfigUpdate(gw.gw_type, gw.env)
-        if gw.event_bus is None:
-            messages.info(request, "gateway have not set event bus")
-            previous_url = request.META.get('HTTP_REFERER')
-            return HttpResponseRedirect(previous_url)
-        EventBublisher(gw.event_bus).send_message(ev)
-        messages.info(request, "Send Config Update Success")
-        previous_url = request.META.get('HTTP_REFERER')
-        return HttpResponseRedirect(previous_url)
-
-    def upload_permission(self, request, gw_id):
-        gw = models.ApiGateway.objects.get(id= gw_id)
-        ev = CMCACLPermissionUpdate(gw.env)
-        if gw.event_bus is None:
-            messages.info(request, "gateway have not set event bus")
-            previous_url = request.META.get('HTTP_REFERER')
-            return HttpResponseRedirect(previous_url)
-        EventBublisher(gw.event_bus).send_message(ev)
-        messages.info(request, "Send Config Update Success")
-        previous_url = request.META.get('HTTP_REFERER')
-        return HttpResponseRedirect(previous_url)
-
-    def upload_role(self, request, gw_id):
-        gw = models.ApiGateway.objects.get(id= gw_id)
-        ev = CMCACLRoleUpdate(gw.env)
-        if gw.event_bus is None:
-            messages.info(request, "gateway have not set event bus")
-            previous_url = request.META.get('HTTP_REFERER')
-            return HttpResponseRedirect(previous_url)
-        EventBublisher(gw.event_bus).send_message(ev)
-        messages.info(request, "Send Config Update Success")
-        previous_url = request.META.get('HTTP_REFERER')
-        return HttpResponseRedirect(previous_url)
-
     def download_draft(self, request, gw_id):
+        """
+        下载当前网关配置
+        """
         gw = models.ApiGateway.objects.get(id=gw_id)
-        response = HttpResponse(json.dumps(gw.generate_ocelot_config(), indent=4), content_type='application/txt')
-        response['Content-Disposition'] = 'attachment; filename=ocelot_%s.config' % gw.name
+        response = HttpResponse(_json_content(gw.generate_ocelot_config()), content_type='application/txt')
+        response['Content-Disposition'] = 'attachment; filename=ocelot_%s_%s_%s.config' % (gw.env, gw.type, gw.name)
         return response
 
     def snapshot_config(self, request, gw_id):
-
+        """
+        生成配快照
+        """
+        previous_url = request.META.get('HTTP_REFERER')
         gw = models.ApiGateway.objects.get(id=gw_id)
-        config = json.dumps(gw.generate_ocelot_config(), indent=4)
-        m = hashlib.md5()
-        m.update(config)
-        md5 = m.hexdigest()
+        config = _json_content(gw.generate_ocelot_config())
+        md5 = _calc_md5(config)
 
         args = models.ApiGatewayConfig.objects.filter(gateway=gw)
         max_version = args.aggregate(Max('version'))
         max_version_val = max_version['version__max']
-        if max_version_val is  None:
+        if max_version_val is None:
             next_version = '1.0'
         else:
-            next_version = str((float(max_version['version__max']) * 10 + 1 )/10)
+            next_version = str((float(max_version['version__max']) * 10 + 1)/10)
 
         # check if config is exist
         if models.ApiGatewayConfig.objects.filter(md5=md5).count() > 0:
             same_config = models.ApiGatewayConfig.objects.filter(md5=md5).first()
-            messages.info(request, "Config same with version:%s" % same_config.version)
-            previous_url = request.META.get('HTTP_REFERER')
+            messages.info(request, "Same Config [version:%s] Exist" % same_config.version)
             return HttpResponseRedirect(previous_url)
 
         config_snapshot = models.ApiGatewayConfig.objects.create(gateway=gw, config=config, md5=md5, version=next_version)
         messages.info(request, "Config Snapshot:%s-%s Success" % (config_snapshot.gateway.gateway_schema, config_snapshot.version))
-        previous_url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(previous_url)
 
 
     def service_dependency(self, request, gw_id):
-
         gw = models.ApiGateway.objects.get(id=gw_id)
 
         services = models.Service.objects.filter(env__iexact=gw.env).order_by('name')

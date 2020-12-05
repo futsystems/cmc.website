@@ -89,12 +89,20 @@ class ApiGateway(models.Model):
     default_config_title.short_description = "Default Config"
 
     def generate_ocelot_config(self):
+        """
+        generate ocelot template config
+        :return:
+        """
         global_cfg = {
-            'BaseUrl': 'http://127.0.0.1',
+            'BaseUrl': 'http://localhost',
         }
 
         #if self.service_provider != None:
-        global_cfg['ServiceDiscoveryProvider'] = None
+        global_cfg['ServiceDiscoveryProvider'] = {
+            'Host': 'localhost',
+            'Port': 8500,
+            'Type': 'Consul',
+        }
 
         config = {
             'Routes': [item.to_dict() for item in self.routes.all().order_by('name')],

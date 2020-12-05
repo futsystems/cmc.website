@@ -158,7 +158,7 @@ class DeployAdmin(admin.ModelAdmin):
         )
 
     deploy_action.allow_tags = True
-    deploy_action.short_description = "Action"
+    deploy_action.short_description = "Update Action"
 
     def get_urls(self):
         # use get_urls for easy adding of views to the admin
