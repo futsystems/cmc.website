@@ -141,8 +141,56 @@ class DeployAdminForm(forms.ModelForm):
             self.fields['event_bus'].queryset = EventBus.objects.filter(env=self.instance.env)
 
 class DeployAdmin(admin.ModelAdmin):
-    list_display = ('name', 'env', 'product_type', 'location', 'suffix', 'gateway_domain_name', 'service_provider', 'elastic_apm', 'event_bus', 'key', 'deploy_action')
+    list_display = ('name', 'product_type', 'env', 'location', 'suffix', 'gateway_domain_name', 'service_provider', 'elastic_apm', 'event_bus', 'key', 'deploy_action')
     form = DeployAdminForm
+
+
+    def get_fieldsets(self, request, obj=None):
+        if obj is None:
+            return ((None, {
+                    'fields': [
+                        'name', 'product_type', 'env', 'location', 'suffix',
+                    ]
+                }),
+
+                ('Other', {
+
+                    'fields': [
+                        'description'
+                    ]
+                })
+            )
+
+        return (
+            (None, {
+                "fields": [
+                    'name', 'product_type', 'env', 'location', 'suffix'
+                ]
+            }),
+            ("Facility", {
+                'fields': [
+                    'service_provider', 'elastic_apm', 'event_bus'
+                ]
+            }),
+
+            ("Config", {
+                'fields': [
+                    'gateway_domain_name', 'log_level'
+                ]
+            }),
+            ("Other", {
+
+                'fields': [
+                    'description'
+                ]
+            }),
+
+        )
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None:
+            return ['service_provider', 'used_services', 'mysql_connections', 'event_bus', 'elastic_apm']
+        return ['product_type', 'env', 'location', 'suffix']
 
     def deploy_action(self, obj):
         """

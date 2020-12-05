@@ -34,6 +34,7 @@ class Deploy(models.Model):
 
     log_level = models.ForeignKey(LogItemGroup, verbose_name='LogLevel', on_delete=models.SET_NULL,default=None,
                                   blank=True, null=True)
+    description = models.CharField('Description', max_length=1000, default='', blank=True)
 
     key = models.CharField('Key', max_length=100, default='', blank=True)
 
