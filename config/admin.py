@@ -278,11 +278,7 @@ class ServiceAdminForm(forms.ModelForm):
         forms.ModelForm.__init__(self, *args, **kwargs)
         if self.instance.id > 0:
             self.fields['used_services'].queryset = models.Service.objects.filter(env=self.instance.env).exclude(id=self.instance.id)
-            #self.fields['service_provider'].queryset = models.Consul.objects.filter(env=self.instance.env)
             self.fields['mysql_connections'].queryset = models.MySqlConnection.objects.filter(env=self.instance.env)
-            #self.fields['elastic_apm'].queryset = models.ElastAPM.objects.filter(env=self.instance.env)
-            #self.fields['event_bus'].queryset = models.EventBus.objects.filter(env=self.instance.env)
-            self.fields['log_level'].queryset = models.LogItemGroup.objects.filter(env=self.instance.env)
             self.fields['other_settings'].queryset = models.SettingGroup.objects.filter(env=self.instance.env)
 
 
@@ -595,7 +591,7 @@ class LogItemAdmin(admin.ModelAdmin):
     list_display = ('prefix', 'level')
 
 class LogItemGroupAdmin(admin.ModelAdmin):
-    list_display = ('name', 'env', 'description')
+    list_display = ('name', 'description')
     filter_horizontal = ('items',)
 
 def copy_setting_staging(modeladmin, request, queryset):

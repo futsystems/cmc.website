@@ -20,7 +20,6 @@ class LogItem(models.Model):
 
 class LogItemGroup(models.Model):
     name = models.CharField('Name', max_length=100, default='Default')
-    env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
     items = models.ManyToManyField(LogItem, verbose_name='Log Items')
     description = models.CharField('Description', max_length=1000, default='', blank=True)
 

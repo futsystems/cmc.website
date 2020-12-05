@@ -21,8 +21,6 @@ class Service(models.Model):
     used_services = models.ManyToManyField('Service', related_name='used_by_services', verbose_name='Used Services',
                                            blank=True)
 
-    #service_provider = models.ForeignKey(Consul, verbose_name='Consul', on_delete=models.SET_NULL, default=None,
-    #                                     blank=True, null=True)
     discovery_scheme = models.CharField('Discovery Scheme', max_length=20, choices=SERVICE_DISCOVERY_SCHEME, default='Consul')
 
     host = models.CharField('Host', max_length=255, default='dev-api.marvelsystem.net', blank=True, null=True)
@@ -40,15 +38,13 @@ class Service(models.Model):
                                   blank=True, null=True)
 
     other_settings = models.ManyToManyField(SettingGroup, verbose_name='Other Settings', blank=True)
-    #used in for
-    #section_name = models.CharField('Section Name', max_length=50, default=None, blank=True, null=True)
+
     description = models.CharField('Description', max_length=1000, default='', blank=True)
 
     pipeline_trigger = models.CharField('Pipeline Trigger', max_length=1000, default='', blank=True)
 
     merge_success = models.BooleanField('Merge Success', default=True)
     merge_message = models.CharField('Merge Message', max_length=500, default='', blank=True, null=True)
-
 
     class Meta:
         app_label = 'config'
