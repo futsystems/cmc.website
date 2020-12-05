@@ -179,7 +179,7 @@ class DeployAdmin(admin.ModelAdmin):
                 ]
             }),
 
-            ("Docker Tag", {
+            ("Portal Tag", {
                 'fields': [
                     'portal_admin_tag', 'portal_console_tag', 'portal_h5_tag',
                 ]

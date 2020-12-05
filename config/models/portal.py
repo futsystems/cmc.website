@@ -59,18 +59,17 @@ class Portal(models.Model):
             'api_gw_domain': deploy.gateway_domain_name
         }
 
-        if self.env != 'Production':
-            dict['admin_pipeline_trigger'] = self.admin_pipeline_trigger
-            dict['console_pipeline_trigger'] = self.console_pipeline_trigger
-            dict['h5_pipeline_trigger'] = self.h5_pipeline_trigger
-
         if self.env == 'Production':
-            dict['admin_tag'] = self.admin_tag
-            dict['console_tag'] = self.console_tag
-            dict['h5_tag'] = self.h5_tag
+            dict['admin_tag'] = deploy.portal_admin_tag
+            dict['console_tag'] = deploy.portal_console_tag
+            dict['h5_tag'] = deploy.portal_h5_tag
         else:
             dict['admin_tag'] = self.env
             dict['console_tag'] = self.env
             dict['h5_tag'] = self.env
+
+            dict['admin_pipeline_trigger'] = self.admin_pipeline_trigger
+            dict['console_pipeline_trigger'] = self.console_pipeline_trigger
+            dict['h5_pipeline_trigger'] = self.h5_pipeline_trigger
 
         return dict
