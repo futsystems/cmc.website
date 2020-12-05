@@ -53,11 +53,11 @@ class Portal(models.Model):
             self.merge_success = True
             self.merge_message = 'Only Development Merge'
 
-    def get_pillar(self):
+    def get_pillar(self, deploy):
         dict = {
-            'domain_name': self.domain_name,
-            'partion_info_api_domain': self.partion_info_api_domain,
-            'api_gw_domain': self.api_gw_domain
+            'domain_name': deploy.portal_domain_name,
+            'partion_info_api_domain': deploy.website_domain_name,
+            'api_gw_domain': deploy.gateway_domain_name
         }
 
         if self.env != 'Production':

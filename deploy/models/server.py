@@ -111,7 +111,7 @@ class Server(models.Model):
             data['gateway'] = self.gateway.get_pillar(self.deploy)
 
         if self.portal is not None:
-            data['portal'] = self.portal.get_pillar()
+            data['portal'] = self.portal.get_pillar(self.deploy)
 
         # development and staging env install gitlab runner
         if self.env == 'Development' or self.env == 'Staging':

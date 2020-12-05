@@ -142,7 +142,7 @@ class DeployAdminForm(forms.ModelForm):
 
 
 class DeployAdmin(admin.ModelAdmin):
-    list_display = ('name', 'product_type', 'env', 'location', 'suffix', 'gateway_domain_name', 'service_provider', 'elastic_apm', 'event_bus', 'key', 'deploy_action')
+    list_display = ('name', 'product_type', 'env', 'location', 'suffix', 'portal_domain_name', 'gateway_domain_name', 'service_provider', 'elastic_apm', 'event_bus', 'key', 'deploy_action')
     form = DeployAdminForm
 
     def get_fieldsets(self, request, obj=None):
