@@ -55,16 +55,22 @@ class ServerAdmin(admin.ModelAdmin):
         """
 
         """
-        return format_html(
-            '<a class="button" href="{}">Highstate</a>&nbsp;'
-            '<a class="button" href="{}">Ping</a>&nbsp;'
-            '<a class="button" href="{}">RegisterRunner</a>&nbsp;'
-            '<a class="button" href="{}">Reboot</a>&nbsp;',
-            reverse('admin:salt-highstate', args=[obj.pk]),
-            reverse('admin:salt-ping', args=[obj.pk]),
-            reverse('admin:gitlab-register-runner', args=[obj.pk]),
-            reverse('admin:salt-reboot', args=[obj.pk]),
-        )
+        if obj.env != 'Production':
+            return format_html(
+                '<a class="button" href="{}">Highstate</a>&nbsp;'
+                '<a class="button" href="{}">Reboot</a>&nbsp;'
+                '<a class="button" href="{}">RegisterRunner</a>&nbsp;',
+                reverse('admin:salt-highstate', args=[obj.pk]),
+                reverse('admin:salt-reboot', args=[obj.pk]),
+                reverse('admin:gitlab-register-runner', args=[obj.pk]),
+            )
+        else:
+            return format_html(
+                '<a class="button" href="{}">Highstate</a>&nbsp;'
+                '<a class="button" href="{}">Reboot</a>&nbsp;',
+                reverse('admin:salt-highstate', args=[obj.pk]),
+                reverse('admin:salt-reboot', args=[obj.pk]),
+            )
 
     salt_action.allow_tags = True
     salt_action.short_description = "Action"
