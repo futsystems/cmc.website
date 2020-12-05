@@ -26,16 +26,8 @@ class Service(models.Model):
     discovery_scheme = models.CharField('Discovery Scheme', max_length=20, choices=SERVICE_DISCOVERY_SCHEME, default='Consul')
 
     host = models.CharField('Host', max_length=255, default='dev-api.marvelsystem.net', blank=True, null=True)
-    #port = models.IntegerField('Port', default=80)
 
     mysql_connections = models.ManyToManyField(MySqlConnection, verbose_name='MySql Connections', blank=True)
-
-    #elastic_apm = models.ForeignKey(ElastAPM, verbose_name='ElasticAPM', on_delete=models.SET_NULL,
-    #                              default=None,
-    #                              blank=True, null=True)
-    #event_bus = models.ForeignKey(EventBus, verbose_name='EventBus', on_delete=models.SET_NULL,
-    #                                      default=None,
-    #                                      blank=True, null=True)
 
     support_rpc = models.BooleanField('RPC Support', default=True)
     rpc_port = models.IntegerField('RPC Port', default=91)
@@ -81,71 +73,72 @@ class Service(models.Model):
         service.save()
 
     def get_config(self, server):
-        dict={}
-        deploy = server.deploy
-        ext_ip = server.ip
+        config={}
+        if server is None:
+            raise Exception('server is None')
+        if server.deploy is None:
+            raise Exception('server have not bind with deploy')
+
         # allowed hosts
-        dict['AllowedHosts'] = "*"
+        config['AllowedHosts'] = "*"
 
         # log
         if self.log_level is not None:
-            dict['Logging'] = self.log_level.to_dict()
+            config['Logging'] = self.log_level.to_dict()
+        else:
+            config['Logging'] = server.deploy.log_level.to_dict()
 
-        dict['System'] = {
+        config['System'] = {
             'Deploy': server.deploy.key,
             'Product': server.deploy.product_type,
             'Service': self.name,
             'Env': self.env,
         }
 
-        if deploy is not None:
-            dict['System']['Deploy'] = deploy.key
-            dict['System']['Product'] = deploy.product_type
+        # append event_bus,elastic_apm,service_provider of deploy
+        if server.deploy.event_bus is not None:
+            config['EventBus'] = server.deploy.event_bus.to_dict()
+            config['EventBus']['SubscriptionClientName'] = self.name
 
-            # append event_bus,elastic_apm,service_provider of deploy
-            if deploy.event_bus is not None:
-                dict['EventBus'] = deploy.event_bus.to_dict()
-                dict['EventBus']['SubscriptionClientName'] = self.name
+        if server.deploy.elastic_apm is not None:
+            apm = server.deploy.elastic_apm.to_dict()
+            apm['ServiceName'] = self.name
+            config['ElasticAPM'] = apm
 
-            if deploy.elastic_apm is not None:
-                apm = deploy.elastic_apm.to_dict()
-                apm['ServiceName'] = self.name
-                dict['ElasticAPM'] = apm
-
-            if deploy.service_provider is not None:
-                dict['ConsulServer'] = deploy.service_provider.to_dict()
+        if server.deploy.service_provider is not None:
+            config['ConsulServer'] = server.deploy.service_provider.to_dict()
 
         # mysql connection
         if self.mysql_connections.all().count() > 0:
-            dict['DBConfig'] = [item.to_dict() for item in self.mysql_connections.all()]
+            config['DBConfig'] = [item.to_dict() for item in self.mysql_connections.all()]
 
         # used services
         for service in self.used_services.all():
             key = 'Srv%sClient' % service.name
-            dict[key] = service.get_rpc_discovery_config(deploy)
+            config[key] = service.get_rpc_discovery_config(server.deploy)
 
         # api,rpc support
         if self.support_api:
-            dict['APIServer'] ={
+            config['APIServer'] ={
                 'Name': '%sAPI' % self.name,
-                'Host': ext_ip,
+                'Host': server.ip,
                 'Protocol': 0,
                 'Port': self.api_port
             }
 
         if self.support_rpc:
-            dict['RPCServer'] = {
+            config['RPCServer'] = {
                 'Name': '%sRPC' % self.name,
-                'Host': ext_ip,
+                'Host': server.ip,
                 'Protocol': 1,
                 'Port': self.rpc_port
             }
 
         # setting
         for setting_group in self.other_settings.all():
-            dict[setting_group.group_name] = setting_group.to_dict()
+            config[setting_group.group_name] = setting_group.to_dict()
 
-        return dict
+        return config
 
     def get_rpc_discovery_config(self, deploy):
         if self.discovery_scheme == 'Consul':
@@ -154,8 +147,8 @@ class Service(models.Model):
                 'MaxRetry': 3,
                 'Discovery': {
                     'Consul': {
-                        'Host': deploy.service_provider.host if deploy.service_provider is not None else 'localhost',
-                        'Port': deploy.service_provider.port if deploy.service_provider is not None else 8500
+                        'Host': deploy.service_provider.host,
+                        'Port': deploy.service_provider.port
                     }
                 }
             }

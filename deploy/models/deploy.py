@@ -7,7 +7,7 @@ from config.models import Service, ApiGateway, Portal
 from choices import LOCATION, NODETYPE, PRODUCTTYPE
 from config.models.choices import ENV_STAGE
 from config.models import Consul
-from config.models import EventBus, ElastAPM
+from config.models import EventBus, ElastAPM, LogItemGroup
 
 class Deploy(models.Model):
     """
@@ -31,6 +31,9 @@ class Deploy(models.Model):
     event_bus = models.ForeignKey(EventBus, verbose_name='EventBus', on_delete=models.SET_NULL,
                                           default=None,
                                           blank=True, null=True)
+
+    log_level = models.ForeignKey(LogItemGroup, verbose_name='LogLevel', on_delete=models.SET_NULL,default=None,
+                                  blank=True, null=True)
 
     key = models.CharField('Key', max_length=100, default='', blank=True)
 

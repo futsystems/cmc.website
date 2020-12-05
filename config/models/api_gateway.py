@@ -118,17 +118,21 @@ class ApiGateway(models.Model):
         return cfg
 
     def get_config(self, server):
-        dict={}
-        deploy = server.deploy
-        ext_ip = server.ip
+        config = dict()
+        if server is None:
+            raise Exception('server is None')
+        if server.deploy is None:
+            raise Exception('server have not bind with deploy')
 
-        dict['AllowedHosts'] = "*"
+        config['AllowedHosts'] = "*"
 
         if self.log_level is not None:
-            dict['Logging'] = self.log_level.to_dict()
+            config['Logging'] = self.log_level.to_dict()
+        else:
+            config['Logging'] = server.deploy.log_level.to_dict()
 
         # system
-        dict['System'] = {
+        config['System'] = {
             'Deploy': server.deploy.key,
             'Product': server.deploy.product_type,
             'Service': 'APIGateway',
@@ -136,46 +140,45 @@ class ApiGateway(models.Model):
         }
 
         # event_bus,elastic_apm,service_provider of deploy
-        if deploy is not None:
-            if deploy.event_bus is not None:
-                dict['EventBus'] = deploy.event_bus.to_dict()
-                dict['EventBus']['SubscriptionClientName'] = self.gw_type
+        if server.deploy.event_bus is not None:
+            config['EventBus'] = server.deploy.event_bus.to_dict()
+            config['EventBus']['SubscriptionClientName'] = self.gw_type
 
-            if deploy.elastic_apm is not None:
-                apm = deploy.elastic_apm.to_dict()
-                apm['ServiceName'] = self.gw_type
-                dict['ElasticAPM'] = apm
+        if server.deploy.elastic_apm is not None:
+            apm = server.deploy.elastic_apm.to_dict()
+            apm['ServiceName'] = self.gw_type
+            config['ElasticAPM'] = apm
 
-            if deploy.service_provider is not None:
-                dict['ConsulServer'] = deploy.service_provider.to_dict()
+        if server.deploy.service_provider is not None:
+            config['ConsulServer'] = server.deploy.service_provider.to_dict()
 
         # services
         for service in self.services.all():
             key = 'Srv%sClient' % service.name
-            dict[key] = {
+            config[key] = {
                 'Name': '%sRPC' % service.name,
                 'MaxRetry': 3,
                 'Discovery': {
                     'Consul': {
-                        'Host': deploy.service_provider.host if deploy.service_provider is not None else 'localhost',
-                        'Port': deploy.service_provider.port if deploy.service_provider is not None else 8500
+                        'Host': server.deploy.service_provider.host,
+                        'Port': server.deploy.service_provider.port,
                     }
                 }
             }
 
         # setting
         for setting_group in self.other_settings.all():
-            dict[setting_group.group_name] = setting_group.to_dict()
+            config[setting_group.group_name] = setting_group.to_dict()
 
         # cmc gateway
-        dict['CMCGatewayConfig'] = {
+        config['CMCGatewayConfig'] = {
             "GatewayIP": server.ip if server is not None else 'localhost',
             "Url": "http://cmc.marvelsystem.net",
             "Type": self.gw_type,
             "Env": self.env
         }
 
-        return dict
+        return config
 
     def get_pillar(self, deploy):
         base_url = 'http://127.0.0.1'
