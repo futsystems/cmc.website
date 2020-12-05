@@ -12,17 +12,16 @@ class Portal(models.Model):
     """
     name = models.CharField('Portal Name', max_length=50, default='Portal')
     env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
-    domain_name = models.CharField('Domain Name', max_length=100, default='dev-portal.marvelsystem.net')
+
     admin_pipeline_trigger = models.CharField('Admin Pipeline Trigger', max_length=1000, default='', blank=True)
     console_pipeline_trigger = models.CharField('Console Pipeline Trigger', max_length=1000, default='', blank=True)
     h5_pipeline_trigger = models.CharField('H5 Pipeline Trigger', max_length=1000, default='', blank=True)
+
     description = models.CharField('Description', max_length=1000, default='', blank=True)
 
     merge_success = models.BooleanField('Merge Success', default=True)
     merge_message = models.CharField('Merge Message', max_length=500, default='', blank=True, null=True)
-    partion_info_api_domain = models.CharField('PartionInfoDomain', max_length=1000, blank=True, default='test-www.marvelsystem.net')
 
-    api_gw_domain = models.CharField('API Gateway', max_length=1000, blank=True, default='dev-api-gw.marvelsystem.net')
     admin_tag = models.CharField(max_length=20, default='v1.0.0')
     console_tag = models.CharField(max_length=20, default='v1.0.0')
     h5_tag = models.CharField(max_length=20, default='v1.0.0')

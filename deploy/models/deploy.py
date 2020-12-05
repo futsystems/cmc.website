@@ -36,8 +36,15 @@ class Deploy(models.Model):
                                           default=None,
                                           blank=True, null=True)
 
-    log_level = models.ForeignKey(LogItemGroup, verbose_name='LogLevel', on_delete=models.SET_NULL,default=None,
+    log_level = models.ForeignKey(LogItemGroup, verbose_name='LogLevel', on_delete=models.SET_NULL, default=None,
                                   blank=True, null=True)
+
+    portal_admin_tag = models.CharField(max_length=20, default='v1.0.0')
+
+    portal_console_tag = models.CharField(max_length=20, default='v1.0.0')
+
+    portal_h5_tag = models.CharField(max_length=20, default='v1.0.0')
+
     description = models.CharField('Description', max_length=1000, default='', blank=True)
 
     key = models.CharField('Key', max_length=100, default='', blank=True)

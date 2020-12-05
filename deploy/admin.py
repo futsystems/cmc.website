@@ -178,6 +178,13 @@ class DeployAdmin(admin.ModelAdmin):
                     'website_domain_name', 'portal_domain_name', 'gateway_domain_name', 'log_level',
                 ]
             }),
+
+            ("Docker Tag", {
+                'fields': [
+                    'portal_admin_tag', 'portal_console_tag', 'portal_h5_tag',
+                ]
+            }),
+
             ("Other", {
 
                 'fields': [

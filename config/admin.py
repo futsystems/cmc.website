@@ -566,7 +566,7 @@ def merge_portal_project(modeladmin, request, queryset):
 merge_portal_project.short_description = "Merge to master branch"
 
 class PortalAdmin(admin.ModelAdmin):
-    list_display = ('name', 'env', 'domain_name','merge_success', 'merge_message')
+    list_display = ('name', 'env', 'merge_success', 'merge_message')
     list_filter = ('env',)
     actions = [merge_portal_project]
 
