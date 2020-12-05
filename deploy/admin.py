@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 import models
 from eventbus import EventBublisher
-from eventbus import CMCGatewayConfigUpdate
+from eventbus import CMCGatewayConfigUpdate,CMCACLRoleUpdate, CMCACLPermissionUpdate
 import hashlib
 from common import salt_helper
 from config.models import ElastAPM, EventBus, Consul
@@ -141,8 +141,90 @@ class DeployAdminForm(forms.ModelForm):
             self.fields['event_bus'].queryset = EventBus.objects.filter(env=self.instance.env)
 
 class DeployAdmin(admin.ModelAdmin):
-    list_display = ('name', 'env', 'product_type', 'location', 'suffix', 'gateway_domain_name', 'service_provider', 'elastic_apm', 'event_bus', 'key')
+    list_display = ('name', 'env', 'product_type', 'location', 'suffix', 'gateway_domain_name', 'service_provider', 'elastic_apm', 'event_bus', 'key', 'deploy_action')
     form = DeployAdminForm
+
+    def deploy_action(self, obj):
+        """
+
+        """
+        return format_html(
+            '<a class="button" href="{}">Gateway</a>&nbsp;'
+            '<a class="button" href="{}">Permission</a>&nbsp;'
+            '<a class="button" href="{}">Role</a>&nbsp;',
+            reverse('admin:deploy-update-gateway-config', args=[obj.pk]),
+            reverse('admin:deploy-upload-permission', args=[obj.pk]),
+            reverse('admin:deploy-upload-role', args=[obj.pk]),
+        )
+
+    deploy_action.allow_tags = True
+    deploy_action.short_description = "Action"
+
+    def get_urls(self):
+        # use get_urls for easy adding of views to the admin
+        urls = super(DeployAdmin, self).get_urls()
+        my_urls = [
+            url(
+                r'^(?P<deploy_id>.+)/upload_permission/$',
+                self.admin_site.admin_view(self.upload_permission),
+                name='deploy-upload-permission',
+            ),
+            url(
+                r'^(?P<deploy_id>.+)/upload_role/$',
+                self.admin_site.admin_view(self.upload_role),
+                name='deploy-upload-role',
+            ),
+            url(
+                r'^(?P<deploy_id>.+)/update_gateway_config/$',
+                self.admin_site.admin_view(self.update_gateway_config),
+                name='deploy-update-gateway-config',
+            ),
+        ]
+
+        return my_urls + urls
+
+    def update_gateway_config(self, request, deploy_id):
+        """
+        触发路由更新消息
+        """
+        previous_url = request.META.get('HTTP_REFERER')
+        deploy = models.Deploy.objects.get(id=deploy_id)
+        ev = CMCGatewayConfigUpdate(deploy.key)
+        if deploy.event_bus is None:
+            messages.info(request, "Deploy have not set event bus")
+            return HttpResponseRedirect(previous_url)
+        EventBublisher(deploy.event_bus).send_message(ev)
+        messages.info(request, "Send Gateway Config Update Success")
+        return HttpResponseRedirect(previous_url)
+
+    def upload_permission(self, request, deploy_id):
+        """
+        触发权限更新消息
+        """
+        previous_url = request.META.get('HTTP_REFERER')
+        deploy = models.Deploy.objects.get(id=deploy_id)
+        ev = CMCACLPermissionUpdate(deploy.key)
+        if deploy.event_bus is None:
+            messages.info(request, "Deploy have not set event bus")
+            return HttpResponseRedirect(previous_url)
+        EventBublisher(deploy.event_bus).send_message(ev)
+        messages.info(request, "Send Permission Update Success")
+        return HttpResponseRedirect(previous_url)
+
+    def upload_role(self, request, deploy_id):
+        """
+        触发角色更新消息
+        """
+        previous_url = request.META.get('HTTP_REFERER')
+        deploy = models.Deploy.objects.get(id=deploy_id)
+        ev = CMCACLRoleUpdate(deploy.key)
+        if deploy.event_bus is None:
+            messages.info(request, "Deploy have not set event bus")
+            return HttpResponseRedirect(previous_url)
+        EventBublisher(deploy.event_bus).send_message(ev)
+        messages.info(request, "Send Role Update Success")
+        return HttpResponseRedirect(previous_url)
+
 
 admin.site.register(models.Server, ServerAdmin)
 admin.site.register(models.Deploy, DeployAdmin)

@@ -4,47 +4,32 @@ from message import IntegrationEvent
 
 
 class CMCACLPermissionUpdate(IntegrationEvent):
-    def __init__(self, env, product='WeiShop', tag=''):
-        """
-
-        :param gw_type: gw.api gw.api.app gw.api.admin and so on
-        :param gw_env: Production Stage Development
-        """
+    def __init__(self, deploy, tag=''):
         super(CMCACLPermissionUpdate, self).__init__()
-        self._product = product
-        self._env = env
+        self._deploy = deploy
         self._tag = tag
         self._event_name = 'CMCACLPermissionnUpdateIntegrationEvent'
 
     @property
     def body(self):
-        dict = super(CMCACLPermissionUpdate, self).body
+        content = super(CMCACLPermissionUpdate, self).body
+        content['deploy'] = self._deploy
+        content['tag'] = self._tag
+        return content
 
-        dict['product'] = self._product
-        dict['tag'] = self._tag
-        dict['env'] = self._env
-        return dict
 
 class CMCACLRoleUpdate(IntegrationEvent):
-    def __init__(self, env, product='WeiShop', tag=''):
-        """
-
-        :param gw_type: gw.api gw.api.app gw.api.admin and so on
-        :param gw_env: Production Stage Development
-        """
+    def __init__(self, deploy, tag=''):
         super(CMCACLRoleUpdate, self).__init__()
-        self._product = product
-        self._env = env
+        self._deploy = deploy
         self._tag = tag
         self._event_name = 'CMCACLRoleUpdateIntegrationEvent'
 
     @property
     def body(self):
-        dict = super(CMCACLRoleUpdate, self).body
-
-        dict['product'] = self._product
-        dict['tag'] = self._tag
-        dict['env'] = self._env
-        return dict
+        content = super(CMCACLRoleUpdate, self).body
+        content['deploy'] = self._deploy
+        content['tag'] = self._tag
+        return content
 
 
