@@ -140,10 +140,10 @@ class DeployAdminForm(forms.ModelForm):
             self.fields['elastic_apm'].queryset = ElastAPM.objects.filter(env=self.instance.env)
             self.fields['event_bus'].queryset = EventBus.objects.filter(env=self.instance.env)
 
+
 class DeployAdmin(admin.ModelAdmin):
     list_display = ('name', 'product_type', 'env', 'location', 'suffix', 'gateway_domain_name', 'service_provider', 'elastic_apm', 'event_bus', 'key', 'deploy_action')
     form = DeployAdminForm
-
 
     def get_fieldsets(self, request, obj=None):
         if obj is None:
@@ -164,18 +164,18 @@ class DeployAdmin(admin.ModelAdmin):
         return (
             (None, {
                 "fields": [
-                    'name', 'product_type', 'env', 'location', 'suffix'
+                    'name', 'product_type', 'env', 'location', 'suffix',
                 ]
             }),
             ("Facility", {
                 'fields': [
-                    'service_provider', 'elastic_apm', 'event_bus'
+                    'service_provider', 'elastic_apm', 'event_bus',
                 ]
             }),
 
             ("Config", {
                 'fields': [
-                    'gateway_domain_name', 'log_level'
+                    'website_domain_name', 'portal_domain_name', 'gateway_domain_name', 'log_level',
                 ]
             }),
             ("Other", {
