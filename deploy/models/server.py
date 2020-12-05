@@ -28,16 +28,22 @@ class Server(models.Model):
 
     index = models.CharField(max_length=20, default='01')
 
-    #服务器安装服务
+    # 服务器安装服务
     installed_services = models.ManyToManyField(Service, verbose_name='Installed Services', blank=True)
 
-    #服务器如果部署网关 则部署绑定的网关设置
+    # 服务器如果部署网关 则部署绑定的网关设置
     gateway = models.ForeignKey(ApiGateway, verbose_name='Gateway', on_delete=models.SET_NULL, default=None,
                                          blank=True, null=True)
 
+    # 服务器部署 portal
     portal = models.ForeignKey(Portal, verbose_name='Portal', on_delete=models.SET_NULL, default=None,
                                          blank=True, null=True)
 
+
+    install_mysql = models.BooleanField('Install MySQL', default=False)
+    install_mq = models.BooleanField('Install RabbitMQ', default=False)
+    install_consul = models.BooleanField('Install Consul', default=False)
+    install_apm = models.BooleanField('Instal APM', default=False)
 
 
     #服务器部署portal 绑定的portal设置
@@ -90,7 +96,6 @@ class Server(models.Model):
             'ip': self.ip,
             'env': self.env,
             'node_type': self.node_type,
-            'net_core_support': False,
         }
 
         if self.deploy is None:
@@ -98,20 +103,30 @@ class Server(models.Model):
         else:
             data['deploy'] = self.deploy.key
 
-        # Service Node
-        if self.installed_services.all().count() > 0:
-            data['net_core_support'] = True
-            data['services'] = [item.get_pillar() for item in self.installed_services.all()]
-            if self.installed_services.filter(name='CMS').count() > 0:
-                data['cms_screenshot'] = True
+        # basic components
+        data['components'] = {
+            'mq': self.install_mq,
+            'mysql': self.install_mysql,
+            'consul': self.install_consul,
+            'apm': self.install_apm,
+            'docker': self.env == 'Staging',
+            'dotnet': self.installed_services.all().count() > 0 or self.gateway is not None,
+            'cms_screen_shot': self.installed_services.filter(name='CMS').count() > 0,
+        }
 
         # Gateway Node
         if self.gateway is not None:
-            data['net_core_support'] = True
             data['gateway'] = self.gateway.get_pillar(self.deploy)
 
+        # Portal
         if self.portal is not None:
             data['portal'] = self.portal.get_pillar(self.deploy)
+
+        # Service Node
+        if self.installed_services.all().count() > 0:
+            data['services'] = [item.get_pillar() for item in self.installed_services.all()]
+            if self.installed_services.filter(name='CMS').count() > 0:
+                data['cms_screenshot'] = True
 
         # development and staging env install gitlab runner
         if self.env == 'Development' or self.env == 'Staging':
@@ -129,7 +144,6 @@ class Server(models.Model):
                 data['gitlab-runner'] = runner
 
         return data
-
 
     def register_runner(self):
         from common import GitlabAPI
