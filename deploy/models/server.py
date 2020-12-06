@@ -25,11 +25,9 @@ class Server(models.Model):
     name = models.CharField('Name', max_length=100, default='Node1', unique=True)
     location = models.CharField(max_length=20, choices=LOCATION, default='hangzhou')
     ip = models.CharField('IP', max_length=50, default='127.0.0.1')
-    #env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
     node_type = models.CharField(max_length=20, choices=NODETYPE, default='Service')
 
-    deploy = models.ForeignKey('Deploy', verbose_name='Deploy', on_delete=models.SET_NULL, default=None,
-                                blank=True, null=True)
+    deploy = models.ForeignKey('Deploy', verbose_name='Deploy')
 
     index = models.CharField(max_length=20, default='01')
 
