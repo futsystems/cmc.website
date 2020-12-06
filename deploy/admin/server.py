@@ -47,7 +47,7 @@ class ServerAdmin(admin.ModelAdmin):
         if obj is None:
             return ((None, {
                     'fields': [
-                        'name', 'location', 'ip', 'deploy',
+                        'name', 'location', 'ip', 'deploy', 'node_type'
                     ]
                 }),
 
@@ -62,7 +62,7 @@ class ServerAdmin(admin.ModelAdmin):
         return (
             (None, {
                 "fields": [
-                    'name', 'location', 'ip', 'deploy',
+                    'name', 'location', 'ip', 'deploy', 'node_type'
                 ]
             }),
             ("Facility", {
