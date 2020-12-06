@@ -102,7 +102,7 @@ class ServerAdmin(admin.ModelAdmin):
         if obj is None:
             return []
         else:
-            return ['deploy']
+            return []
 
     def salt_action(self, obj):
         """
