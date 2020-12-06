@@ -27,7 +27,7 @@ class Server(models.Model):
     ip = models.CharField('IP', max_length=50, default='127.0.0.1')
     node_type = models.CharField(max_length=20, choices=NODETYPE, default='Service')
 
-    deploy = models.ForeignKey('Deploy', verbose_name='Deploy')
+    deploy = models.ForeignKey('Deploy', verbose_name='Deploy', default= 1)
 
     index = models.CharField(max_length=20, default='01')
 
@@ -54,7 +54,7 @@ class Server(models.Model):
 
     gitlab_runner_register_token = models.CharField(max_length=100, default='register_token', blank=True)
 
-    gitlab_runner_id = models.IntegerField('Runner Id', default=8080)
+    gitlab_runner_id = models.IntegerField('Runner Id', default=None, null=True)
 
     gitlab_runner_auth_token = models.CharField(max_length=100, blank=True, null=True, default=None)
 
@@ -76,9 +76,9 @@ class Server(models.Model):
     @property
     def host_name(self):
         # 生产环境才通过deploy信息进行host_name生成
-        if self.deploy is not None:
+        if self.deploy.env == 'Production':
             if self.deploy.env == 'Production':
-                return ('%s-%s-%s-%s' % (self.node_type,self.deploy.product_type,self.deploy.suffix, self.index)).lower()
+                return ('%s-%s-%s-%s' % (self.node_type, self.deploy.product_type, self.deploy.suffix, self.index)).lower()
 
         return self.name
 
