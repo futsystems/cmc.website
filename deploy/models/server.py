@@ -6,11 +6,16 @@ from django.db import models
 from config.models import Service, ApiGateway, Portal
 from choices import LOCATION, NODETYPE
 from config.models.choices import ENV_STAGE
+from ip_white_list import IP
 
 class ServerManager(models.Manager):
 
-    def in_white_list(self,ip):
-        return self.filter(ip=ip).first() is not None
+    def in_white_list(self, ip):
+        is_server = self.filter(ip=ip).first() is not None
+        in_whitelist = IP.objects.filter(ip=ip,is_blocked=False).first() is not None
+        return  is_server or in_whitelist
+
+
 
 
 class Server(models.Model):
@@ -20,7 +25,7 @@ class Server(models.Model):
     name = models.CharField('Name', max_length=100, default='Node1', unique=True)
     location = models.CharField(max_length=20, choices=LOCATION, default='hangzhou')
     ip = models.CharField('IP', max_length=50, default='127.0.0.1')
-    env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
+    #env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
     node_type = models.CharField(max_length=20, choices=NODETYPE, default='Service')
 
     deploy = models.ForeignKey('Deploy', verbose_name='Deploy', on_delete=models.SET_NULL, default=None,
@@ -91,11 +96,13 @@ class Server(models.Model):
         return ','.join(items)
 
     def get_pillar(self):
+
         data = {
             'name': self.name,
             'ip': self.ip,
-            'env': self.env,
+            'env': self.deploy.env,
             'node_type': self.node_type,
+            'deploy': self.deploy.env,
         }
 
         if self.deploy is None:
@@ -109,7 +116,7 @@ class Server(models.Model):
             'mysql': self.install_mysql,
             'consul': self.install_consul,
             'apm': self.install_apm,
-            'docker': self.env == 'Staging',
+            'docker': self.deploy.env == 'Staging',
             'dotnet': self.installed_services.all().count() > 0 or self.gateway is not None,
             'cms_screen_shot': self.installed_services.filter(name='CMS').count() > 0,
         }
@@ -129,15 +136,15 @@ class Server(models.Model):
                 data['cms_screenshot'] = True
 
         # development and staging env install gitlab runner
-        if self.env == 'Development' or self.env == 'Staging':
+        if self.deploy.env == 'Development' or self.deploy.env == 'Staging':
             if self.gitlab_runner_id is not None:
                 runner = {}
                 runner['register_url'] = 'https://gitlab.marvelsystem.net/'
                 runner['register_token'] = self.gitlab_runner_register_token
                 runner['auth_token'] = self.gitlab_runner_auth_token
-                if self.env == 'Development':
+                if self.deploy.env == 'Development':
                     runner['tags'] = 'development,%s' % self.name
-                if self.env == 'Staging':
+                if self.deploy.env == 'Staging':
                     runner['tags'] = 'staging,production,%s' % self.name
                 runner['identifier'] = '%s-runner' % self.name
 
@@ -156,9 +163,9 @@ class Server(models.Model):
         #初始化参数
         description = '%s-runner' % self.name
         tags= []
-        if self.env == 'Development':
+        if self.deploy.env == 'Development':
             tags.append('development')
-        if self.env == 'Staging':
+        if self.deploy.env == 'Staging':
             tags.append('staging')
             tags.append('production')
         tags.append(self.name)
