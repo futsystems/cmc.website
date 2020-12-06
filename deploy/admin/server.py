@@ -32,9 +32,9 @@ class ServerAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         forms.ModelForm.__init__(self, *args, **kwargs)
         if self.instance.id > 0:
-            self.fields['installed_services'].queryset = Service.objects.filter(env=self.instance.env)
-            self.fields['gateway'].queryset = ApiGateway.objects.filter(env=self.instance.env)
-            self.fields['portal'].queryset = Portal.objects.filter(env=self.instance.env)
+            self.fields['installed_services'].queryset = Service.objects.filter(env=self.instance.deploy.env)
+            self.fields['gateway'].queryset = ApiGateway.objects.filter(env=self.instance.deploy.env)
+            self.fields['portal'].queryset = Portal.objects.filter(env=self.instance.deploy.env)
 
 
 class ServerAdmin(admin.ModelAdmin):
