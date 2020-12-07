@@ -1,0 +1,109 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_list %}
+{% block content %}
+  <div id="content-main">
+      <div class="results">
+        <table id="result_list">
+        <thead><tr>
+            <th scope="col">
+            <div class="text"><span>Name</span></div>
+            <div class="clear"></div>
+        </th>
+<th scope="col">
+   <div class="text"><span>Git Path</span></div>
+   <div class="clear"></div>
+</th>
+<th scope="col">
+   <div class="text"><span>Commits CNT</span></div>
+   <div class="clear"></div>
+</th>
+
+<th scope="col">
+   <div class="text"><span>Action</span></div>
+   <div class="clear"></div>
+</th>
+</tr>
+</thead>
+<tbody>
+
+
+{% for item in diff%}
+<tr class="row{{forloop.counter}} row" data="{{item.commits_json}}">
+    <th class="field-name"><a href="/admin/deploy/server/5/change/">{{item.name}}</a></th>
+    <td class="field-path">{{item.path}}</td>
+    <td class="field-commit_cnt">{{item.commit_cnt}}</td>
+    <td class="field-action"><a href="https://gitlab.marvelsystem.net/{{item.path}}" target="_blank">Project</a></td></tr>
+
+{% endfor %}
+</tbody>
+</table>
+</div>
+  </div>
+
+<script type="text/javascript" src="/static/admin/js/vendor/jquery/jquery.js"></script>
+<script>
+    $(function () {
+        $('.row').click(function () {
+            let $this = $(this)
+            if($this.hasClass('expend')){
+                $this.next().remove()
+                $this.removeClass('expend')
+
+            }else {
+
+                            let data =JSON.parse($(this).attr('data'))
+
+        let  str = `<tr>
+                        <td colspan="4">
+                            <table >
+                                <thead>
+                                    <tr>
+                                        <th scope="col">title</th>
+                                        <th scope="col">author_name</th>
+                                        <th scope="col">HASH</th>
+                                        <th scope="col">time</th>
+                                        <th scope="col">short_id</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                </thead>
+                        <tbody>
+
+
+${function(data){
+    let htm=``
+                for(let d of data){
+                    htm +=`<tr>
+                                <td>${d.title}</td>
+                                <td>${d.author_name}</td>
+                                <td>${d.short_id}</td>
+                                <td>${d.created_at}</td>
+                                <td>${d.short_id}</td>
+                                <td><a href=${d.web_url} target="_blank">commit</a></td>
+                            </tr>`
+                }
+
+      return htm
+            }(data)
+
+                }
+
+
+
+</tbody>
+</table>
+
+</td>
+
+
+</tr>`
+                  $this.after(str)
+                $this.addClass('expend')
+            }
+
+
+
+        })
+    })
+
+</script>
+{% endblock %}

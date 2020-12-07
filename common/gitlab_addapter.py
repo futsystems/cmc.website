@@ -64,10 +64,26 @@ class GitlabAPI(object):
 
         try:
             diff = project.repository_compare(source, target)
-
-            if diff['commit'] is None:
-                return None
-            return diff['commit']
+            #if path=='platform/srv.order':
+            #    logger.info(diff)
+            data = {
+                'compare_timeout': diff['compare_timeout'],
+                'compare_same_ref': diff['compare_same_ref'],
+                'commits': []
+            }
+            if diff['compare_same_ref'] == False:
+                for commit in diff['commits']:
+                    data['commits'].append(
+                        {
+                            'author_name': commit['author_name'],
+                            'author_email': commit['author_email'],
+                            'title': commit['title'],
+                            'web_url': commit['web_url'],
+                            'created_at': commit['created_at'],
+                            'short_id': commit['short_id'],
+                        }
+                    )
+            return data
         except GitlabGetError as e:
             return e.message
 

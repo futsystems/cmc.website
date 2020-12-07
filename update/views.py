@@ -399,8 +399,10 @@ def code_diff(request):
                 'diff': []
             }
 
-
+            idx =0
             for item_name in intersection_items:
+                #if idx > 1:
+                #    continue
                 new_item = target_items.get(name=item_name)
                 old_item = source_items.get(name=item_name)
 
@@ -410,13 +412,20 @@ def code_diff(request):
                 if env == 'Production':
                     source_repo = old_item.production_tag
                 ret = api.compare_repository(path, source_repo, target_repo)
-
-                if ret is not None:
+                if ret['compare_same_ref'] == False:
+                    idx = idx + 1
                     diff['diff'].append({
-                        'path':path,
-                        'commits':ret
+                        'name': new_item.name,
+                        'path': path,
+                        'commits': ret['commits'],
+                        'commits_json': json.dumps(ret['commits']),
+                        'commit_cnt': len(ret['commits']),
                     })
-            return json_response(diff)
+            #return json_response(diff)
+            context = diff
+
+            # Render the HTML template index.html with the data in the context variable
+            return render(request, 'update/diff_code.html', context=context)
         except Exception, e:
             logging.error(traceback.format_exc())
             return json_response(Error("get gateway ocelot config error"))
