@@ -364,17 +364,21 @@ def code_diff(request):
     if request.method == "POST":
         return HttpResponse("POST not support")
     else:
-        env = request.GET.get("env")
+        deploy_key = request.GET.get("deploy")
+        logger.info('get deploy:%s info' % deploy_key)
 
-        if env == None:
-            env = 'Staging'
         try:
-            if env == 'Staging':
+            deploy = config_models.Deploy.objects.get(key=deploy_key)
+        except config_models.Deploy.DoesNotExist:
+            json_response(Error("deploy do not exist"))
+
+        try:
+            if deploy.env == 'Staging':
                 source = 'Staging'
                 source_repo = 'master'
                 target = 'Development'
                 target_repo = 'develop'
-            elif env == 'Production':
+            elif deploy.env == 'Production':
                 source = 'Production'
                 source_repo = 'v1.0.0'
                 target = 'Staging'
@@ -409,8 +413,8 @@ def code_diff(request):
                 path = 'platform/srv.%s' % new_item.name.lower()
                 api = GitlabAPI()
 
-                if env == 'Production':
-                    source_repo = old_item.production_tag
+                if deploy.env == 'Production':
+                    source_repo = deploy.get_version(old_item.name) #old_item.production_tag
                 ret = api.compare_repository(path, source_repo, target_repo)
                 if len(ret['commits']) > 0:
                     idx = idx + 1
