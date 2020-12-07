@@ -11,7 +11,7 @@ from deploy.models import Server,Deploy,NodeInfo
 from common import Response,Success,Error, json_response, _json_content
 from common.request_helper import get_client_ip
 import requests
-
+import datetime
 
 import logging, traceback
 logger = logging.getLogger(__name__)
@@ -277,8 +277,8 @@ def update_health_info(request):
             msg = 'node:%s at ip:%s do not exist' % (node_service, ip)
             logger.warn(msg)
             return json_response(Error(msg))
-
         node_info.health_report = json.dumps(health)
+        node_info.last_active_time = datetime.datetime.now()
         node_info.save()
 
 
