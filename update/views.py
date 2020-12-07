@@ -368,7 +368,7 @@ def code_diff(request):
         deploy_key = request.GET.get("deploy")
         logger.info('get deploy:%s info' % deploy_key)
         deploy = None
-        if deploy_key != 'latest':
+        if deploy_key != 'latest_tag':
             try:
                 deploy = Deploy.objects.get(key=deploy_key)
             except Deploy.DoesNotExist:
