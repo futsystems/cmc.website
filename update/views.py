@@ -423,7 +423,7 @@ def code_diff(request):
                     })
 
             #return json_response(diff)
-            diff['diff'].sort()
+            diff['diff'].sort(key=lambda x: x.name, reverse=True)
             context = diff
 
             # Render the HTML template index.html with the data in the context variable
