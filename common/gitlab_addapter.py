@@ -7,7 +7,7 @@ from gitlab import GitlabCreateError, GitlabMRClosedError, GitlabGetError
 from settings import GITLAB_SETTING
 
 import datetime
-
+import time
 
 import logging, traceback
 logger = logging.getLogger(__name__)
@@ -106,10 +106,9 @@ class GitlabAPI(object):
             return [False, e.message]
 
         try:
-            from time import sleep
-            sleep(1)
+            time.sleep(1)
             mr.approve()
-            sleep(1)
+            time.sleep(1)
             mr.merge()
             return [True, "Merge Success"]
         except GitlabMRClosedError as e:
