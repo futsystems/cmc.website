@@ -426,7 +426,7 @@ def code_diff(request):
                 api = GitlabAPI()
                 #logger.info('22222')
                 if deploy is not None and deploy.env == 'Production':
-                    source_repo = deploy.get_version(old_item.name) #old_item.production_tag
+                    target_repo = deploy.get_version(old_item.name) #old_item.production_tag
                 ret = api.compare_repository(path, source_repo, target_repo)
                 if len(ret['commits']) > 0:
                     idx = idx + 1
