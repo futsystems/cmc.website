@@ -264,7 +264,7 @@ def update_health_info(request):
     import json
     if request.method == 'POST':
         data = json.loads(request.body)
-        logger.info(data)
+        #logger.info(data)
 
         try:
             deploy_key = data['deploy']
