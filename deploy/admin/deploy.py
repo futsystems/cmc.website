@@ -31,7 +31,7 @@ class DeployAdminForm(forms.ModelForm):
 
 
 class DeployAdmin(admin.ModelAdmin):
-    list_display = ('name', 'product_type', 'env', 'location', 'suffix', 'portal_domain_name', 'gateway_domain_name', 'service_provider', 'elastic_apm', 'event_bus', 'key', 'deploy_action')
+    list_display = ('name', 'product_type', 'env', 'location', 'suffix', 'portal_domain_name', 'gateway_domain_name', 'service_provider', 'elastic_apm', 'event_bus', 'key', 'deploy_action', 'code_action')
     form = DeployAdminForm
 
     def get_fieldsets(self, request, obj=None):
@@ -104,6 +104,18 @@ class DeployAdmin(admin.ModelAdmin):
     deploy_action.allow_tags = True
     deploy_action.short_description = "Update Action"
 
+    def code_action(self, obj):
+        """
+
+        """
+        return format_html(
+            '<a href="{}" target="_blank">Compare</a>&nbsp;',
+            reverse('admin:deploy-code-compare', args=[obj.pk]),
+        )
+
+    code_action.allow_tags = True
+    code_action.short_description = "Code Action"
+
     def get_urls(self):
         # use get_urls for easy adding of views to the admin
         urls = super(DeployAdmin, self).get_urls()
@@ -123,9 +135,38 @@ class DeployAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.update_gateway_config),
                 name='deploy-update-gateway-config',
             ),
+
+            url(
+                r'^(?P<deploy_id>.+)/code_compare/$',
+                self.admin_site.admin_view(self.code_compare),
+                name='deploy-code-compare',
+            ),
         ]
 
         return my_urls + urls
+
+    def code_compare(self, request, deploy_id):
+        """
+        比较代码变化
+        """
+        previous_url = request.META.get('HTTP_REFERER')
+        deploy = models.Deploy.objects.get(id=deploy_id)
+        if deploy.env == 'Development':
+            messages.info(request, "Development has no target to compare")
+            return HttpResponseRedirect(previous_url)
+
+        if deploy.env == 'Staging':
+            url = '/update/diff/code/?env=Staging'
+            return HttpResponseRedirect(url)
+
+        if deploy.env == 'Production':
+            url = '/update/diff/code/?env=Production'
+            return HttpResponseRedirect(url)
+
+        messages.info(request, "No target to compare")
+        return HttpResponseRedirect(previous_url)
+
+
 
     def update_gateway_config(self, request, deploy_id):
         """
