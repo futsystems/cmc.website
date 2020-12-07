@@ -65,7 +65,7 @@ class GitlabAPI(object):
 
         tags = [tag.name for tag in project.tags.list()]
         if source == 'latest' and len(tags) > 0:
-            source = tags[0].name
+            source = tags[0]
             logger.info('change source to latest:%s' % source)
         try:
             diff = project.repository_compare(source, target)
