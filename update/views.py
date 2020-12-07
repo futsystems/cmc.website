@@ -429,5 +429,5 @@ def code_diff(request):
             # Render the HTML template index.html with the data in the context variable
             return render(request, 'update/diff_code.html', context=context)
         except Exception, e:
-            logging.error(traceback.format_exc())
-            return json_response(Error("get gateway ocelot config error"))
+            logger.error(traceback.format_exc())
+            return json_response(Error("get code diff error"))
