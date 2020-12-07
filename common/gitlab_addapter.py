@@ -83,6 +83,7 @@ class GitlabAPI(object):
                             'short_id': commit['short_id'],
                         }
                     )
+            data['commits'] = data['commits'][::-1]
             return data
         except GitlabGetError as e:
             return e.message

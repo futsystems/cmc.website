@@ -43,6 +43,7 @@ class NodeInfo(models.Model):
 
     def to_dict(self):
         dict = {
+            'id': self.pk,
             "service": self.node_service,
             'ip': self.ip,
             'product': self.product_type,
