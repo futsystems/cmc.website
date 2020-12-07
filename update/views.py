@@ -412,7 +412,7 @@ def code_diff(request):
                 if env == 'Production':
                     source_repo = old_item.production_tag
                 ret = api.compare_repository(path, source_repo, target_repo)
-                if ret['compare_same_ref'] == False:
+                if len(ret['commits']) > 0:
                     idx = idx + 1
                     diff['diff'].append({
                         'name': new_item.name,
