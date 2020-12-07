@@ -205,14 +205,14 @@ def unregister_node_info(request):
         data = json.loads(request.body)
         logger.info(data)
         try:
-            deploy_key = data['Deploy']
-            node_service = data['Service']
+            deploy_key = data['deploy']
+            node_service = data['service']
             ip = get_client_ip(request)
 
-            product_type = data['Product']
-            env = data['Env']
-            version = data['Version']
-            framework = data['Framework']
+            product_type = data['product']
+            env = data['env']
+            version = data['version']
+            framework = data['framework']
         except Exception:
             logger.warn('bad unregister data:%s' % data)
 
@@ -250,11 +250,12 @@ def update_health_info(request):
         logger.info(data)
 
         try:
-            deploy_key = data['Deploy']
-            node_service = data['Service']
-            product_type = data['Product']
-            env = data['Env']
+            deploy_key = data['deploy']
+            node_service = data['service']
+            product_type = data['product']
+            env = data['env']
             ip = get_client_ip(request)
+            health = data['health']
 
         except Exception:
             logger.warn('bad health data:%s' % data)
@@ -269,11 +270,11 @@ def update_health_info(request):
         try:
             node_info = NodeInfo.objects.get(deploy=deploy, node_service=node_service, ip=ip)
         except NodeInfo.DoesNotExist:
-            msg = 'node:%s at ip:%s do not exist' % (node_service,ip)
+            msg = 'node:%s at ip:%s do not exist' % (node_service, ip)
             logger.warn(msg)
             return json_response(Error(msg))
 
-        node_info.health_report = _json_content(data['Health'])
+        node_info.health_report = _json_content(health)
         node_info.save()
 
 
