@@ -66,7 +66,7 @@ class GitlabAPI(object):
         tags = [tag.name for tag in project.tags.list()]
         if target == 'latest_tag' and len(tags) > 0:
             target = tags[0]
-            logger.info('change target to latest:%s' % source)
+            logger.info('change target to latest:%s' % target)
         try:
             diff = project.repository_compare(target, source)
             #if path=='platform/srv.order':
