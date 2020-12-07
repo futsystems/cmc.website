@@ -26,9 +26,9 @@ class NodeInfo(models.Model):
     env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
 
     version = models.CharField('Version', max_length=100, default='1.0.0')
-    framework = models.TextField('Framework', default='')
+    framework = models.TextField('Framework', default='{}')
 
-    health_report = models.TextField('Health Report', default='')
+    health_report = models.TextField('Health Report', default='{}')
 
     up = models.BooleanField('No Up', default=False)
     up_time = models.DateTimeField('Up Time', default=timezone.now)
