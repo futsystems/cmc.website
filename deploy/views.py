@@ -106,13 +106,15 @@ def node_info(request):
             data = deploy.to_info_dict()
 
             try:
-                url2 = 'http://%s:8500/v1/health/node/consul-%s' % (deploy.service_provider.host, deploy.key)
-                logger.info('url:%s' % url2)
-                #health_result = requests.get(url=url2).json()
+                #url2 = 'http://%s:8500/v1/health/node/consul-%s' % (deploy.service_provider.host, deploy.key)
+                url1 = 'http://consul.marvelsystem.net:8500/v1/agent/services'
+                #logger.info('url:%s' % url2)
+                service_status = requests.get(url=url1).json()
 
                 services = []
                 gateways = []
                 for node in [item.to_dict() for item in deploy.nodes.all()]:
+                    node['consul'] = get_consul_status(node, service_status)
                     if node['service'] == 'APIGateway':
                         gateways.append(node)
                     else:
@@ -127,6 +129,34 @@ def node_info(request):
             return json_response(Success(data))
         except Deploy.DoesNotExist:
             return json_response(Error('Deploy do not exist'))
+
+
+def get_consul_status(service_node, service_status):
+    api_name = '%sAPI' % service_node['service']
+    rpc_name = '%sRPC' % service_node['service']
+    result={
+        'api': None,
+        'rpc': None
+    }
+    for item in service_status:
+        if item['ServiceName'] == api_name:
+            result['api'] = {
+                'service_name':api_name,
+                'status': item['Status'],
+                'output': item['Output'],
+                'type': item['Type'],
+                'notes': item['Notes'],
+            }
+        if item['ServiceName'] == rpc_name:
+            result['rpc'] = {
+                'service_name': item['ServiceName'],
+                'status': item['Status'],
+                'output': item['Output'],
+                'type': item['Type'],
+                'notes': item['Notes'],
+            }
+    return result
+
 
 def get_health_result(health_result,service_name):
     api_name = '%sAPI' % service_name
