@@ -248,7 +248,7 @@ copy_service_production.short_description = "Copy Service To Production"
 
 
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'env', 'has_other_settings', 'support_rpc', 'rpc_port', 'support_api', 'api_port', 'merge_success', 'merge_message')
+    list_display = ('name', 'env', 'has_other_settings', 'support_rpc', 'rpc_port', 'support_api', 'api_port', 'production_tag', 'merge_success', 'merge_message')
     ordering = ('name',)
     search_fields = ['name']
     filter_horizontal = ('used_services', 'mysql_connections', 'other_settings')
