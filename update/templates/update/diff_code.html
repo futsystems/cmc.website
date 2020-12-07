@@ -17,6 +17,18 @@
    <div class="text"><span>Commits CNT</span></div>
    <div class="clear"></div>
 </th>
+ <th scope="col">
+   <div class="text"><span>Tags</span></div>
+   <div class="clear"></div>
+</th>
+<th scope="col">
+   <div class="text"><span>Source</span></div>
+   <div class="clear"></div>
+</th>
+<th scope="col">
+   <div class="text"><span>Target</span></div>
+   <div class="clear"></div>
+</th>
 
 <th scope="col">
    <div class="text"><span>Action</span></div>
@@ -32,6 +44,9 @@
     <th class="field-name"><a href="https://gitlab.marvelsystem.net/{{item.path}}">{{item.name}}</a></th>
     <td class="field-path">{{item.path}}</td>
     <td class="field-commit_cnt">{{item.commit_cnt}}</td>
+    <td class="field-tags">{{item.tags}}</td>
+    <td class="field-tags">{{item.source}}</td>
+    <td class="field-tags">{{item.target}}</td>
     <td class="field-action"><a href="https://gitlab.marvelsystem.net/{{item.path}}" target="_blank">Project</a></td></tr>
 
 {% endfor %}

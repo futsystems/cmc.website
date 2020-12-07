@@ -63,6 +63,10 @@ class GitlabAPI(object):
             return None
         logger.info('path:%s source:%s taget:%s' % (path, source, target))
 
+        tags = [tag.name for tag in project.tags.list()]
+        if source == 'latest' and len(tags) > 0:
+            source = tags[0].name
+            logger.info('change source to latest:%s' % source)
         try:
             diff = project.repository_compare(source, target)
             #if path=='platform/srv.order':
@@ -70,7 +74,10 @@ class GitlabAPI(object):
             data = {
                 'compare_timeout': diff['compare_timeout'],
                 'compare_same_ref': diff['compare_same_ref'],
-                'commits': []
+                'commits': [],
+                'tags': tags,
+                'source': source,
+                'target': target,
             }
             if diff['compare_same_ref'] == False:
                 for commit in diff['commits']:

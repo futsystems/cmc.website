@@ -368,12 +368,11 @@ def code_diff(request):
         deploy_key = request.GET.get("deploy")
         logger.info('get deploy:%s info' % deploy_key)
 
-        try:
-            deploy = Deploy.objects.get(key=deploy_key)
-        except Deploy.DoesNotExist:
-            json_response(Error("deploy do not exist"))
-
-        try:
+        if deploy_key != 'latest':
+            try:
+                deploy = Deploy.objects.get(key=deploy_key)
+            except Deploy.DoesNotExist:
+                return json_response(Error("deploy do not exist"))
             if deploy.env == 'Staging':
                 source = 'Staging'
                 source_repo = 'master'
@@ -384,6 +383,18 @@ def code_diff(request):
                 source_repo = 'v1.0.0'
                 target = 'Staging'
                 target_repo = 'master'
+            env = deploy.env
+        else:
+            source = 'Production'
+            source_repo = 'latest'
+            target = 'Staging'
+            target_repo = 'master'
+            env = 'Production'
+
+
+
+        try:
+
 
             logger.info('get diff of env source:%s target:%s' % (source, target))
             # 检查api permission变化
@@ -403,28 +414,31 @@ def code_diff(request):
                 'remove': remove_items,
                 'diff': []
             }
-
+            #logger.info(intersection_items)
             idx =0
             for item_name in intersection_items:
-                #if idx > 1:
-                #    continue
+                if idx > 1:
+                    continue
                 new_item = target_items.get(name=item_name)
                 old_item = source_items.get(name=item_name)
 
                 path = 'platform/srv.%s' % new_item.name.lower()
                 api = GitlabAPI()
-
-                if deploy.env == 'Production':
+                #logger.info('22222')
+                if deploy is not  None and deploy.env == 'Production':
                     source_repo = deploy.get_version(old_item.name) #old_item.production_tag
                 ret = api.compare_repository(path, source_repo, target_repo)
                 if len(ret['commits']) > 0:
                     idx = idx + 1
                     diff['diff'].append({
                         'name': new_item.name,
+                        'tags': str.join(',' ,ret['tags']),
                         'path': path,
                         'commits': ret['commits'],
                         'commits_json': json.dumps(ret['commits']),
                         'commit_cnt': len(ret['commits']),
+                        'source': ret['source'],
+                        'target': ret['target'],
                     })
 
             #return json_response(diff)
