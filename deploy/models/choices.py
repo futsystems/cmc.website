@@ -21,3 +21,9 @@ PRODUCTTYPE = {
     ('WeiShop', 'WeiShop'),
     ('WeiSite', 'WeiSite'),
 }
+
+NODETTYPE = {
+    ('Portal', 'Portal'),
+    ('Service', 'Service'),
+    ('Gateway', 'Gateway'),
+}

@@ -129,7 +129,7 @@ class Server(models.Model):
 
         # Service Node
         if self.installed_services.all().count() > 0:
-            data['services'] = [item.get_pillar() for item in self.installed_services.all()]
+            data['services'] = [item.get_pillar(self.deploy) for item in self.installed_services.all()]
             if self.installed_services.filter(name='CMS').count() > 0:
                 data['cms_screenshot'] = True
 

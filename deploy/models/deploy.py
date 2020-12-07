@@ -72,4 +72,10 @@ class Deploy(models.Model):
         }
         return dict
 
+    def get_version(self, node_name):
+        item = self.versions.filter(node_name=node_name).first()
+        if item is None:
+            return 'v1.0.0'
+        return item.version
+
 

@@ -17,6 +17,11 @@ import logging,traceback,json
 logger = logging.getLogger(__name__)
 
 
+class VersionInline(admin.StackedInline):  # or admin.StackedInline
+    model = models.Version
+    exclude = []
+    #filter_horizontal = ('api_permissions',)
+
 class DeployAdminForm(forms.ModelForm):
     class Meta:
         model = models.Server
@@ -33,6 +38,7 @@ class DeployAdminForm(forms.ModelForm):
 class DeployAdmin(admin.ModelAdmin):
     list_display = ('name', 'product_type', 'env', 'location', 'suffix', 'portal_domain_name', 'gateway_domain_name', 'service_provider', 'elastic_apm', 'event_bus', 'key', 'deploy_action', 'code_action')
     form = DeployAdminForm
+    inlines = [VersionInline, ]
 
     def get_fieldsets(self, request, obj=None):
         if obj is None:
@@ -209,5 +215,6 @@ class DeployAdmin(admin.ModelAdmin):
         EventBublisher(deploy.event_bus).send_message(ev)
         messages.info(request, "Send Role Update Success")
         return HttpResponseRedirect(previous_url)
+
 
 

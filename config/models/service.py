@@ -175,7 +175,7 @@ class Service(models.Model):
             self.merge_success = True
             self.merge_message = 'Only Development Merge'
 
-    def get_pillar(self):
+    def get_pillar(self, deploy):
         pillar = {
             'env': self.env,
             'name': self.name,
@@ -185,7 +185,7 @@ class Service(models.Model):
 
         pillar['api_port'] = self.api_port if self.support_api else 0
         pillar['rpc_port'] = self.rpc_port if self.support_rpc else 0
-        pillar['tag'] = self.production_tag
+        pillar['tag'] = deploy.get_version(self.name) #self.production_tag
         return pillar
 
 
