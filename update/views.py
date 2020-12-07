@@ -422,8 +422,8 @@ def code_diff(request):
                         'commit_cnt': len(ret['commits']),
                     })
 
-                diff['diff'] = diff['diff'].sort()
             #return json_response(diff)
+            diff['diff'] = diff['diff'].sort()
             context = diff
 
             # Render the HTML template index.html with the data in the context variable
