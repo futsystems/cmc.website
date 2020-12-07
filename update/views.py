@@ -417,8 +417,8 @@ def code_diff(request):
             #logger.info(intersection_items)
             idx =0
             for item_name in intersection_items:
-                if idx > 1:
-                    continue
+                #if idx > 1:
+                #    continue
                 new_item = target_items.get(name=item_name)
                 old_item = source_items.get(name=item_name)
 
