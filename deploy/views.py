@@ -161,14 +161,14 @@ def register_node_info(request):
         data = json.loads(request.body)
         logger.info(data)
         try:
-            deploy_key = data['Deploy']
-            node_service = data['Service']
+            deploy_key = data['deploy']
+            node_service = data['service']
             ip = get_client_ip(request)
 
-            product_type = data['Product']
-            env = data['Env']
-            version = data['Version']
-            framework = data['Framework']
+            product_type = data['product']
+            env = data['env']
+            version = data['version']
+            framework = data['framework']
         except Exception:
             logger.warn('bad register data:%s' % data)
             return json_response(Error('bad register data'))
