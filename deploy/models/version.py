@@ -40,6 +40,7 @@ class Version(models.Model):
 
     class Meta:
         app_label = 'deploy'
+        unique_together = ('deploy', 'node_type', 'node_name')
 
     def __unicode__(self):
         return u'%s-%s-%s' % (self.node_type, self.node_name, self.version)
