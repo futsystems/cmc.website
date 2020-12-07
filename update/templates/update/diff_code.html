@@ -29,7 +29,7 @@
 
 {% for item in diff%}
 <tr class="row{{forloop.counter}} row" data="{{item.commits_json}}">
-    <th class="field-name"><a href="/admin/deploy/server/5/change/">{{item.name}}</a></th>
+    <th class="field-name"><a href="https://gitlab.marvelsystem.net/{{item.path}}">{{item.name}}</a></th>
     <td class="field-path">{{item.path}}</td>
     <td class="field-commit_cnt">{{item.commit_cnt}}</td>
     <td class="field-action"><a href="https://gitlab.marvelsystem.net/{{item.path}}" target="_blank">Project</a></td></tr>
