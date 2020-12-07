@@ -142,7 +142,7 @@ def get_consul_status(service_node, service_status):
         item = service_status[key]
         if item['Service'] == api_name:
             result['api'] = {
-                'name':api_name,
+                'name': api_name,
                 'status': item['Status'],
                 'output': item['Output'],
                 'type': item['Type'],
@@ -150,7 +150,7 @@ def get_consul_status(service_node, service_status):
             }
         if item['Service'] == rpc_name:
             result['rpc'] = {
-                'name': item['ServiceName'],
+                'name': rpc_name,
                 'status': item['Status'],
                 'output': item['Output'],
                 'type': item['Type'],
