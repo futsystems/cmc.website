@@ -138,7 +138,8 @@ def get_consul_status(service_node, service_status):
         'api': None,
         'rpc': None
     }
-    for item in service_status:
+    for key in service_status:
+        item = service_status[key]
         if item['ServiceName'] == api_name:
             result['api'] = {
                 'service_name':api_name,
