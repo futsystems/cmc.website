@@ -69,7 +69,6 @@ class Deploy(models.Model):
             'deploy': self.key,
             'name': self.name,
             'env': self.env,
-            'nodes': [node.to_dict() for node in self.nodes.all()]
         }
         return dict
 

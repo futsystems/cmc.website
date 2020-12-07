@@ -108,18 +108,17 @@ def node_info(request):
             try:
                 url2 = 'http://%s:8500/v1/health/node/consul-%s' % (deploy.service_provider.host, deploy.key)
                 logger.info('url:%s' % url2)
-                health_result = requests.get(url=url2).json()
+                #health_result = requests.get(url=url2).json()
 
                 services = []
                 gateways = []
-                for node in data['nodes']:
-                    #node['healths'] = get_health_result(health_result, node['service'])
+                for node in [item.to_dict() for item in deploy.nodes.all()]:
                     if node['service'] == 'APIGateway':
                         gateways.append(node)
                     else:
                         services.append(node)
 
-                data['gateway'] = services
+                data['gateway'] = gateways
                 data['service'] = services
 
 
