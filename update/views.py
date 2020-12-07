@@ -7,8 +7,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseNotFound, Http404 ,HttpResponseRedirect
 from django.views.generic import TemplateView, ListView, DetailView, CreateView
 from common import Response,Success,Error, GitlabAPI
-from config import  models as config_models
-from acl import  models as acl_models
+from config import models as config_models
+from deploy.models import Deploy
+from acl import models as acl_models
 
 import hashlib
 from deploy.models import Server
@@ -368,8 +369,8 @@ def code_diff(request):
         logger.info('get deploy:%s info' % deploy_key)
 
         try:
-            deploy = config_models.Deploy.objects.get(key=deploy_key)
-        except config_models.Deploy.DoesNotExist:
+            deploy = Deploy.objects.get(key=deploy_key)
+        except Deploy.DoesNotExist:
             json_response(Error("deploy do not exist"))
 
         try:
