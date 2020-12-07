@@ -106,10 +106,10 @@ def node_info(request):
             data = deploy.to_info_dict()
 
             try:
-                #url2 = 'http://%s:8500/v1/health/node/consul-%s' % (deploy.service_provider.host, deploy.key)
-                url1 = 'http://%s:8500/v1/agent/services' % deploy.service_provider.host
+                url2 = 'http://%s:8500/v1/health/node/consul-%s' % (deploy.service_provider.host, deploy.key)
+                #url1 = 'http://%s:8500/v1/agent/services' % deploy.service_provider.host
                 #logger.info('url:%s' % url2)
-                service_status = requests.get(url=url1).json()
+                service_status = requests.get(url=url2).json()
 
                 services = []
                 gateways = []
@@ -138,9 +138,9 @@ def get_consul_status(service_node, service_status):
         'api': None,
         'rpc': None
     }
-    for key in service_status:
-        item = service_status[key]
-        if item['Service'] == api_name:
+    for item in service_status:
+        #item = service_status[key]
+        if item['ServiceName'] == api_name:
             result['api'] = {
                 'name': api_name,
                 'status': item['Status'],
@@ -148,7 +148,7 @@ def get_consul_status(service_node, service_status):
                 'type': item['Type'],
                 'notes': item['Notes'],
             }
-        if item['Service'] == rpc_name:
+        if item['ServiceName'] == rpc_name:
             result['rpc'] = {
                 'name': rpc_name,
                 'status': item['Status'],
