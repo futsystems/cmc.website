@@ -421,7 +421,8 @@ def code_diff(request):
                         'commits_json': json.dumps(ret['commits']),
                         'commit_cnt': len(ret['commits']),
                     })
-                    diff.sort()
+
+                diff['diff'] = diff['diff'].sort()
             #return json_response(diff)
             context = diff
 
