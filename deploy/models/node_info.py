@@ -49,9 +49,16 @@ class NodeInfo(models.Model):
             'env': self.env,
             'version': self.version,
             'framework': json.loads(self.framework),
+            'framework_version': '',
             'health': json.loads(self.health_report),
             'up': self.up,
             'up_time': self.up_time.strftime("%Y-%m-%d %H:%M:%S"),
-            'last_active_time': self.last_active_time.strftime("%Y-%m-%d %H:%M:%S"),
+            'last_active_time': self.last_active_time.strftime("%Y-%m-%d %H:%M:%S")
         }
+
+        for dll in dict['framework'] :
+            if dll['name'] == 'Marvel.Web.Framework':
+                dict['framework_version'] = dll['version']
+
+
         return dict

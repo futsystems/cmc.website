@@ -291,7 +291,7 @@ def update_health_info(request):
             logger.warn(msg)
             return json_response(Error(msg))
         node_info.health_report = json.dumps(health)
-        node_info.last_active_time = timezone.now()#datetime.datetime.now()
+        node_info.last_active_time = datetime.datetime.now()
         node_info.save()
 
 
