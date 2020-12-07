@@ -115,8 +115,18 @@ def node_info(request):
                 logger.info('url:%s' % url2)
                 health_result = requests.get(url=url2).json()
 
+                services = []
+                gateways = []
                 for node in data['nodes']:
                     node['healths'] = get_health_result(health_result, node['service'])
+                    if node['service'] == 'APIGateway':
+                        gateways.append(node)
+                    else:
+                        services.append(node)
+
+                data['Gateway'] = services
+                data['Service'] = services
+
             except Exception:
                 logging.error(traceback.format_exc())
             return json_response(Success(data))
