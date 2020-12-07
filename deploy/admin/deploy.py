@@ -162,11 +162,11 @@ class DeployAdmin(admin.ModelAdmin):
             return HttpResponseRedirect(previous_url)
 
         if deploy.env == 'Staging':
-            url = '/update/diff/code/?env=Staging'
+            url = '/update/diff/code/?deploy=%s' % deploy.key
             return HttpResponseRedirect(url)
 
         if deploy.env == 'Production':
-            url = '/update/diff/code/?env=Production'
+            url = '/update/diff/code/?deploy=%s' % deploy.key
             return HttpResponseRedirect(url)
 
         messages.info(request, "No target to compare")
