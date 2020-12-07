@@ -124,8 +124,8 @@ def node_info(request):
                     else:
                         services.append(node)
 
-                data['Gateway'] = services
-                data['Service'] = services
+                data['gateway'] = services
+                data['service'] = services
 
             except Exception:
                 logging.error(traceback.format_exc())
@@ -252,4 +252,16 @@ def update_node_info(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         logger.info(data)
+
+        try:
+            deploy_key = data['Deploy']
+            node_service = data['Service']
+            ip = get_client_ip(request)
+
+            product_type = data['Product']
+            env = data['Env']
+        except Exception:
+            logger.warn('bad unregister data:%s' % data)
+
+
     return json_response(Success("success"))
