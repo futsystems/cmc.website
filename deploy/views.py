@@ -171,12 +171,14 @@ def register_node_info(request):
             framework = data['Framework']
         except Exception:
             logger.warn('bad register data:%s' % data)
+            return json_response(Error('bad register data'))
 
         try:
             deploy = Deploy.objects.get(key=deploy_key)
         except Deploy.DoesNotExist:
-            deploy = None
-            logger.warn('deploy:%s do not exist' % deploy_key)
+            msg = 'deploy:%s do not exist' % deploy_key
+            logger.warn(msg)
+            return json_response(Error(msg))
 
         if deploy is not None:
             try:
@@ -215,12 +217,14 @@ def unregister_node_info(request):
             framework = data['framework']
         except Exception:
             logger.warn('bad unregister data:%s' % data)
+            return json_response(Error('bad unregister data'))
 
         try:
             deploy = Deploy.objects.get(key=deploy_key)
         except Deploy.DoesNotExist:
-            deploy = None
-            logger.warn('deploy:%s do not exist' % deploy_key)
+            msg = 'deploy:%s do not exist' % deploy_key
+            logger.warn(msg)
+            return json_response(Error(msg))
 
         if deploy is not None:
             try:
@@ -266,7 +270,7 @@ def update_health_info(request):
         except Deploy.DoesNotExist:
             logger.warn('deploy:%s do not exist' % deploy_key)
             return json_response(Error('deploy:%s do not exist' % deploy_key))
-
+        deploy_key
         try:
             node_info = NodeInfo.objects.get(deploy=deploy, node_service=node_service, ip=ip)
         except NodeInfo.DoesNotExist:
