@@ -8,7 +8,7 @@ from django.http import HttpResponse, HttpResponseNotFound, Http404 ,HttpRespons
 from django.views.generic import TemplateView, ListView, DetailView, CreateView
 from django.views.decorators.csrf import csrf_exempt
 from deploy.models import Server,Deploy,NodeInfo
-from common import Response,Success,Error
+from common import Response,Success,Error, json_response, _json_content
 from common.request_helper import get_client_ip
 import requests
 
@@ -16,11 +16,6 @@ import requests
 import logging, traceback
 logger = logging.getLogger(__name__)
 
-
-def json_response(obj):
-    if issubclass(obj.__class__, Response):
-        return HttpResponse(json.dumps(obj.to_dict()), content_type="application/json")
-    return HttpResponse(json.dumps(obj, indent=4), content_type="application/json")
 
 
 def salt_pillar(request):
@@ -118,7 +113,7 @@ def node_info(request):
                 services = []
                 gateways = []
                 for node in data['nodes']:
-                    node['healths'] = get_health_result(health_result, node['service'])
+                    #node['healths'] = get_health_result(health_result, node['service'])
                     if node['service'] == 'APIGateway':
                         gateways.append(node)
                     else:
@@ -126,6 +121,7 @@ def node_info(request):
 
                 data['gateway'] = services
                 data['service'] = services
+
 
             except Exception:
                 logging.error(traceback.format_exc())
@@ -247,7 +243,7 @@ def unregister_node_info(request):
     return json_response(Success("success"))
 
 @csrf_exempt
-def update_node_info(request):
+def update_health_info(request):
     import json
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -256,12 +252,30 @@ def update_node_info(request):
         try:
             deploy_key = data['Deploy']
             node_service = data['Service']
-            ip = get_client_ip(request)
-
             product_type = data['Product']
             env = data['Env']
+            ip = get_client_ip(request)
+
         except Exception:
-            logger.warn('bad unregister data:%s' % data)
+            logger.warn('bad health data:%s' % data)
+            return json_response(Error('bad health data'))
+
+        try:
+            deploy = Deploy.objects.get(key=deploy_key)
+        except Deploy.DoesNotExist:
+            logger.warn('deploy:%s do not exist' % deploy_key)
+            return json_response(Error('deploy:%s do not exist' % deploy_key))
+
+        try:
+            node_info = NodeInfo.objects.get(deploy=deploy, node_service=node_service, ip=ip)
+        except NodeInfo.DoesNotExist:
+            msg = 'node:%s at ip:%s do not exist' % (node_service,ip)
+            logger.warn(msg)
+            return json_response(Error(msg))
+
+        node_info.health_report = _json_content(data['Health'])
+        node_info.save()
+
 
 
     return json_response(Success("success"))

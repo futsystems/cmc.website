@@ -26,7 +26,10 @@ class NodeInfo(models.Model):
     env = models.CharField(max_length=20, choices=ENV_STAGE, default='Development')
 
     version = models.CharField('Version', max_length=100, default='1.0.0')
-    framework = models.TextField('Framwork')
+    framework = models.TextField('Framework', default='')
+
+    health_report = models.TextField('Health Report', default='')
+
     up = models.BooleanField('No Up', default=False)
     up_time = models.DateTimeField('Up Time', default=timezone.now)
     last_active_time = models.DateTimeField('Last Active Time', auto_now=True)
@@ -46,6 +49,7 @@ class NodeInfo(models.Model):
             'env': self.env,
             'version': self.version,
             'framework': json.loads(self.framework),
+            'health': json.loads(self.health_report),
             'up': self.up,
             'up_time': self.up_time.strftime("%Y-%m-%d %H:%M:%S"),
             'last_active_time': self.last_active_time.strftime("%Y-%m-%d %H:%M:%S"),
