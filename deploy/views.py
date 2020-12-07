@@ -4,6 +4,7 @@
 import json
 from django.shortcuts import render_to_response,render
 from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
 from django.http import HttpResponse, HttpResponseNotFound, Http404 ,HttpResponseRedirect
 from django.views.generic import TemplateView, ListView, DetailView, CreateView
 from django.views.decorators.csrf import csrf_exempt
@@ -71,30 +72,13 @@ def node_info2(request):
         except Deploy.DoesNotExist:
             return json_response(Error('Deploy do not exist'))
 
+
 def node_info(request):
-
     """
-    url = "http://consul.marvelsystem.net:8500/v1/agent/services"
-    result = requests.get(url=url)
-    # extracting data in json format
-    data = result.json()
-    list = []
-    for key in data:
-        if str.endswith(str(data[key]['Service']), 'API'):
-
-            wan = data[key]['TaggedAddresses']['wan_ipv4']
-            address = 'http://%s:%s' % (wan['Address'],wan['Port'])
-            logger.info('address:%s' % address)
-            result = requests.get(url='%s/info' % address)
-            list.append(
-                {
-                    'name': data[key]['Service'],
-                    'address':address,
-                    'result':result.content
-                }
-            )
+    返回deploy状态信息
+    :param request:
+    :return:
     """
-
     if request.method == "POST":
         return HttpResponse("POST not support")
     else:
@@ -139,7 +123,6 @@ def get_consul_status(service_node, service_status):
         'rpc': None
     }
     for item in service_status:
-        #item = service_status[key]
         if item['ServiceName'] == api_name:
             result['api'] = {
                 'name': api_name,
@@ -308,7 +291,7 @@ def update_health_info(request):
             logger.warn(msg)
             return json_response(Error(msg))
         node_info.health_report = json.dumps(health)
-        node_info.last_active_time = datetime.datetime.now()
+        node_info.last_active_time = timezone.now()#datetime.datetime.now()
         node_info.save()
 
 
