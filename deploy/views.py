@@ -283,7 +283,7 @@ def update_health_info(request):
         except Deploy.DoesNotExist:
             logger.warn('deploy:%s do not exist' % deploy_key)
             return json_response(Error('deploy:%s do not exist' % deploy_key))
-        deploy_key
+
         try:
             node_info = NodeInfo.objects.get(deploy=deploy, node_service=node_service, ip=ip)
         except NodeInfo.DoesNotExist:
