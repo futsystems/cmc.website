@@ -107,7 +107,7 @@ def node_info(request):
 
             try:
                 #url2 = 'http://%s:8500/v1/health/node/consul-%s' % (deploy.service_provider.host, deploy.key)
-                url1 = 'http://consul.marvelsystem.net:8500/v1/agent/services'
+                url1 = 'http://%s:8500/v1/agent/services' % deploy.service_provider.host
                 #logger.info('url:%s' % url2)
                 service_status = requests.get(url=url1).json()
 
@@ -122,11 +122,11 @@ def node_info(request):
 
                 data['gateway'] = gateways
                 data['service'] = services
-
-
+                return json_response(Success(data))
             except Exception:
-                logging.error(traceback.format_exc())
-            return json_response(Success(data))
+                logger.error(traceback.format_exc())
+                return json_response((Error('get deploy info error')))
+
         except Deploy.DoesNotExist:
             return json_response(Error('Deploy do not exist'))
 
