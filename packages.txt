@@ -8,6 +8,7 @@ mysql-python
 Django==1.10.4
 
 requests
+django-cors-headers
 
 #redis
 #django-redis==4.8.0
