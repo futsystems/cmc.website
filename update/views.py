@@ -367,7 +367,7 @@ def code_diff(request):
     else:
         deploy_key = request.GET.get("deploy")
         logger.info('get deploy:%s info' % deploy_key)
-
+        deploy = None
         if deploy_key != 'latest':
             try:
                 deploy = Deploy.objects.get(key=deploy_key)
@@ -425,7 +425,7 @@ def code_diff(request):
                 path = 'platform/srv.%s' % new_item.name.lower()
                 api = GitlabAPI()
                 #logger.info('22222')
-                if deploy is not  None and deploy.env == 'Production':
+                if deploy is not None and deploy.env == 'Production':
                     source_repo = deploy.get_version(old_item.name) #old_item.production_tag
                 ret = api.compare_repository(path, source_repo, target_repo)
                 if len(ret['commits']) > 0:
