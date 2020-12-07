@@ -366,9 +366,10 @@ def code_diff(request):
     deploy=WeiShop-Staging:查看测试环境下 代码差异量，显示没有提交到测试环境的commit
         develop 比 master 代码的差异
     deploy=latest_tag:查看发布环境下 代码差异量，显示没有提交到生产环境的commit（已经提交到master，但是没有提打tag）
-        master 对最新tag的 代码差异
+        master 对 latest_tag的 代码差异
     deploy=WeiShop-1:查看某个部署 代码差异量，显示没有升级到部署的commit
         最新tag的 对部署环境 代码差异
+        latest_tag 对 production tag
     :param request:
     :return:
     """
@@ -437,6 +438,7 @@ def code_diff(request):
                 #logger.info('22222')
                 if deploy is not None and deploy.env == 'Production':
                     target_repo = deploy.get_version(old_item.name) #old_item.production_tag
+                    source_repo = 'latest_tag'
                 ret = api.compare_repository(path, source_repo, target_repo)
                 if len(ret['commits']) > 0:
                     idx = idx + 1
