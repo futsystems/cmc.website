@@ -11,7 +11,7 @@ import views
 urlpatterns = [
     url(r'^node/up/$', views.register_node_info, name='node_up'),
     url(r'^node/down/$', views.unregister_node_info, name='node_down'),
-    url(r'^node/health/update/$', views.update_health_info, name='update_node_health_info'),
+    url(r'^node/health/$', views.update_health_info, name='update_node_health_info'),
 
     url(r'^info/$', views.node_info, name='node_info'),
 
