@@ -278,7 +278,7 @@ def update_health_info(request):
             logger.warn(msg)
             return json_response(Error(msg))
 
-        node_info.health_report = _json_content(health)
+        node_info.health_report = json.dumps(health)
         node_info.save()
 
 
