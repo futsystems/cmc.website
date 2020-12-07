@@ -375,20 +375,20 @@ def code_diff(request):
                 return json_response(Error("deploy do not exist"))
             if deploy.env == 'Staging':
                 source = 'Staging'
-                source_repo = 'master'
+                source_repo = 'develop'
                 target = 'Development'
-                target_repo = 'develop'
+                target_repo = 'master'
             elif deploy.env == 'Production':
                 source = 'Production'
-                source_repo = 'v1.0.0'
+                source_repo = 'master'
                 target = 'Staging'
-                target_repo = 'master'
+                target_repo = 'v1.0.0'
             env = deploy.env
         else:
             source = 'Production'
-            source_repo = 'latest'
+            source_repo = 'master'
             target = 'Staging'
-            target_repo = 'master'
+            target_repo = 'latest_tag'
             env = 'Production'
 
 
