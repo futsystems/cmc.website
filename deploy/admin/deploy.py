@@ -155,22 +155,13 @@ class DeployAdmin(admin.ModelAdmin):
         """
         比较代码变化
         """
-        previous_url = request.META.get('HTTP_REFERER')
+        #previous_url = request.META.get('HTTP_REFERER')
         deploy = models.Deploy.objects.get(id=deploy_id)
-        if deploy.env == 'Development':
-            messages.info(request, "Development has no target to compare")
-            return HttpResponseRedirect(previous_url)
+        url = '/update/diff/code/?deploy=%s' % deploy.key
+        return HttpResponseRedirect(url)
 
-        if deploy.env == 'Staging':
-            url = '/update/diff/code/?deploy=%s' % deploy.key
-            return HttpResponseRedirect(url)
-
-        if deploy.env == 'Production':
-            url = '/update/diff/code/?deploy=%s' % deploy.key
-            return HttpResponseRedirect(url)
-
-        messages.info(request, "No target to compare")
-        return HttpResponseRedirect(previous_url)
+        #messages.info(request, "No target to compare")
+        #return HttpResponseRedirect(previous_url)
 
 
 
