@@ -12,7 +12,7 @@ from .. import models
 from eventbus import EventBublisher
 from eventbus import CMCGatewayConfigUpdate, CMCACLRoleUpdate, CMCACLPermissionUpdate
 from config.models import ElastAPM, EventBus, Consul
-from common import GitlabAPI
+from common import GitlabAPI, json_response,Error
 from config import models as config_models
 from django.shortcuts import render_to_response,render
 
@@ -276,11 +276,10 @@ class DeployAdmin(admin.ModelAdmin):
             context = diff
 
             # Render the HTML template index.html with the data in the context variable
-            return render(request, 'update/diff_code.html', context=context)
+            return render(request, 'deploy/admin/diff_code.html', context=context)
         except Exception, e:
             logger.error(traceback.format_exc())
-            return render(request, 'update/diff_code.html', context=context)
-
+            return json_response(Error('code compare error'))
 
 
     def _parse_compare_result(self,name, path, ret):
