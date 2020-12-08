@@ -377,10 +377,6 @@ def code_diff(request):
         return HttpResponse("POST not support")
     else:
         deploy_key = request.GET.get("deploy")
-        logger.info('get deploy:%s info' % deploy_key)
-        deploy = None
-        msg = ''
-
         try:
             deploy = Deploy.objects.get(key=deploy_key)
         except Deploy.DoesNotExist:
@@ -429,8 +425,8 @@ def code_diff(request):
             #logger.info(intersection_items)
             idx =0
             for item_name in intersection_items:
-                #if idx > 1:
-                #    continue
+                if idx > 1:
+                    continue
                 new_item = target_items.get(name=item_name)
                 old_item = source_items.get(name=item_name)
 
