@@ -12,6 +12,9 @@ from .. import models
 from eventbus import EventBublisher
 from eventbus import CMCGatewayConfigUpdate, CMCACLRoleUpdate, CMCACLPermissionUpdate
 from config.models import ElastAPM, EventBus, Consul
+from common import GitlabAPI
+from config import models as config_models
+from django.shortcuts import render_to_response,render
 
 import logging,traceback,json
 logger = logging.getLogger(__name__)
@@ -147,9 +150,22 @@ class DeployAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.code_compare),
                 name='deploy-code-compare',
             ),
+            url(
+                r'^(?P<path>.+)/code_merge/$',
+                self.admin_site.admin_view(self.code_merge),
+                name='deploy-code-merge',
+            ),
         ]
 
         return my_urls + urls
+
+    def code_merge(self,request,path):
+        print 'code merge path:%s' % path
+        api = GitlabAPI()
+        #result = api.merge_project(path)
+        messages.info(request, "Merge success")
+        previous_url = request.META.get('HTTP_REFERER')
+        return HttpResponseRedirect(previous_url)
 
     def code_compare(self, request, deploy_id):
         """
@@ -157,11 +173,83 @@ class DeployAdmin(admin.ModelAdmin):
         """
         #previous_url = request.META.get('HTTP_REFERER')
         deploy = models.Deploy.objects.get(id=deploy_id)
-        url = '/update/diff/code/?deploy=%s' % deploy.key
-        return HttpResponseRedirect(url)
+        if deploy.env == 'Development':
+            source = 'Development'
+            source_repo = 'develop'
+            target = 'Staging'
+            target_repo = 'master'
+            msg = u'开发环境与测试环境代码差异'
+        if deploy.env == 'Staging':
+            source = 'Staging'
+            source_repo = 'master'
+            target = 'Staging'
+            target_repo = 'latest_tag'
+            msg = u'测试环境与生产环境代码(最新tag版本)代码差异'
+        elif deploy.env == 'Production':
+            source = 'Staging'
+            source_repo = 'latest_tag'
+            target = 'Production'
+            target_repo = 'product_tag'
+            msg = u'某个部署环境与生产环境(最新tag版本)代码差异'
+        try:
+            logger.info('get code diff from:%s to:%s' % (source_repo, target_repo))
+            # 检查api permission变化
+            api = GitlabAPI()
 
-        #messages.info(request, "No target to compare")
-        #return HttpResponseRedirect(previous_url)
+            target_items = config_models.Service.objects.filter(env=target)
+            source_items = config_models.Service.objects.filter(env=source)
+            target_names = [item.name for item in target_items]
+            source_names = [item.name for item in source_items]
+
+            add_items = list(set(target_names).difference(set(source_names)))
+            remove_items = list(set(source_names).difference(set(target_names)))
+            intersection_items = list(set(source_names).intersection(set(target_names)))
+
+            diff = {
+                'add': add_items,
+                'remove': remove_items,
+                'diff': [],
+                'msg': msg
+            }
+
+            #logger.info(intersection_items)
+            idx =0
+            for item_name in intersection_items:
+                #if idx > 1:
+                #    continue
+                new_item = target_items.get(name=item_name)
+                old_item = source_items.get(name=item_name)
+
+                path = 'platform/srv.%s' % new_item.name.lower()
+                api = GitlabAPI()
+                #logger.info('22222')
+                # 比较某个部署环境与生产环境(最新tag版本)代码差异
+                if deploy.env == 'Production':
+                    target_repo = deploy.get_version(old_item.name)
+
+                ret = api.compare_repository(path, source_repo, target_repo)
+                if len(ret['commits']) > 0:
+                    idx = idx + 1
+                    diff['diff'].append({
+                        'name': new_item.name,
+                        'tags': str.join(',' ,ret['tags']),
+                        'path': path,
+                        'commits': ret['commits'],
+                        'commits_json': json.dumps(ret['commits']),
+                        'commit_cnt': len(ret['commits']),
+                        'source': ret['source'],
+                        'target': ret['target'],
+                    })
+
+            #return json_response(diff)
+            diff['diff'].sort(key=lambda x: x['name'], reverse=False)
+            context = diff
+
+            # Render the HTML template index.html with the data in the context variable
+            return render(request, 'update/diff_code.html', context=context)
+        except Exception, e:
+            logger.error(traceback.format_exc())
+            return render(request, 'update/diff_code.html', context=context)
 
 
 

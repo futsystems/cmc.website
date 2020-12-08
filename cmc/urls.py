@@ -24,6 +24,10 @@ from acl import urls as acl_urls
 from basic import urls as basic_urls
 from update import urls as update_urls
 
+#from adminplus.sites import AdminSitePlus
+#admin.site = AdminSitePlus()
+#admin.autodiscover()
+
 urlpatterns = [
     url(r'^config/', include(config_urls)),
     url(r'^deploy/', include(deploy_urls)),
