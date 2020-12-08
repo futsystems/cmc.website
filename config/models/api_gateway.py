@@ -201,5 +201,6 @@ class ApiGateway(models.Model):
             'type': self.gw_type,
             'base_url': base_url,
             'domain_name': domain_name,
-            'pipeline_trigger': self.pipeline_trigger
+            'pipeline_trigger': self.pipeline_trigger,
+            'tag': deploy.get_version('Gateway', 'APIGateway')
         }

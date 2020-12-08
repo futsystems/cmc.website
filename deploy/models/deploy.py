@@ -39,12 +39,6 @@ class Deploy(models.Model):
     log_level = models.ForeignKey(LogItemGroup, verbose_name='LogLevel', on_delete=models.SET_NULL, default=None,
                                   blank=True, null=True)
 
-    portal_admin_tag = models.CharField(max_length=20, default='v1.0.0')
-
-    portal_console_tag = models.CharField(max_length=20, default='v1.0.0')
-
-    portal_h5_tag = models.CharField(max_length=20, default='v1.0.0')
-
     description = models.CharField('Description', max_length=1000, default='', blank=True)
 
     key = models.CharField('Key', max_length=100, default='', blank=True)
@@ -72,10 +66,11 @@ class Deploy(models.Model):
         }
         return dict
 
-    def get_version(self, node_name):
-        item = self.versions.filter(node_name=node_name).first()
+    def get_version(self, node_type, node_name):
+        item = self.versions.filter(node_name=node_name, node_type=node_type).first()
         if item is None:
             return 'v1.0.0'
         return item.version
+
 
 

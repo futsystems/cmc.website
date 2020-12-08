@@ -56,9 +56,9 @@ class Portal(models.Model):
         }
 
         if self.env == 'Production':
-            dict['admin_tag'] = deploy.portal_admin_tag
-            dict['console_tag'] = deploy.portal_console_tag
-            dict['h5_tag'] = deploy.portal_h5_tag
+            dict['admin_tag'] = deploy.get_version('Portal', 'Admin')
+            dict['console_tag'] = deploy.get_version('Portal', 'Console')
+            dict['h5_tag'] = deploy.get_version('Portal', 'H5')
         else:
             dict['admin_tag'] = self.env
             dict['console_tag'] = self.env

@@ -33,7 +33,7 @@ class Service(models.Model):
     support_api = models.BooleanField('HTTP Support', default=True)
     api_port = models.IntegerField('Http Port', default=90)
 
-    production_tag = models.CharField(max_length=20, default='v1.0.0')
+    #production_tag = models.CharField(max_length=20, default='v1.0.0')
     log_level = models.ForeignKey(LogItemGroup, verbose_name='LogLevel', on_delete=models.SET_NULL,default=None,
                                   blank=True, null=True)
 
@@ -185,7 +185,7 @@ class Service(models.Model):
 
         pillar['api_port'] = self.api_port if self.support_api else 0
         pillar['rpc_port'] = self.rpc_port if self.support_rpc else 0
-        pillar['tag'] = deploy.get_version(self.name) #self.production_tag
+        pillar['tag'] = deploy.get_version('Service', self.name)
         return pillar
 
 

@@ -77,12 +77,6 @@ class DeployAdmin(admin.ModelAdmin):
                 ]
             }),
 
-            ("Portal Tag", {
-                'fields': [
-                    'portal_admin_tag', 'portal_console_tag', 'portal_h5_tag',
-                ]
-            }),
-
             ("Other", {
 
                 'fields': [
@@ -225,7 +219,7 @@ class DeployAdmin(admin.ModelAdmin):
                 #logger.info('22222')
                 # 比较某个部署环境与生产环境(最新tag版本)代码差异
                 if deploy.env == 'Production':
-                    target_repo = deploy.get_version(old_item.name)
+                    target_repo = deploy.get_version('Service', old_item.name)
 
                 ret = api.compare_repository(path, source_repo, target_repo)
                 tmp = self._parse_compare_result(new_item.name, path, ret)
@@ -236,7 +230,7 @@ class DeployAdmin(admin.ModelAdmin):
             name = 'APIGateway'
             path = 'platform/gateway'
             if deploy.env == 'Production':
-                target_repo = deploy.get_version('APIGateway')
+                target_repo = deploy.get_version('Gateway', 'APIGateway',)
             ret = api.compare_repository(path, source_repo, target_repo)
             tmp = self._parse_compare_result(name, path, ret)
             if tmp is not None:
@@ -246,7 +240,7 @@ class DeployAdmin(admin.ModelAdmin):
             name = 'Admin'
             path = 'terminal-portal/admin'
             if deploy.env == 'Production':
-                target_repo = deploy.get_version('Admin')
+                target_repo = deploy.get_version('Portal', 'Admin')
             ret = api.compare_repository(path, source_repo, target_repo)
             tmp = self._parse_compare_result(name, path, ret)
             if tmp is not None:
@@ -255,7 +249,7 @@ class DeployAdmin(admin.ModelAdmin):
             name = 'Console'
             path = 'terminal-portal/console'
             if deploy.env == 'Production':
-                target_repo = deploy.get_version('Console')
+                target_repo = deploy.get_version('Portal', 'Console')
             ret = api.compare_repository(path, source_repo, target_repo)
             tmp = self._parse_compare_result(name, path, ret)
             if tmp is not None:
@@ -264,7 +258,7 @@ class DeployAdmin(admin.ModelAdmin):
             name = 'H5'
             path = 'terminal-portal/h5'
             if deploy.env == 'Production':
-                target_repo = deploy.get_version('H5')
+                target_repo = deploy.get_version('Portal', 'H5')
             ret = api.compare_repository(path, source_repo, target_repo)
             tmp = self._parse_compare_result(name, path, ret)
             if tmp is not None:
@@ -281,9 +275,8 @@ class DeployAdmin(admin.ModelAdmin):
             logger.error(traceback.format_exc())
             return json_response(Error('code compare error'))
 
-
     def _parse_compare_result(self,name, path, ret):
-        if len(ret['commits']) > 0:
+        if ret is not None and len(ret['commits']) > 0:
             return  {
                 'name': name,
                 'tags': str.join(',', ret['tags']),
