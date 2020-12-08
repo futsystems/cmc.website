@@ -214,6 +214,7 @@ class DeployAdmin(admin.ModelAdmin):
 
             #logger.info(intersection_items)
             idx =0
+            api = GitlabAPI()
             for item_name in intersection_items:
                 #if idx > 1:
                 #    continue
@@ -221,25 +222,54 @@ class DeployAdmin(admin.ModelAdmin):
                 old_item = source_items.get(name=item_name)
 
                 path = 'platform/srv.%s' % new_item.name.lower()
-                api = GitlabAPI()
                 #logger.info('22222')
                 # 比较某个部署环境与生产环境(最新tag版本)代码差异
                 if deploy.env == 'Production':
                     target_repo = deploy.get_version(old_item.name)
 
                 ret = api.compare_repository(path, source_repo, target_repo)
-                if len(ret['commits']) > 0:
-                    idx = idx + 1
-                    diff['diff'].append({
-                        'name': new_item.name,
-                        'tags': str.join(',' ,ret['tags']),
-                        'path': path,
-                        'commits': ret['commits'],
-                        'commits_json': json.dumps(ret['commits']),
-                        'commit_cnt': len(ret['commits']),
-                        'source': ret['source'],
-                        'target': ret['target'],
-                    })
+                tmp = self._parse_compare_result(new_item.name, path, ret)
+                if tmp is not None:
+                    diff['diff'].append(tmp)
+
+            #添加 gateway
+            name = 'APIGateway'
+            path = 'platform/gateway'
+            if deploy.env == 'Production':
+                target_repo = deploy.get_version('APIGateway')
+            ret = api.compare_repository(path, source_repo, target_repo)
+            tmp = self._parse_compare_result(name, path, ret)
+            if tmp is not None:
+                diff['diff'].append(tmp)
+
+            #添加 portal
+            name = 'Admin'
+            path = 'terminal-portal/admin'
+            if deploy.env == 'Production':
+                target_repo = deploy.get_version('Admin')
+            ret = api.compare_repository(path, source_repo, target_repo)
+            tmp = self._parse_compare_result(name, path, ret)
+            if tmp is not None:
+                diff['diff'].append(tmp)
+
+            name = 'Console'
+            path = 'terminal-portal/console'
+            if deploy.env == 'Production':
+                target_repo = deploy.get_version('Console')
+            ret = api.compare_repository(path, source_repo, target_repo)
+            tmp = self._parse_compare_result(name, path, ret)
+            if tmp is not None:
+                diff['diff'].append(tmp)
+
+            name = 'H5'
+            path = 'terminal-portal/h5'
+            if deploy.env == 'Production':
+                target_repo = deploy.get_version('H5')
+            ret = api.compare_repository(path, source_repo, target_repo)
+            tmp = self._parse_compare_result(name, path, ret)
+            if tmp is not None:
+                diff['diff'].append(tmp)
+
 
             #return json_response(diff)
             diff['diff'].sort(key=lambda x: x['name'], reverse=False)
@@ -252,6 +282,21 @@ class DeployAdmin(admin.ModelAdmin):
             return render(request, 'update/diff_code.html', context=context)
 
 
+
+    def _parse_compare_result(self,name, path, ret):
+        if len(ret['commits']) > 0:
+            return  {
+                'name': name,
+                'tags': str.join(',', ret['tags']),
+                'path': path,
+                'commits': ret['commits'],
+                'commits_json': json.dumps(ret['commits']),
+                'commit_cnt': len(ret['commits']),
+                'source': ret['source'],
+                'target': ret['target'],
+            }
+        else:
+            return None
 
     def update_gateway_config(self, request, deploy_id):
         """
