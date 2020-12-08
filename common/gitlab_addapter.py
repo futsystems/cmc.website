@@ -97,7 +97,8 @@ class GitlabAPI(object):
             data['commits'] = data['commits'][::-1]
             return data
         except GitlabGetError as e:
-            return e.message
+            logger.error(traceback.format_exc())
+            return None
 
     def merge_project(self, path):
         project = self.get_project_by_path(path)
@@ -107,7 +108,6 @@ class GitlabAPI(object):
         diff = project.repository_compare('master', 'develop')
         if diff['commit'] is None:
             return [True, "No Commit"]
-
 
         mr_title = 'Merge:' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         try:
