@@ -379,35 +379,34 @@ def code_diff(request):
         deploy_key = request.GET.get("deploy")
         logger.info('get deploy:%s info' % deploy_key)
         deploy = None
-        if deploy_key != 'latest_tag':
-            try:
-                deploy = Deploy.objects.get(key=deploy_key)
-            except Deploy.DoesNotExist:
-                return json_response(Error("deploy do not exist"))
-            if deploy.env == 'Staging':
-                source = 'Staging'
-                source_repo = 'develop'
-                target = 'Development'
-                target_repo = 'master'
-            elif deploy.env == 'Production':
-                source = 'Production'
-                source_repo = 'master'
-                target = 'Staging'
-                target_repo = 'v1.0.0'
-            env = deploy.env
-        else:
-            source = 'Production'
+        msg = ''
+
+        try:
+            deploy = Deploy.objects.get(key=deploy_key)
+        except Deploy.DoesNotExist:
+            return json_response(Error("deploy do not exist"))
+        if deploy.env == 'Development':
+            source = 'Development'
+            source_repo = 'develop'
+            target = 'Staging'
+            target_repo = 'master'
+            msg = u'开发环境与测试环境代码差异'
+        if deploy.env == 'Staging':
+            source = 'Staging'
             source_repo = 'master'
             target = 'Staging'
             target_repo = 'latest_tag'
-            env = 'Production'
-
-
+            msg = u'测试环境与生产环境代码(最新tag版本)代码差异'
+        elif deploy.env == 'Production':
+            source = 'Staging'
+            source_repo = 'latest_tag'
+            target = 'Production'
+            target_repo = 'product_tag'
+            msg = u'某个部署环境与生产环境(最新tag版本)代码差异'
+        env = deploy.env
 
         try:
-
-
-            logger.info('get diff of env source:%s target:%s' % (source, target))
+            logger.info('get code diff from:%s to:%s' % (source_repo, target_repo))
             # 检查api permission变化
             api = GitlabAPI()
 
@@ -423,8 +422,10 @@ def code_diff(request):
             diff = {
                 'add': add_items,
                 'remove': remove_items,
-                'diff': []
+                'diff': [],
+                'msg': msg
             }
+
             #logger.info(intersection_items)
             idx =0
             for item_name in intersection_items:
@@ -436,9 +437,10 @@ def code_diff(request):
                 path = 'platform/srv.%s' % new_item.name.lower()
                 api = GitlabAPI()
                 #logger.info('22222')
-                if deploy is not None and deploy.env == 'Production':
-                    target_repo = deploy.get_version(old_item.name) #old_item.production_tag
-                    source_repo = 'latest_tag'
+                # 比较某个部署环境与生产环境(最新tag版本)代码差异
+                if deploy.env == 'Production':
+                    target_repo = deploy.get_version(old_item.name)
+
                 ret = api.compare_repository(path, source_repo, target_repo)
                 if len(ret['commits']) > 0:
                     idx = idx + 1

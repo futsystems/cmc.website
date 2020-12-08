@@ -61,7 +61,7 @@ class GitlabAPI(object):
         project = self.get_project_by_path(path)
         if project is None:
             return None
-        logger.info('path:%s source:%s taget:%s' % (path, source, target))
+        logger.info('compare repository path:%s source:%s target:%s' % (path, source, target))
 
         tags = [tag.name for tag in project.tags.list()]
         if target == 'latest_tag' and len(tags) > 0:

@@ -29,7 +29,6 @@ class Version(models.Model):
             result.append(('H5', 'Portal_H5'))
             return tuple(result)
 
-
     deploy = models.ForeignKey(Deploy, verbose_name='Deploy', on_delete=models.SET_NULL, default=None,
                                 blank=True, null=True, related_name='versions')
     node_type = models.CharField("Node Type", max_length=20, choices=NODETTYPE, default='Service')
