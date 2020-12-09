@@ -294,6 +294,4 @@ def update_health_info(request):
         node_info.last_active_time = datetime.datetime.now()
         node_info.save()
 
-
-
     return json_response(Success("success"))

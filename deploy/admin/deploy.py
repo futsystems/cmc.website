@@ -259,6 +259,7 @@ class DeployAdmin(admin.ModelAdmin):
                 'msg': msg,
                 'op_tag': deploy.env == 'Staging',
                 'op_merge': deploy.env == 'Development',
+                'version_id': None
             }
 
             #logger.info(intersection_items)
@@ -285,6 +286,8 @@ class DeployAdmin(admin.ModelAdmin):
                 ret = api.compare_repository(project_id, source_repo, target_repo)
                 tmp = self._parse_compare_result(new_item.name, path, ret)
                 if tmp is not None:
+                    if deploy.env == 'Production':
+                        diff['version_id'] = deploy.get_version_id('Service', old_item.name)
                     diff['diff'].append(tmp)
 
             #添加 gateway
@@ -295,6 +298,8 @@ class DeployAdmin(admin.ModelAdmin):
             ret = api.compare_repository(path, source_repo, target_repo)
             tmp = self._parse_compare_result(name, path, ret)
             if tmp is not None:
+                if deploy.env == 'Production':
+                    diff['version_id'] = deploy.get_version_id('Gateway', 'APIGateway')
                 diff['diff'].append(tmp)
 
             #添加 portal
@@ -305,6 +310,8 @@ class DeployAdmin(admin.ModelAdmin):
             ret = api.compare_repository(path, source_repo, target_repo)
             tmp = self._parse_compare_result(name, path, ret)
             if tmp is not None:
+                if deploy.env == 'Production':
+                    diff['version_id'] = deploy.get_version_id('Portal', 'Admin')
                 diff['diff'].append(tmp)
 
             name = 'Console'
@@ -314,6 +321,8 @@ class DeployAdmin(admin.ModelAdmin):
             ret = api.compare_repository(path, source_repo, target_repo)
             tmp = self._parse_compare_result(name, path, ret)
             if tmp is not None:
+                if deploy.env == 'Production':
+                    diff['version_id'] = deploy.get_version_id('Portal', 'Console')
                 diff['diff'].append(tmp)
 
             name = 'H5'
@@ -323,6 +332,8 @@ class DeployAdmin(admin.ModelAdmin):
             ret = api.compare_repository(path, source_repo, target_repo)
             tmp = self._parse_compare_result(name, path, ret)
             if tmp is not None:
+                if deploy.env == 'Production':
+                    diff['version_id'] = deploy.get_version_id('Portal', 'H5')
                 diff['diff'].append(tmp)
 
 
