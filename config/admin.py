@@ -439,6 +439,10 @@ class RateLimitOptionAdmin(admin.ModelAdmin):
 class HttpMethodAdmin(admin.ModelAdmin):
     list_display = ('name', 'method')
 
+
+class GitLabProjectAdmin(admin.ModelAdmin):
+    list_display = ('path', 'project_id')
+
 class HeadTransformAdmin(admin.ModelAdmin):
     list_display = ('name', 'header_key', 'header_value')
 
@@ -591,3 +595,4 @@ admin.site.register(models.SettingItem, SettingItemAdmin)
 admin.site.register(models.Portal, PortalAdmin)
 
 admin.site.register(models.WXBoundServer, WXBoundServerAdmin)
+admin.site.register(models.GitLabProject, GitLabProjectAdmin)

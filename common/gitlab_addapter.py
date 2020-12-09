@@ -44,7 +44,7 @@ class GitlabAPI(object):
 
     def get_projects_in_paths(self, paths):
         projects = []
-        for item in self._gl.projects.list(simple=True,per_page=100):
+        for item in self._gl.projects.list(simple=True, per_page=100):
             if item.path_with_namespace in paths:
                 projects.append(item)
 
@@ -57,11 +57,29 @@ class GitlabAPI(object):
 
         return None
 
-    def compare_repository(self, path, source, target):
-        project = self.get_project_by_path(path)
+    def get_project_by_id(self, project_id):
+        try:
+            project = self._gl.projects.get(project_id)
+            return project
+        except GitlabGetError, e:
+            return None
+
+    def get_projects(self):
+        result = []
+        for item in self._gl.projects.list(simple=True, per_page=100):
+            result.append({
+                'path':item.path_with_namespace,
+                'project_id': item.id
+
+            })
+        return result
+
+
+    def compare_repository(self, project_id, source, target):
+        project = self.get_project_by_id(project_id)
         if project is None:
             return None
-        logger.info('compare repository path:%s source:%s target:%s' % (path, source, target))
+        logger.info('compare repository project:%s source:%s target:%s' % (project.name, source, target))
 
         tags = [tag.name for tag in project.tags.list()]
         if target == 'latest_tag' and len(tags) > 0:
@@ -82,6 +100,7 @@ class GitlabAPI(object):
                 'source': source,
                 'target': target,
             }
+
             if diff['compare_same_ref'] == False:
                 for commit in diff['commits']:
                     data['commits'].append(

@@ -346,6 +346,7 @@ def diff_permission(source='Staging',target='Development'):
 
     return diff
 
+
 def diff_permission_api_permission(new_permission, old_permission):
     """
     检查依赖服务的变化
@@ -359,3 +360,16 @@ def diff_permission_api_permission(new_permission, old_permission):
         'remove': remove,
         'add': add,
     }
+
+
+def demo(request):
+    api = GitlabAPI()
+    projects = api.get_projects()
+    from config.models import GitLabProject
+    logger.info(projects)
+    for item in projects:
+        project = GitLabProject()
+        project.path = item['path']
+        project.project_id = item['project_id']
+        project.save()
+

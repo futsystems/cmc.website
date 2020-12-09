@@ -271,12 +271,18 @@ class DeployAdmin(admin.ModelAdmin):
                 old_item = source_items.get(name=item_name)
 
                 path = 'platform/srv.%s' % new_item.name.lower()
+                from config.models import GitLabProject
+                try:
+                    project = GitLabProject.objects.get(path=path)
+                except GitLabProject.DoesNotExist, e:
+                    return
+                project_id =project.project_id
                 #logger.info('22222')
                 # 比较某个部署环境与生产环境(最新tag版本)代码差异
                 if deploy.env == 'Production':
                     target_repo = deploy.get_version('Service', old_item.name)
 
-                ret = api.compare_repository(path, source_repo, target_repo)
+                ret = api.compare_repository(project_id, source_repo, target_repo)
                 tmp = self._parse_compare_result(new_item.name, path, ret)
                 if tmp is not None:
                     diff['diff'].append(tmp)

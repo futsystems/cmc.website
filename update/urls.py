@@ -11,4 +11,5 @@ import views
 urlpatterns = [
     url(r'^diff/$', views.diff, name='diff'),
     url(r'^acl/diff/$', views.acl_diff, name='acl_diff'),
+    url(r'^demo/$', views.demo, name='demo'),
 ]
