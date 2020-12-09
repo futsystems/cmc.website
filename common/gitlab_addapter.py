@@ -127,7 +127,8 @@ class GitlabAPI(object):
         next_tag = 'v1.0.0'
         if len(tags) > 0:
             latest_tag = tags[0]
-            diff = project.repository_compare('master', latest_tag)
+            logger.info('compare source:%s target:%s' % ('master', latest_tag))
+            diff = project.repository_compare(latest_tag, 'master')
             if len(diff['commits']) == 0 :
                 return [False, 'No Commits']
             tag_nums = latest_tag[1:].split('.')
