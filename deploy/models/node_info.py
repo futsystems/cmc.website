@@ -11,15 +11,13 @@ from deploy import Deploy
 import json
 
 
-
-
 class NodeInfo(models.Model):
     """
     NodeInfo, node report information to CMC
     """
     deploy = models.ForeignKey(Deploy, verbose_name='Consul', on_delete=models.SET_NULL, default=None,
                                 blank=True, null=True, related_name='nodes')
-    node_service = models.CharField(max_length=20, default='Gateway')
+    node_name = models.CharField(max_length=20, default='Gateway')
     ip = models.CharField('IP', max_length=50, default='127.0.0.1')
 
     product_type = models.CharField(max_length=20, choices=PRODUCTTYPE, default='WeiShop')
@@ -40,10 +38,10 @@ class NodeInfo(models.Model):
     def __unicode__(self):
         return u'%s-%s' % (self.deploy, self.node_service)
 
-
     def to_dict(self):
         dict = {
             'id': self.pk,
+            'name': self.node_service,
             "service": self.node_service,
             'ip': self.ip,
             'product': self.product_type,
@@ -60,6 +58,5 @@ class NodeInfo(models.Model):
         for dll in dict['framework'] :
             if dll['name'] == 'Marvel.Web.Framework':
                 dict['framework_version'] = dll['version']
-
 
         return dict

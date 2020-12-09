@@ -12,7 +12,7 @@ from .. import models
 from eventbus import EventBublisher
 from eventbus import CMCGatewayConfigUpdate, CMCACLRoleUpdate, CMCACLPermissionUpdate
 from config.models import ElastAPM, EventBus, Consul
-from common import GitlabAPI, json_response,Error
+from common import GitlabAPI, json_response,Error, _json_content
 from config import models as config_models
 from django.shortcuts import render_to_response,render
 
@@ -111,10 +111,19 @@ class DeployAdmin(admin.ModelAdmin):
         """
 
         """
-        return format_html(
-            '<a href="{}" target="_blank">Compare</a>&nbsp;',
-            reverse('admin:deploy-code-compare', args=[obj.pk]),
-        )
+        print obj.env == 'Production'
+        if obj.env == 'Production':
+            return format_html(
+                '<a href="{}" target="_blank">Compare</a>&nbsp;'
+                '| <a href="{}" target="_blank">Confirm</a>&nbsp;',
+                reverse('admin:deploy-code-compare', args=[obj.pk]),
+                reverse('admin:deploy-code-confirm', args=[obj.pk]),
+            )
+        else:
+            return format_html(
+                '<a href="{}" target="_blank">Compare</a>&nbsp;',
+                reverse('admin:deploy-code-compare', args=[obj.pk]),
+            )
 
     code_action.allow_tags = True
     code_action.short_description = "Code Action"
@@ -145,6 +154,11 @@ class DeployAdmin(admin.ModelAdmin):
                 name='deploy-code-compare',
             ),
             url(
+                r'^(?P<deploy_id>.+)/code_confirm/$',
+                self.admin_site.admin_view(self.code_confirm),
+                name='deploy-code-confirm',
+            ),
+            url(
                 r'^(?P<path>.+)/code_merge/$',
                 self.admin_site.admin_view(self.code_merge),
                 name='deploy-code-merge',
@@ -153,13 +167,33 @@ class DeployAdmin(admin.ModelAdmin):
 
         return my_urls + urls
 
+    def code_confirm(self, request, deploy_id):
+        deploy = models.Deploy.objects.get(id=deploy_id)
+
+        data = []
+        for item in deploy.nodes:
+            info = {
+                'name':item.node_name
+            }
+        data = [
+            {
+            'name': item.node_name,
+            'version': item.version
+        } for item in deploy.versions.all()]
+
+        return json_response(Error(''))
+
+
     def code_merge(self,request,path):
         print 'code merge path:%s' % path
         api = GitlabAPI()
-        #result = api.merge_project(path)
-        messages.info(request, "Merge success")
-        previous_url = request.META.get('HTTP_REFERER')
-        return HttpResponseRedirect(previous_url)
+        result = api.merge_project(path)
+        context ={
+            'success': result[0],
+            'result': result[1]
+        }
+
+        return render(request, 'deploy/admin/merge_result.html', context=context)
 
     def code_compare(self, request, deploy_id):
         """
