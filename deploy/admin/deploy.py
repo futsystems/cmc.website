@@ -115,9 +115,9 @@ class DeployAdmin(admin.ModelAdmin):
         if obj.env == 'Production':
             return format_html(
                 '<a href="{}" target="_blank">Compare</a>&nbsp;'
-                '| <a href="{}" target="_blank">Confirm</a>&nbsp;',
+                '| <a href="{}" target="_blank">Version Diff</a>&nbsp;',
                 reverse('admin:deploy-code-compare', args=[obj.pk]),
-                reverse('admin:deploy-code-confirm', args=[obj.pk]),
+                reverse('admin:deploy_version_diff', args=[obj.pk]),
             )
         elif obj.env == 'Staging':
             return format_html(
@@ -159,9 +159,9 @@ class DeployAdmin(admin.ModelAdmin):
                 name='deploy-code-compare',
             ),
             url(
-                r'^(?P<deploy_id>.+)/code_confirm/$',
+                r'^(?P<deploy_id>.+)/version_diff/$',
                 self.admin_site.admin_view(self.code_confirm),
-                name='deploy-code-confirm',
+                name='deploy_version_diff',
             ),
             url(
                 r'^(?P<path>.+)/code_merge/$',
