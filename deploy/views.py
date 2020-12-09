@@ -175,7 +175,7 @@ def register_node_info(request):
         logger.info(data)
         try:
             deploy_key = data['deploy']
-            node_service = data['service']
+            node_name = data['service']
             ip = get_client_ip(request)
 
             product_type = data['product']
@@ -195,10 +195,10 @@ def register_node_info(request):
 
         if deploy is not None:
             try:
-                node_info = NodeInfo.objects.get(deploy=deploy, node_name=node_service, ip=ip)
+                node_info = NodeInfo.objects.get(deploy=deploy, node_name=node_name, ip=ip)
             except NodeInfo.DoesNotExist:
                 node_info = NodeInfo()
-                node_info.node_service = node_service
+                node_info.node_name = node_name
                 node_info.deploy = deploy
                 node_info.ip = ip
 
@@ -221,7 +221,7 @@ def unregister_node_info(request):
         logger.info(data)
         try:
             deploy_key = data['deploy']
-            node_service = data['service']
+            node_name = data['service']
             ip = get_client_ip(request)
 
             product_type = data['product']
@@ -241,10 +241,10 @@ def unregister_node_info(request):
 
         if deploy is not None:
             try:
-                node_info = NodeInfo.objects.get(deploy=deploy, node_name=node_service, ip=ip)
+                node_info = NodeInfo.objects.get(deploy=deploy, node_name=node_name, ip=ip)
             except NodeInfo.DoesNotExist:
                 node_info = NodeInfo()
-                node_info.node_service = node_service
+                node_info.node_name = node_name
                 node_info.deploy = deploy
                 node_info.ip = ip
 
@@ -268,7 +268,7 @@ def update_health_info(request):
 
         try:
             deploy_key = data['deploy']
-            node_service = data['service']
+            node_name = data['service']
             product_type = data['product']
             env = data['env']
             ip = get_client_ip(request)
@@ -285,9 +285,9 @@ def update_health_info(request):
             return json_response(Error('deploy:%s do not exist' % deploy_key))
 
         try:
-            node_info = NodeInfo.objects.get(deploy=deploy, node_name=node_service, ip=ip)
+            node_info = NodeInfo.objects.get(deploy=deploy, node_name=node_name, ip=ip)
         except NodeInfo.DoesNotExist:
-            msg = 'node:%s at ip:%s do not exist' % (node_service, ip)
+            msg = 'node:%s at ip:%s do not exist' % (node_name, ip)
             logger.warn(msg)
             return json_response(Error(msg))
         node_info.health_report = json.dumps(health)
