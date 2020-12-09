@@ -186,7 +186,8 @@ class DeployAdmin(admin.ModelAdmin):
                 'version_health': item.version,
                 'version': deploy.get_version(item.node_type, item.node_name)
             }
-            data.append(info)
+            if not info['version_health'].startswith(item.version):
+                data.append(info)
         return json_response(data)
 
     def code_merge(self,request,path):
