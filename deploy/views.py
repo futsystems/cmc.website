@@ -195,7 +195,7 @@ def register_node_info(request):
 
         if deploy is not None:
             try:
-                node_info = NodeInfo.objects.get(deploy=deploy,node_service=node_service, ip=ip)
+                node_info = NodeInfo.objects.get(deploy=deploy, node_name=node_service, ip=ip)
             except NodeInfo.DoesNotExist:
                 node_info = NodeInfo()
                 node_info.node_service = node_service
@@ -241,7 +241,7 @@ def unregister_node_info(request):
 
         if deploy is not None:
             try:
-                node_info = NodeInfo.objects.get(deploy=deploy,node_service=node_service, ip=ip)
+                node_info = NodeInfo.objects.get(deploy=deploy, node_name=node_service, ip=ip)
             except NodeInfo.DoesNotExist:
                 node_info = NodeInfo()
                 node_info.node_service = node_service
@@ -285,7 +285,7 @@ def update_health_info(request):
             return json_response(Error('deploy:%s do not exist' % deploy_key))
 
         try:
-            node_info = NodeInfo.objects.get(deploy=deploy, node_service=node_service, ip=ip)
+            node_info = NodeInfo.objects.get(deploy=deploy, node_name=node_service, ip=ip)
         except NodeInfo.DoesNotExist:
             msg = 'node:%s at ip:%s do not exist' % (node_service, ip)
             logger.warn(msg)
