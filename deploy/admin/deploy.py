@@ -119,6 +119,11 @@ class DeployAdmin(admin.ModelAdmin):
                 reverse('admin:deploy-code-compare', args=[obj.pk]),
                 reverse('admin:deploy-code-confirm', args=[obj.pk]),
             )
+        elif obj.env == 'Staging':
+            return format_html(
+                '<a href="{}" target="_blank">Compare</a>&nbsp;',
+                reverse('admin:deploy-code-compare', args=[obj.pk]),
+            )
         else:
             return format_html(
                 '<a href="{}" target="_blank">Compare</a>&nbsp;',
@@ -163,6 +168,11 @@ class DeployAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.code_merge),
                 name='deploy-code-merge',
             ),
+            url(
+                r'^(?P<path>.+)/code_tag/$',
+                self.admin_site.admin_view(self.code_tag),
+                name='deploy-code-tag',
+            ),
         ]
 
         return my_urls + urls
@@ -183,7 +193,6 @@ class DeployAdmin(admin.ModelAdmin):
 
         return json_response(Error(''))
 
-
     def code_merge(self,request,path):
         print 'code merge path:%s' % path
         api = GitlabAPI()
@@ -192,8 +201,18 @@ class DeployAdmin(admin.ModelAdmin):
             'success': result[0],
             'result': result[1]
         }
-
         return render(request, 'deploy/admin/merge_result.html', context=context)
+
+    def code_tag(self, request, path):
+        print 'code tag path:%s' % path
+        api = GitlabAPI()
+        result = api.tag_project(path)
+
+        context ={
+            'success': result[0],
+            'result': result[1]
+        }
+        return render(request, 'deploy/admin/tag_result.html', context=context)
 
     def code_compare(self, request, deploy_id):
         """
@@ -237,7 +256,9 @@ class DeployAdmin(admin.ModelAdmin):
                 'add': add_items,
                 'remove': remove_items,
                 'diff': [],
-                'msg': msg
+                'msg': msg,
+                'op_tag': deploy.env == 'Staging',
+                'op_merge': deploy.env == 'Development',
             }
 
             #logger.info(intersection_items)

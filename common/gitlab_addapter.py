@@ -100,6 +100,28 @@ class GitlabAPI(object):
             logger.error(traceback.format_exc())
             return None
 
+    def tag_project(self, path):
+        project = self.get_project_by_path(path)
+        if project is None:
+            return [True, 'Project do not exist']
+        tags = [tag.name for tag in project.tags.list()]
+        next_tag = 'v1.0.0'
+        if len(tags) > 0:
+            latest_tag = tags[0]
+            diff = project.repository_compare('master', latest_tag)
+            if len(diff['commits']) == 0 :
+                return [False, 'No Commits']
+            tag_nums = latest_tag[1:].split('.')
+            if len(tag_nums) == 3:
+                next_tag = 'v%s.%s.%s' % (tag_nums[0], tag_nums[1], int(tag_nums[2])+1)
+            else:
+                next_tag = 'v1.0.0'
+        try:
+            tag = project.tags.create({'tag_name': next_tag, 'ref': 'master'})
+            return [True, 'tag:%s is created' % tag.name]
+        except GitlabCreateError,e:
+            return [False, e.error_message]
+
     def merge_project(self, path):
         project = self.get_project_by_path(path)
         if project is None:

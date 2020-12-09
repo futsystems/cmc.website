@@ -49,7 +49,10 @@
     <td class="field-tags">{{item.tags}}</td>
     <td class="field-tags">{{item.source}}</td>
     <td class="field-tags">{{item.target}}</td>
-    <td class="field-action"><a href="https://gitlab.marvelsystem.net/{{item.path}}" target="_blank">Project</a> | <a href="{% url 'admin:deploy-code-merge' path=item.path %}" target="_blank">Merge</a></td></tr>
+    <td class="field-action"><a href="https://gitlab.marvelsystem.net/{{item.path}}" target="_blank">Project</a>
+        {% if op_merge %}| <a href="{% url 'admin:deploy-code-merge' path=item.path %}" target="_blank">Merge</a> {% endif %}
+        {% if op_tag %}| <a href="{% url 'admin:deploy-code-tag' path=item.path %}" target="_blank">Tag</a> {% endif %}
+    </td></tr>
 
 {% endfor %}
 </tbody>
