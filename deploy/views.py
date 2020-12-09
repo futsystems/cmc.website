@@ -199,6 +199,7 @@ def register_node_info(request):
             except NodeInfo.DoesNotExist:
                 node_info = NodeInfo()
                 node_info.node_name = node_name
+                node_info.node_type = get_node_type(node_name)
                 node_info.deploy = deploy
                 node_info.ip = ip
 
@@ -245,6 +246,7 @@ def unregister_node_info(request):
             except NodeInfo.DoesNotExist:
                 node_info = NodeInfo()
                 node_info.node_name = node_name
+                node_info.node_type = get_node_type(node_name)
                 node_info.deploy = deploy
                 node_info.ip = ip
 
@@ -291,7 +293,19 @@ def update_health_info(request):
             logger.warn(msg)
             return json_response(Error(msg))
         node_info.health_report = json.dumps(health)
+        node_info.node_type = get_node_type(node_info)
         node_info.last_active_time = datetime.datetime.now()
         node_info.save()
 
     return json_response(Success("success"))
+
+def get_node_type(node_name):
+    if node_name == 'Admin':
+        return 'Portal'
+    if node_name == 'Console':
+        return 'Portal'
+    if node_name == 'H5':
+        return 'Portal'
+    if node_name == 'APIGateway':
+        return 'Gateway'
+    return 'Service'

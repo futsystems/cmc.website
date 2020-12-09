@@ -17,6 +17,8 @@ class NodeInfo(models.Model):
     """
     deploy = models.ForeignKey(Deploy, verbose_name='Consul', on_delete=models.SET_NULL, default=None,
                                 blank=True, null=True, related_name='nodes')
+
+    node_type = models.CharField(max_length=20, default='Portal')
     node_name = models.CharField(max_length=20, default='Gateway')
     ip = models.CharField('IP', max_length=50, default='127.0.0.1')
 

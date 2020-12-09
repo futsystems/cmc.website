@@ -179,19 +179,15 @@ class DeployAdmin(admin.ModelAdmin):
 
     def code_confirm(self, request, deploy_id):
         deploy = models.Deploy.objects.get(id=deploy_id)
-
         data = []
         for item in deploy.nodes:
             info = {
-                'name':item.node_name
+                'name': item.node_name,
+                'version': item.version,
+                'version_config': deploy.get_version(item.node_type, item.node_name)
             }
-        data = [
-            {
-            'name': item.node_name,
-            'version': item.version
-        } for item in deploy.versions.all()]
-
-        return json_response(Error(''))
+            data.append(info)
+        return json_response(data)
 
     def code_merge(self,request,path):
         print 'code merge path:%s' % path
