@@ -60,5 +60,6 @@ class NodeInfo(models.Model):
         for dll in dict['framework'] :
             if dll['name'] == 'Marvel.Web.Framework':
                 dict['framework_version'] = dll['version']
-
+        if dict['up'] is False:
+            dict['health'] = []
         return dict

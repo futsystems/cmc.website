@@ -103,7 +103,6 @@ def node_info(request):
                         gateways.append(node)
                     else:
                         services.append(node)
-
                 data['gateway'] = gateways
                 data['service'] = services
                 return json_response(Success(data))
