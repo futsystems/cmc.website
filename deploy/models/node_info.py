@@ -57,9 +57,14 @@ class NodeInfo(models.Model):
             'last_active_time': self.last_active_time.strftime("%Y-%m-%d %H:%M:%S")
         }
 
+        print self.last_active_time
         for dll in dict['framework'] :
             if dll['name'] == 'Marvel.Web.Framework':
                 dict['framework_version'] = dll['version']
         if dict['up'] is False:
-            dict['health'] = []
+            dict['health'] = {
+                'status': 'Unhealthy',
+                'entries': [],
+                'description': 'service is not up, default status is Unhealthy',
+            }
         return dict
