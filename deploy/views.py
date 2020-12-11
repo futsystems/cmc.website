@@ -210,7 +210,7 @@ def register_node_info(request):
             node_info.up = True
             node_info.save()
 
-            logger.warn('service:%s of product:%s in deploy:%s up ' % (node_service, product_type, deploy_key))
+            logger.warn('service:%s of product:%s in deploy:%s up ' % (node_name, product_type, deploy_key))
 
     return json_response(Success("success"))
 
@@ -257,7 +257,7 @@ def unregister_node_info(request):
             node_info.up = False
             node_info.save()
 
-            logger.warn('service:%s of product:%s in deploy:%s down ' % (node_service, product_type, deploy_key))
+            logger.warn('service:%s of product:%s in deploy:%s down ' % (node_name, product_type, deploy_key))
 
     return json_response(Success("success"))
 
