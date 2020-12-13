@@ -29,9 +29,9 @@ class GitLabProject(models.Model):
                 "https://gitlab.marvelsystem.net/%s/badges/master/pipeline.svg" % self.path]
 
     def on_pipeline_success(self,tag):
-        try:
-            tag_info = self.tags.filter(tag=tag).first()
-        except Exception:
+
+        tag_info = self.tags.filter(tag=tag).first()
+        if tag_info is None:
             tag_info = TagInfo()
             tag_info.project = self
 
