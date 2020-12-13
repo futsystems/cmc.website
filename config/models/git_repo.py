@@ -23,6 +23,12 @@ class GitLabProject(models.Model):
     def __unicode__(self):
         return u'%s-%s' % (self.path, self.project_id)
 
+    @property
+    def pipeline_status_image(self):
+        return ["https://gitlab.marvelsystem.net/%s/badges/develop/pipeline.svg" % self.path,
+                "https://gitlab.marvelsystem.net/%s/badges/master/pipeline.svg" % self.path]
+
+
 class TagInfo(models.Model):
     """
     TagInfo

@@ -441,7 +441,14 @@ class HttpMethodAdmin(admin.ModelAdmin):
 
 
 class GitLabProjectAdmin(admin.ModelAdmin):
-    list_display = ('path','node_type', 'node_name', 'project_id')
+    list_display = ('path', 'node_type', 'node_name', 'project_id', 'pipeline_image_tag')
+
+    def pipeline_image_tag(self, obj):
+        from django.utils.html import escape
+        imgs = obj.pipeline_status_image
+        return u'<img src="%s" /> <img src="%s" />' % (escape(imgs[0]), escape(imgs[1]))
+    pipeline_image_tag.short_description = 'Develop/Master'
+    pipeline_image_tag.allow_tags = True
 
 class HeadTransformAdmin(admin.ModelAdmin):
     list_display = ('name', 'header_key', 'header_value')
