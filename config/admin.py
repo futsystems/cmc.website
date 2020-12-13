@@ -441,7 +441,7 @@ class HttpMethodAdmin(admin.ModelAdmin):
 
 
 class GitLabProjectAdmin(admin.ModelAdmin):
-    list_display = ('path', 'project_id')
+    list_display = ('path','node_type', 'node_name', 'project_id')
 
 class HeadTransformAdmin(admin.ModelAdmin):
     list_display = ('name', 'header_key', 'header_value')

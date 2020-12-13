@@ -11,6 +11,9 @@ class GitLabProject(models.Model):
     GitProject
     """
     path = models.CharField('Path', max_length=100, default='platform/path', unique=True)
+    node_type = models.CharField("Node Type", max_length=20, choices=NODETYPE, default='Service')
+    node_name = models.CharField("Node Name", max_length=20, default='APIGateway')
+
     project_id = models.CharField(max_length=5, default='1')
     description = models.CharField('Description', max_length=1000, default='', blank=True)
 
