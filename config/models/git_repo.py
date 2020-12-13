@@ -28,6 +28,19 @@ class GitLabProject(models.Model):
         return ["https://gitlab.marvelsystem.net/%s/badges/develop/pipeline.svg" % self.path,
                 "https://gitlab.marvelsystem.net/%s/badges/master/pipeline.svg" % self.path]
 
+    def on_pipeline_success(self,tag):
+        try:
+            tag_info = self.tags.filter(tag=tag)
+        except Exception:
+            tag_info = TagInfo()
+            tag_info.project = self
+
+        tag_info.tag = tag
+        tag_info.version = tag[1:]
+        tag_info.db_version = 0
+        tag_info.save()
+
+
 
 class TagInfo(models.Model):
     """

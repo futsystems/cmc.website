@@ -3,7 +3,7 @@
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from models import ApiGateway,Service
+from models import ApiGateway,Service, GitLabProject
 from common import Success, Error, json_response, _json_content_md5
 from deploy.models import Server
 from common.request_helper import get_client_ip
@@ -191,4 +191,23 @@ def gitlab_event(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         logger.info(data)
+        if data['object_kind'] == 'pipeline':
+            obj_attr = data['object_attributes']
+            if obj_attr['status'] == 'success' and obj_attr['tag'] == True:
+                # tag build is success
+                tag = obj_attr['ref']
+                project_id = data['project']['id']
+                try:
+                    project = GitLabProject.objects.get(pk=project_id)
+                    project.on_pipeline_success(tag)
+                    logger.info('project:%s update tag:%s' % (project.path, tag))
+                except GitLabProject.DoesNotExist:
+                    logger.error('project:%s do not exist' % project_id)
+
+
+
+
+
+
+
     return json_response(Success(""))
