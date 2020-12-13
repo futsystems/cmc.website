@@ -67,13 +67,13 @@ class Deploy(models.Model):
         return dict
 
     def get_version(self, node_type, node_name):
-        item = self.versions.filter(node_name=node_name, node_type=node_type).first()
+        item = self.versions.filter(project__node_name=node_name, project__node_type=node_type).first()
         if item is None:
             return 'v1.0.0'
         return item.version
 
     def get_version_id(self, node_type, node_name):
-        item = self.versions.filter(node_name=node_name, node_type=node_type).first()
+        item = self.versions.filter(project__node_name=node_name, project__node_type=node_type).first()
         if item is None:
             return None
         return item.pk
