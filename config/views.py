@@ -190,7 +190,7 @@ def used_services(request):
 def gitlab_event(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        logger.info(data)
+        #logger.info(data)
         if data['object_kind'] == 'pipeline':
             obj_attr = data['object_attributes']
             if obj_attr['status'] == 'success' and obj_attr['tag'] == True:
