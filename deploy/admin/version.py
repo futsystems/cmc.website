@@ -28,7 +28,7 @@ class VersionAdminForm(forms.ModelForm):
                 self.fields['tag'].queryset = TagInfo.objects.filter(project=self.instance.project)
 
 class VersionAdmin(admin.ModelAdmin):
-    list_display = ('deploy', 'project', 'node_type', 'node_name', 'version', 'tag_name')
+    list_display = ('deploy', 'project', 'tag_name')
     list_filter = ('deploy',)
     form = VersionAdminForm
 
