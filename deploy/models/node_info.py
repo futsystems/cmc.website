@@ -10,6 +10,9 @@ from config.models import Consul
 from deploy import Deploy
 import json
 
+import logging, traceback
+logger = logging.getLogger(__name__)
+
 
 class NodeInfo(models.Model):
     """
@@ -57,7 +60,9 @@ class NodeInfo(models.Model):
             'last_active_time': self.last_active_time.strftime("%Y-%m-%d %H:%M:%S")
         }
 
-        print self.last_active_time
+        logger.info('111111')
+        logger.info(self.last_active_time)
+
         for dll in dict['framework'] :
             if dll['name'] == 'Marvel.Web.Framework':
                 dict['framework_version'] = dll['version']

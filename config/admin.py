@@ -571,6 +571,12 @@ class WXBoundServerAdmin(admin.ModelAdmin):
     list_display = ('name', 'env', 'ip')
     list_filter = ('env',)
 
+
+class TagInfoAdmin(admin.ModelAdmin):
+    list_display = ('project', 'tag', 'version', 'db_version')
+    list_filter = ('project',)
+
+
 admin.site.register(models.ApiGateway, ApiGatewayAdmin)
 admin.site.register(models.Consul, ConsulAdmin)
 admin.site.register(models.Service, ServiceAdmin)
@@ -596,3 +602,4 @@ admin.site.register(models.Portal, PortalAdmin)
 
 admin.site.register(models.WXBoundServer, WXBoundServerAdmin)
 admin.site.register(models.GitLabProject, GitLabProjectAdmin)
+admin.site.register(models.TagInfo, TagInfoAdmin)

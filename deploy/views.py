@@ -298,6 +298,7 @@ def update_health_info(request):
 
     return json_response(Success("success"))
 
+
 def get_node_type(node_name):
     if node_name == 'Admin':
         return 'Portal'

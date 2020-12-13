@@ -373,3 +373,21 @@ def demo(request):
         project.project_id = item['project_id']
         project.save()
 
+def demo2(request):
+    from config.models import GitLabProject,TagInfo
+    api = GitlabAPI()
+    for project in GitLabProject.objects.all():
+        item = api.get_project_by_id(project.project_id)
+        for tag in item.tags.list():
+            info = TagInfo()
+            info.project = project
+            info.tag = tag.name
+            info.version = tag.name[1:]
+            info.db_version = 0
+            info.save()
+
+        tags = item.tags.list()
+        logger.info('project:%s tags:%s' % (project.path, [tag.name for tag in tags]))
+
+
+

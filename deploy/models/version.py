@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-
 from django.db import models
 import django.utils.timezone as timezone
 from choices import LOCATION, NODETYPE, PRODUCTTYPE
@@ -36,18 +35,12 @@ class Version(models.Model):
     #node_name = models.ModelChoiceField(queryset=Service.objects.all())
     version = models.CharField('Version', max_length=50, default='v1.0.0')
 
-
     class Meta:
         app_label = 'deploy'
         unique_together = ('deploy', 'node_type', 'node_name')
 
     def __unicode__(self):
         return u'%s-%s-%s' % (self.node_type, self.node_name, self.version)
-
-    #def save(self, *args, **kwargs):
-    #    self.node_type = self.node_name.split('_')[0]
-    #    print self.node_name
-    #    super(Version, self).save(*args, **kwargs)
 
 
 

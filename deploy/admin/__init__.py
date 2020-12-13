@@ -8,6 +8,7 @@ from deploy import DeployAdmin
 from ip import IPAdmin
 from version import VersionAdmin
 
+
 admin.site.register(models.Server, ServerAdmin)
 admin.site.register(models.Deploy, DeployAdmin)
 admin.site.register(models.IP, IPAdmin)

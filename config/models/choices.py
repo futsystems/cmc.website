@@ -64,3 +64,14 @@ PRODUCT=(
     ('WeiSite', 'WeiSite'),
     ('WeiShop', 'WeiShop'),
 )
+
+NODETYPE = {
+    ('Service', 'Service'),
+    ('Gateway', 'Gateway'),
+    ('Access', 'Access'),
+    ('MQ', 'MQ'),
+    ('Consul', 'Consul'),
+    ('Portal', 'Portal'),
+    ('APM', 'APM'),
+    ('Mix', 'Mix'),
+}

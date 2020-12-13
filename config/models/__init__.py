@@ -5,7 +5,7 @@ from api_gateway import ApiGateway
 from consul import Consul
 from service import Service
 from route import Route
-from git_repo import GitLabProject
+from git_repo import GitLabProject, TagInfo
 
 
 
