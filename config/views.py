@@ -198,7 +198,7 @@ def gitlab_event(request):
                 tag = obj_attr['ref']
                 project_id = data['project']['id']
                 try:
-                    project = GitLabProject.objects.get(pk=project_id)
+                    project = GitLabProject.objects.get(project_id=project_id)
                     project.on_pipeline_success(tag)
                     logger.info('project:%s update tag:%s' % (project.path, tag))
                 except GitLabProject.DoesNotExist:
