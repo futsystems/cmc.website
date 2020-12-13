@@ -30,7 +30,7 @@ class GitLabProject(models.Model):
 
     def on_pipeline_success(self,tag):
         try:
-            tag_info = self.tags.filter(tag=tag)
+            tag_info = self.tags.filter(tag=tag).first()
         except Exception:
             tag_info = TagInfo()
             tag_info.project = self
