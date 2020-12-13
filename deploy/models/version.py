@@ -46,6 +46,13 @@ class Version(models.Model):
     def __unicode__(self):
         return u'%s-%s-%s' % (self.node_type, self.node_name, self.version)
 
+    @property
+    def tag_name(self):
+        if self.tag is None:
+            return 'None'
+        else:
+            return self.tag.tag
+
 
 
 
