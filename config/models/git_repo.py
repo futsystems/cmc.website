@@ -44,3 +44,6 @@ class TagInfo(models.Model):
     tag = models.CharField('Tag', max_length=50, default='v1.0.0')
     version = models.CharField('Image Version', max_length=50, default='1.0.0')
     db_version = models.CharField('DB Version', max_length=50, default='20200101180500')#年月日时分秒代表数据库版本号
+
+    def __unicode__(self):
+        return u'%s-%s' % (self.project, self.tag)
