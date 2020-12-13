@@ -7,7 +7,7 @@ from django.utils.html import format_html
 from django import forms
 from django.shortcuts import render_to_response
 from django.db.models import Max
-from config.models import Service, ApiGateway,Portal
+from config.models import Service, ApiGateway,Portal, TagInfo
 
 import logging,traceback,json
 logger = logging.getLogger(__name__)
@@ -24,9 +24,11 @@ class VersionAdminForm(forms.ModelForm):
         forms.ModelForm.__init__(self, *args, **kwargs)
         if self.instance.id > 0:
             self.fields['node_name'].queryset = Service.objects.filter(env=self.instance.deploy.env)
+            if self.instance.project is not None:
+                self.fields['tag'].queryset = TagInfo.objects.filter(project=self.instance.project)
 
 class VersionAdmin(admin.ModelAdmin):
-    list_display = ('deploy', 'node_type', 'node_name', 'version')
+    list_display = ('deploy', 'project', 'node_type', 'node_name', 'version')
     list_filter = ('deploy',)
     form = VersionAdminForm
 
