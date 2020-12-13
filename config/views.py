@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from django.http import HttpResponse
-
+from django.views.decorators.csrf import csrf_exempt
 from models import ApiGateway,Service
 from common import Success, Error, json_response, _json_content_md5
 from deploy.models import Server
 from common.request_helper import get_client_ip
 import logging, traceback
 from collections import OrderedDict
+import json
 logger = logging.getLogger(__name__)
 
 
@@ -184,3 +185,10 @@ def used_services(request):
         except Exception, e:
             logger.error(traceback.format_exc())
             return json_response(Error("get service config error"))
+
+@csrf_exempt
+def gitlab_event(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        logger.info(data)
+    return json_response(Success(""))

@@ -18,5 +18,7 @@ urlpatterns = [
     url(r'^service/$', views.service, name='service_config'),
     url(r'^service/hash/$', views.service_hash, name='service_config_hash'),
 
+    url(r'^gitlab/notify/$', views.gitlab_event, name='gitlab_event_notify'),
+
     #url(r'^service/used/$', views.used_services, name='config_used_services'),
 ]
