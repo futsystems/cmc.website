@@ -21,7 +21,7 @@ class EventBublisher(object):
 
     def send_message(self, event):
         # send a message
-        print ('send event:%s body:%s' % (event.name, event.body))
+        print ('send mq:%s event:%s body:%s' % (self._url, event.name, event.body))
         self._channel.basic_publish(exchange=self._broker_name, routing_key=event.name, body=json.dumps(event.body))
         self._channel.close()
 

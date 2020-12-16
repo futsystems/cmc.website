@@ -77,6 +77,12 @@ class DeployAdmin(admin.ModelAdmin):
                 ]
             }),
 
+            ("Miniprogram Template", {
+                'fields': [
+                    'weixin_miniprogram_template',
+                ]
+            }),
+
             ("Other", {
 
                 'fields': [

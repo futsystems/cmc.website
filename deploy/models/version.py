@@ -32,7 +32,6 @@ class Version(models.Model):
                                 blank=True, null=True, related_name='versions')
     project = models.ForeignKey(GitLabProject, verbose_name='Project', on_delete=models.SET_NULL, default=None,
                                blank=True, null=True, related_name='versions')
-    #version = models.CharField('Version', max_length=50, default='v1.0.0')
 
     tag = models.ForeignKey(TagInfo, verbose_name='Tag', on_delete=models.SET_NULL, default=None,
                                 blank=True, null=True, related_name='versions')
@@ -41,7 +40,7 @@ class Version(models.Model):
         app_label = 'deploy'
 
     def __unicode__(self):
-        return u'%s-%s-%s' % (self.node_type, self.node_name, self.version)
+        return u'%s-%s' % (self.deploy, self.tag)
 
     @property
     def tag_name(self):

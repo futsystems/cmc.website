@@ -204,10 +204,16 @@ def gitlab_event(request):
                 except GitLabProject.DoesNotExist:
                     logger.error('project:%s do not exist' % project_id)
 
-
-
-
-
-
-
     return json_response(Success(""))
+
+@csrf_exempt
+def miniprogram_release_notify(request):
+    """
+    1.小程序发布更新，调用webhook,
+    2.触发消息通知
+    3.微信节点收到消息后从微信服务器获取新的微信小程序模版
+    :param request: 
+    :return: 
+    """
+    pass
+
