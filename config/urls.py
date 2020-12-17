@@ -20,5 +20,7 @@ urlpatterns = [
 
     url(r'^gitlab/notify/$', views.gitlab_event, name='gitlab_event_notify'),
 
+    url(r'^gitlab/notify/miniprogram/weixin$', views.gitlab_miniprogram_weixin_notify, name='gitlab_miniprogram_push_notify'),
+
     #url(r'^service/used/$', views.used_services, name='config_used_services'),
 ]

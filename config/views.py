@@ -8,7 +8,9 @@ from common import Success, Error, json_response, _json_content_md5
 from deploy.models import Server
 from common.request_helper import get_client_ip
 import logging, traceback
+from config.models import WeiXinMiniprogramTemplate
 from collections import OrderedDict
+
 import json
 logger = logging.getLogger(__name__)
 
@@ -206,14 +208,23 @@ def gitlab_event(request):
 
     return json_response(Success(""))
 
+
 @csrf_exempt
-def miniprogram_release_notify(request):
+def gitlab_miniprogram_weixin_notify(request):
     """
-    1.小程序发布更新，调用webhook,
-    2.触发消息通知
+    1.小程序代码提交通知对应分支 执行小程序模版检查 如果有新草稿则提交到模版库
+    2.触发小程序发布消息
     3.微信节点收到消息后从微信服务器获取新的微信小程序模版
-    :param request: 
-    :return: 
     """
-    pass
+    if request.method == "POST":
+        raise Exception("POST not support")
+    else:
+        app_id = request.GET.get("appId", None)
+        try:
+            template = WeiXinMiniprogramTemplate.objects.get(app_id=app_id)
+            logger.info(template)
+            template.release()
+        except WeiXinMiniprogramTemplate.DoesNotExist:
+            logger.info('appId:%s do not exist' % app_id)
+            return json_response(Error('appId do not exist'))
 
