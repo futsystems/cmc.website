@@ -60,6 +60,10 @@ class Deploy(models.Model):
     def save(self, *args, **kwargs):
         self.key = self.get_key()
         super(Deploy, self).save(*args, **kwargs)
+        if self.enable_node_info_filter:
+            for node in self.nodes.all():
+                if not self.has_server_by_ip(node.ip):
+                    node.delete()
 
 
     def to_info_dict(self):
