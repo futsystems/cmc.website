@@ -248,6 +248,7 @@ class DeployAdmin(admin.ModelAdmin):
         import validators
         #idx =0;
         items=[]
+        # fire service pipeline trigger
         for service in services:
             #if idx >= 1:
             #    continue
@@ -258,6 +259,16 @@ class DeployAdmin(admin.ModelAdmin):
                 result = requests.post(service.pipeline_trigger)
                 logger.info('pipline trigger result : %s' % result)
             #idx = idx+1
+
+        # fire gateway pipeline trigger
+        gateway = config_models.ApiGateway.objects.filter(env=deploy.env).first()
+        if gateway is not None:
+            if not validators.url(gateway.pipeline_trigger):
+                logger.info('invalid pipeline trigger')
+                items.append(gateway.name)
+            else:
+                result = requests.post(gateway.pipeline_trigger)
+                logger.info('pipline trigger result : %s' % result)
 
         messages.info(request, "runner jobs fired, not fired:%s" ','.join(items))
         return HttpResponseRedirect(previous_url)
