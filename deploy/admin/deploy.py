@@ -129,7 +129,7 @@ class DeployAdmin(admin.ModelAdmin):
         if obj.env == 'Production':
             return format_html(
                 '<a href="{}" target="_blank">Compare</a>&nbsp;'
-                '| <a href="{}" target="_blank">Update Framework</a>&nbsp;'
+                '| <a href="{}" >Framework</a>&nbsp;'
                 '| <a href="{}" target="_blank">Version Diff</a>&nbsp;',
                 reverse('admin:deploy-code-compare', args=[obj.pk]),
                 reverse('admin:deploy_code_update_framework', args=[obj.pk]),
@@ -138,14 +138,14 @@ class DeployAdmin(admin.ModelAdmin):
         elif obj.env == 'Staging':
             return format_html(
                 '<a href="{}" target="_blank">Compare</a>&nbsp;'
-                '| <a href="{}" target="_blank">Update Framework</a>&nbsp;',
+                '| <a href="{}" >Framework</a>&nbsp;',
                 reverse('admin:deploy-code-compare', args=[obj.pk]),
                 reverse('admin:deploy_code_update_framework', args=[obj.pk]),
             )
         else:
             return format_html(
                 '<a href="{}" target="_blank">Compare</a>&nbsp;'
-                '| <a href="{}" target="_blank">Update Framework</a>&nbsp;',
+                '| <a href="{}" >Framework</a>&nbsp;',
                 reverse('admin:deploy-code-compare', args=[obj.pk]),
                 reverse('admin:deploy_code_update_framework', args=[obj.pk]),
             )
