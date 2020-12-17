@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseNotFound, Http404 ,HttpResponseRedirect, JsonResponse
 from django.contrib import admin,messages
 from django.utils.html import format_html
+from django.forms.models import BaseInlineFormSet
 from django import forms
 from .. import models
 from eventbus import EventBublisher
@@ -20,9 +21,16 @@ import logging,traceback,json
 logger = logging.getLogger(__name__)
 
 
+class VersionInLineFormSet(BaseInlineFormSet):
+    def get_queryset(self):
+        qs = super(VersionInLineFormSet, self).get_queryset()
+        return qs.filter(project=self.instance.project)
+
 class VersionInline(admin.StackedInline):  # or admin.StackedInline
     model = models.Version
+    formset = VersionInLineFormSet
     exclude = []
+
     #filter_horizontal = ('api_permissions',)
 
 class DeployAdminForm(forms.ModelForm):
@@ -121,19 +129,25 @@ class DeployAdmin(admin.ModelAdmin):
         if obj.env == 'Production':
             return format_html(
                 '<a href="{}" target="_blank">Compare</a>&nbsp;'
+                '| <a href="{}" target="_blank">Update Framework</a>&nbsp;'
                 '| <a href="{}" target="_blank">Version Diff</a>&nbsp;',
                 reverse('admin:deploy-code-compare', args=[obj.pk]),
+                reverse('admin:deploy_code_update_framework', args=[obj.pk]),
                 reverse('admin:deploy_version_diff', args=[obj.pk]),
             )
         elif obj.env == 'Staging':
             return format_html(
-                '<a href="{}" target="_blank">Compare</a>&nbsp;',
+                '<a href="{}" target="_blank">Compare</a>&nbsp;'
+                '| <a href="{}" target="_blank">Update Framework</a>&nbsp;',
                 reverse('admin:deploy-code-compare', args=[obj.pk]),
+                reverse('admin:deploy_code_update_framework', args=[obj.pk]),
             )
         else:
             return format_html(
-                '<a href="{}" target="_blank">Compare</a>&nbsp;',
+                '<a href="{}" target="_blank">Compare</a>&nbsp;'
+                '| <a href="{}" target="_blank">Update Framework</a>&nbsp;',
                 reverse('admin:deploy-code-compare', args=[obj.pk]),
+                reverse('admin:deploy_code_update_framework', args=[obj.pk]),
             )
 
     code_action.allow_tags = True
@@ -173,6 +187,11 @@ class DeployAdmin(admin.ModelAdmin):
                 r'^(?P<path>.+)/code_merge/$',
                 self.admin_site.admin_view(self.code_merge),
                 name='deploy-code-merge',
+            ),
+            url(
+                r'^(?P<deploy_id>.+)/code_update_framework/$',
+                self.admin_site.admin_view(self.code_update_framework),
+                name='deploy_code_update_framework',
             ),
             url(
                 r'^(?P<path>.+)/code_tag/$',
@@ -216,6 +235,30 @@ class DeployAdmin(admin.ModelAdmin):
             'result': result[1]
         }
         return render(request, 'deploy/admin/tag_result.html', context=context)
+
+    def code_update_framework(self, request, deploy_id):
+        """
+        触发路由更新消息
+        """
+        previous_url = request.META.get('HTTP_REFERER')
+        deploy = models.Deploy.objects.get(id=deploy_id)
+
+        services = config_models.Service.objects.filter(env=deploy.env).all()
+        import requests
+        import validators
+        idx =0;
+        for service in services:
+            if idx >= 1:
+                continue
+            if not validators.url(service.pipeline_trigger):
+                logger.info('invalid pipeline trigger')
+            else:
+                result = requests.post(service.pipeline_trigger)
+                logger.info('pipline trigger result : %s' % result)
+            idx = idx+1
+
+        messages.info(request, "fired runner jobs")
+        return HttpResponseRedirect(previous_url)
 
     def code_compare(self, request, deploy_id):
         """
