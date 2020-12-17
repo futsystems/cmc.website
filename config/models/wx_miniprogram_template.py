@@ -15,7 +15,7 @@ class WeiXinMiniprogramTemplate(models.Model):
     app_id = models.CharField(max_length=20, default='wx000000000000', unique=True)
     web_hook = models.CharField(max_length=255, default='')
     description = models.CharField('Description', max_length=1000, default='', blank=True)
-    latest_version = models.CharField(max_length=255, default='')
+    latest_version = models.CharField(max_length=255, default='', null=True)
 
     class Meta:
         app_label = 'config'
