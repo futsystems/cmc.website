@@ -42,8 +42,8 @@ class Deploy(models.Model):
 
     description = models.CharField('Description', max_length=1000, default='', blank=True)
 
-    #weixin_miniprogram_template = models.ForeignKey(WeiXinMiniprogramTemplate, verbose_name='WeiXin Miniprogram Template', on_delete=models.SET_NULL, default=None,
-    #                            blank=True, null=True, related_name='deploys')
+    weixin_miniprogram_template = models.ForeignKey(WeiXinMiniprogramTemplate, verbose_name='WeiXin Miniprogram Template', on_delete=models.SET_NULL, default=None,
+                                blank=True, null=True, related_name='deploys')
 
     key = models.CharField('Key', max_length=100, default='', blank=True)
 
