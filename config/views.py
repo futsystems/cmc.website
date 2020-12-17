@@ -217,8 +217,6 @@ def gitlab_miniprogram_weixin_notify(request):
     3.微信节点收到消息后从微信服务器获取新的微信小程序模版
     """
     if request.method == "POST":
-        raise Exception("POST not support")
-    else:
         app_id = request.GET.get("appId", None)
         try:
             template = WeiXinMiniprogramTemplate.objects.get(app_id=app_id)
@@ -228,4 +226,5 @@ def gitlab_miniprogram_weixin_notify(request):
         except WeiXinMiniprogramTemplate.DoesNotExist:
             logger.info('appId:%s do not exist' % app_id)
             return json_response(Error('appId do not exist'))
+    return json_response(Success(""))
 
