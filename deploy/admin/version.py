@@ -23,7 +23,6 @@ class VersionAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         forms.ModelForm.__init__(self, *args, **kwargs)
         if self.instance.id > 0:
-            self.fields['node_name'].queryset = Service.objects.filter(env=self.instance.deploy.env)
             if self.instance.project is not None:
                 self.fields['tag'].queryset = TagInfo.objects.filter(project=self.instance.project)
 
