@@ -187,6 +187,9 @@ def register_node_info(request):
 
         try:
             deploy = Deploy.objects.get(key=deploy_key)
+            result = _check_ip(deploy, ip)
+            if result[0] is False:
+                return result[1]
         except Deploy.DoesNotExist:
             msg = 'deploy:%s do not exist' % deploy_key
             logger.warn(msg)
@@ -234,6 +237,9 @@ def unregister_node_info(request):
 
         try:
             deploy = Deploy.objects.get(key=deploy_key)
+            result = _check_ip(deploy, ip)
+            if result[0] is False:
+                return result[1]
         except Deploy.DoesNotExist:
             msg = 'deploy:%s do not exist' % deploy_key
             logger.warn(msg)
@@ -281,6 +287,9 @@ def update_health_info(request):
 
         try:
             deploy = Deploy.objects.get(key=deploy_key)
+            result = _check_ip(deploy, ip)
+            if result[0] is False:
+                return result[1]
         except Deploy.DoesNotExist:
             logger.warn('deploy:%s do not exist' % deploy_key)
             return json_response(Error('deploy:%s do not exist' % deploy_key))
@@ -298,6 +307,15 @@ def update_health_info(request):
 
     return json_response(Success("success"))
 
+
+def _check_ip(deploy, ip):
+    if not deploy.enable_node_info_filter:
+        return [True, None]
+    if not deploy.has_server_by_ip(ip):
+        msg = 'node io:%s is not in deploy:%s' % (ip, deploy.key)
+        logger.warn(msg)
+        return [False ,json_response(Error(msg))]
+    return [True, None]
 
 def get_node_type(node_name):
     if node_name == 'Admin':

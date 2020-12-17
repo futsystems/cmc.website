@@ -45,6 +45,7 @@ class Deploy(models.Model):
     weixin_miniprogram_template = models.ForeignKey(WeiXinMiniprogramTemplate, verbose_name='WeiXin Miniprogram Template', on_delete=models.SET_NULL, default=None,
                                 blank=True, null=True, related_name='deploys')
 
+    enable_node_info_filter = models.BooleanField('Node Info Filter', default=False)
     key = models.CharField('Key', max_length=100, default='', blank=True)
 
     class Meta:
@@ -83,6 +84,21 @@ class Deploy(models.Model):
         if item is None:
             return None
         return item.pk
+
+    def has_server_by_ip(self,ip):
+        """
+        检查IP是否在该部署服务器列表内
+        :param ip:
+        :return:
+        """
+        for server in self.servers.all():
+            if ip == server.ip:
+                return True
+
+        return False
+
+
+
 
 
 

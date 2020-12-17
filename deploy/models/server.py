@@ -27,7 +27,7 @@ class Server(models.Model):
     ip = models.CharField('IP', max_length=50, default='127.0.0.1')
     node_type = models.CharField(max_length=20, choices=NODETYPE, default='Service')
 
-    deploy = models.ForeignKey('Deploy', verbose_name='Deploy', default= 1)
+    deploy = models.ForeignKey('Deploy', verbose_name='Deploy', related_name='servers', default= 1)
 
     index = models.CharField(max_length=20, default='01')
 
