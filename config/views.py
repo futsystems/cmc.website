@@ -224,6 +224,7 @@ def gitlab_miniprogram_weixin_notify(request):
             template = WeiXinMiniprogramTemplate.objects.get(app_id=app_id)
             logger.info(template)
             template.release()
+            return json_response(Success("release success"))
         except WeiXinMiniprogramTemplate.DoesNotExist:
             logger.info('appId:%s do not exist' % app_id)
             return json_response(Error('appId do not exist'))
