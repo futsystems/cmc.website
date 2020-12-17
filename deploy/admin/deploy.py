@@ -246,18 +246,20 @@ class DeployAdmin(admin.ModelAdmin):
         services = config_models.Service.objects.filter(env=deploy.env).all()
         import requests
         import validators
-        idx =0;
+        #idx =0;
+        items=[]
         for service in services:
-            if idx >= 1:
-                continue
+            #if idx >= 1:
+            #    continue
             if not validators.url(service.pipeline_trigger):
                 logger.info('invalid pipeline trigger')
+                items.append(service.name)
             else:
                 result = requests.post(service.pipeline_trigger)
                 logger.info('pipline trigger result : %s' % result)
-            idx = idx+1
+            #idx = idx+1
 
-        messages.info(request, "fired runner jobs")
+        messages.info(request, "runner jobs fired, not fired:%s" ','.join(items))
         return HttpResponseRedirect(previous_url)
 
     def code_compare(self, request, deploy_id):
