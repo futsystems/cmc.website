@@ -88,7 +88,7 @@ class ServerAdmin(admin.ModelAdmin):
             ("Other", {
                 'classes': ('collapse',),
                 'fields': [
-                    'description', 'enable_node_info_filter'
+                    'description',
                 ]
             }),
 

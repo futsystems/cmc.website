@@ -86,7 +86,7 @@ class DeployAdmin(admin.ModelAdmin):
             ("Other", {
 
                 'fields': [
-                    'description'
+                    'enable_node_info_filter', 'description'
                 ]
             }),
 
