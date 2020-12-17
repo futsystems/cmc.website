@@ -8,7 +8,7 @@ from choices import LOCATION, NODETYPE, PRODUCTTYPE
 from config.models.choices import ENV_STAGE
 from config.models import Consul
 from config.models import EventBus, ElastAPM, LogItemGroup
-from wx_miniprogram_template import WeiXinMiniprogramTemplate
+from config.models import WeiXinMiniprogramTemplate
 
 class Deploy(models.Model):
     """
@@ -42,8 +42,8 @@ class Deploy(models.Model):
 
     description = models.CharField('Description', max_length=1000, default='', blank=True)
 
-    weixin_miniprogram_template = models.ForeignKey(WeiXinMiniprogramTemplate, verbose_name='WeiXin Miniprogram Template', on_delete=models.SET_NULL, default=None,
-                                blank=True, null=True, related_name='deploys')
+    #weixin_miniprogram_template = models.ForeignKey(WeiXinMiniprogramTemplate, verbose_name='WeiXin Miniprogram Template', on_delete=models.SET_NULL, default=None,
+    #                            blank=True, null=True, related_name='deploys')
 
     key = models.CharField('Key', max_length=100, default='', blank=True)
 

@@ -584,6 +584,48 @@ class TagInfoAdmin(admin.ModelAdmin):
     list_filter = ('project',)
 
 
+class WeiXinMiniprogramTemplateAdmin(admin.ModelAdmin):
+    list_display = ('name', 'app_id', 'web_hook', 'latest_version', 'template_action')
+
+    def template_action(self, obj):
+        """
+
+        """
+        return format_html(
+            '<a class="button" href="{}">Release</a>&nbsp;',
+            reverse('admin:deploy_wx_template_release_new', args=[obj.pk]),
+        )
+
+    template_action.allow_tags = True
+    template_action.short_description = "Template Action"
+
+
+    def get_urls(self):
+        # use get_urls for easy adding of views to the admin
+        urls = super(WeiXinMiniprogramTemplateAdmin, self).get_urls()
+        my_urls = [
+            url(
+                r'^(?P<template_config_id>.+)/new_release/$',
+                self.admin_site.admin_view(self.release_new),
+                name='deploy_wx_template_release_new',
+            ),
+        ]
+
+        return my_urls + urls
+
+    def release_new(self, request, template_config_id):
+        """
+        触发路由更新消息
+        """
+        previous_url = request.META.get('HTTP_REFERER')
+        wx_template = models.WeiXinMiniprogramTemplate.objects.get(id=template_config_id)
+        result = wx_template.release()
+        if result['code'] > 0:
+            messages.info(request, result['msg'])
+        else:
+            messages.info(request, 'release miniprogram template:%s success' % result['data'])
+        return HttpResponseRedirect(previous_url)
+
 admin.site.register(models.ApiGateway, ApiGatewayAdmin)
 admin.site.register(models.Consul, ConsulAdmin)
 admin.site.register(models.Service, ServiceAdmin)
@@ -610,3 +652,4 @@ admin.site.register(models.Portal, PortalAdmin)
 admin.site.register(models.WXBoundServer, WXBoundServerAdmin)
 admin.site.register(models.GitLabProject, GitLabProjectAdmin)
 admin.site.register(models.TagInfo, TagInfoAdmin)
+admin.site.register(models.WeiXinMiniprogramTemplate, WeiXinMiniprogramTemplateAdmin)

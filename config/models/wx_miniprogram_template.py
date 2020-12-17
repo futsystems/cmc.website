@@ -3,12 +3,9 @@
 
 
 from django.db import models
-from config.models import Service, ApiGateway, Portal
-from choices import LOCATION, NODETYPE
-from config.models.choices import ENV_STAGE
-from ip_white_list import IP
-import requests
 from eventbus import EventBublisher, CMCMiniprogramRelease
+import requests
+
 
 class WeiXinMiniprogramTemplate(models.Model):
     """
@@ -21,7 +18,7 @@ class WeiXinMiniprogramTemplate(models.Model):
     latest_version = models.CharField(max_length=255, default='')
 
     class Meta:
-        app_label = 'deploy'
+        app_label = 'config'
 
     def __unicode__(self):
         return u'%s-%s' % (self.name, self.app_id)
