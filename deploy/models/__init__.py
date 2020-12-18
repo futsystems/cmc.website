@@ -13,6 +13,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from config.models import Service
 from eventbus import EventBublisher, CMCAPMRequestSampleChange
+from deploy import Deploy
 
 import logging
 logger = logging.getLogger(__name__)
@@ -21,8 +22,12 @@ logger = logging.getLogger(__name__)
 @receiver(post_save, sender=Service, dispatch_uid="update_stock_count")
 def send_amp_sample_change_event(sender, instance, **kwargs):
     logger.info('service is chagned,env:%s' % instance.env)
-    from deploy import Deploy
-    for item in Deploy.objects.filter(env=instance.env).all():
-        ev = CMCAPMRequestSampleChange(item.key, instance.name, instance.apm_sample)
-        if item.event_bus is not None:
-            EventBublisher(item.event_bus).send_message(ev)
+
+    if instance.env == 'Development' or instance.env == 'Staging':
+        for item in Deploy.objects.filter(env=instance.env).all():
+            ev = CMCAPMRequestSampleChange(item.key, instance.name, instance.apm_sample)
+            if item.event_bus is not None:
+                EventBublisher(item.event_bus).send_message(ev)
+    else:
+        #生产环境通过部署配置进行设置
+        pass
