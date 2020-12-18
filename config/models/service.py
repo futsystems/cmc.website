@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from django.db import models
 
 from db_connection import MySqlConnection
@@ -36,6 +39,8 @@ class Service(models.Model):
     #production_tag = models.CharField(max_length=20, default='v1.0.0')
     log_level = models.ForeignKey(LogItemGroup, verbose_name='LogLevel', on_delete=models.SET_NULL,default=None,
                                   blank=True, null=True)
+
+    apm_sample = models.BooleanField('APM Sample', default=False)
 
     other_settings = models.ManyToManyField(SettingGroup, verbose_name='Other Settings', blank=True)
 
@@ -99,6 +104,10 @@ class Service(models.Model):
         if server.deploy.elastic_apm is not None:
             apm = server.deploy.elastic_apm.to_dict()
             apm['ServiceName'] = self.name
+            apm['RequestSample'] = self.apm_sample
+            # 生产环境采样开关从单独的配置信息中获得
+            if server.deploy.env == 'Production':
+                apm['RequestSample'] = server.deploy.get_version('Service', self.name)
             config['ElasticAPM'] = apm
 
         if server.deploy.service_provider is not None:

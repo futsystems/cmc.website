@@ -36,6 +36,8 @@ class Version(models.Model):
     tag = models.ForeignKey(TagInfo, verbose_name='Tag', on_delete=models.SET_NULL, default=None,
                                 blank=True, null=True, related_name='versions')
 
+    apm_sample = models.BooleanField('APM Sample', default=False)
+
     class Meta:
         app_label = 'deploy'
 

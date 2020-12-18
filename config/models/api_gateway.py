@@ -37,6 +37,8 @@ class ApiGateway(models.Model):
     other_settings = models.ManyToManyField(SettingGroup, verbose_name='Other Settings', blank=True)
 
     pipeline_trigger = models.CharField('Pipeline Trigger', max_length=1000, default='', blank=True)
+    apm_sample = models.BooleanField('APM Sample', default=False)
+
     merge_success = models.BooleanField('Merge Success', default=True)
     merge_message = models.CharField('Merge Message', max_length=500, default='', blank=True, null=True)
 
@@ -155,6 +157,7 @@ class ApiGateway(models.Model):
         if server.deploy.elastic_apm is not None:
             apm = server.deploy.elastic_apm.to_dict()
             apm['ServiceName'] = self.gw_type
+            apm['RequestSample'] = self.apm_sample
             config['ElasticAPM'] = apm
 
         if server.deploy.service_provider is not None:

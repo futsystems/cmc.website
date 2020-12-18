@@ -306,7 +306,7 @@ class ServiceAdmin(admin.ModelAdmin):
             ("Other", {
 
                 "fields": [
-                    "other_settings", "description", "pipeline_trigger"
+                    "other_settings", "description", "pipeline_trigger", "apm_sample"
                 ]
             }),
 
