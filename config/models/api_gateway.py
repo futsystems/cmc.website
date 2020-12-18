@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from django.db import models
 
 from elastic_apm import ElastAPM
@@ -153,6 +156,7 @@ class ApiGateway(models.Model):
         if server.deploy.event_bus is not None:
             config['EventBus'] = server.deploy.event_bus.to_dict()
             config['EventBus']['SubscriptionClientName'] = self.gw_type
+            config['EventBus']['OutBoxEnable'] = False #禁止 网关使用发件箱执行发送消息
 
         if server.deploy.elastic_apm is not None:
             apm = server.deploy.elastic_apm.to_dict()

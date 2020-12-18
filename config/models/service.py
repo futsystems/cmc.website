@@ -100,6 +100,7 @@ class Service(models.Model):
         if server.deploy.event_bus is not None:
             config['EventBus'] = server.deploy.event_bus.to_dict()
             config['EventBus']['SubscriptionClientName'] = self.name
+            config['EventBus']['OutBoxEnable'] = True
 
         if server.deploy.elastic_apm is not None:
             apm = server.deploy.elastic_apm.to_dict()
