@@ -142,7 +142,7 @@ class ApiGatewayAdmin(admin.ModelAdmin):
         """
         gw = models.ApiGateway.objects.get(id=gw_id)
         response = HttpResponse(_json_content(gw.generate_ocelot_config()), content_type='application/txt')
-        response['Content-Disposition'] = 'attachment; filename=ocelot_%s_%s_%s.config' % (gw.env, gw.type, gw.name)
+        response['Content-Disposition'] = 'attachment; filename=ocelot_%s_%s_%s.config' % (gw.env, gw.gw_type, gw.name)
         return response
 
     def snapshot_config(self, request, gw_id):
