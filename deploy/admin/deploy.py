@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 class VersionInLineFormSet(BaseInlineFormSet):
     def get_queryset(self):
         qs = super(VersionInLineFormSet, self).get_queryset()
-        return qs.filter(project=self.instance.project)
+        return qs#.filter(project=self.instance.project)
 
 class VersionInline(admin.StackedInline):  # or admin.StackedInline
     model = models.Version
