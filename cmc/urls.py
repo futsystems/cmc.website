@@ -23,6 +23,7 @@ from deploy import urls as deploy_urls
 from acl import urls as acl_urls
 from basic import urls as basic_urls
 from update import urls as update_urls
+from feed import urls as feed_urls
 
 #from adminplus.sites import AdminSitePlus
 #admin.site = AdminSitePlus()
@@ -34,6 +35,7 @@ urlpatterns = [
     url(r'^acl/', include(acl_urls)),
     url(r'^basic/', include(basic_urls)),
     url(r'^update/', include(update_urls)),
+    url(r'^feed/', include(feed_urls)),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^chaining/', include('smart_selects.urls')),
 ]
