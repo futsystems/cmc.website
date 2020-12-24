@@ -27,17 +27,28 @@ def index(request):
         try:
             type = request.GET.get("type")
             if type is None:
-                type = 'Doc'
+                type = 'All'
             count = request.GET.get("count")
             if count is None:
                 count = 10
             count = int(count)
             if count == 0:
                 count = 10
-
             logger.info('get feed of %s count:%s' % (type, count))
-            articles = Article.objects.filter(type=type).order_by("create_time").all()[:count]
-            return json_response([item.to_dict() for item in articles])
+
+            if type != 'All':
+                articles = Article.objects.filter(type=type).order_by("create_time").all()[:count]
+                data = {}
+                data[type] = [item.to_dict() for item in articles]
+                return json_response(data)
+            else:
+                docs = Article.objects.filter(type='Doc').order_by("create_time").all()[:count]
+                news = Article.objects.filter(type='News').order_by("create_time").all()[:count]
+                data = {
+                    'doc':[item.to_dict() for item in docs],
+                    'news': [item.to_dict() for item in news]
+                }
+                return json_response(data)
         except Exception, e:
             logger.error(traceback.format_exc())
             return json_response(Error("get feed error"))
