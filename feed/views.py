@@ -39,7 +39,7 @@ def index(request):
             if type != 'All':
                 articles = Article.objects.filter(type=type).order_by("create_time").all()[:count]
                 data = {}
-                data[type] = [item.to_dict() for item in articles]
+                data[type.lower()] = [item.to_dict() for item in articles]
                 return json_response(data)
             else:
                 docs = Article.objects.filter(type='Doc').order_by("create_time").all()[:count]
