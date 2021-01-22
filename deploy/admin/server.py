@@ -67,7 +67,7 @@ class ServerAdmin(admin.ModelAdmin):
             }),
             ("Facility", {
                 'fields': [
-                    'installed_services', 'gateway', 'portal',
+                    'installed_services', 'gateway', 'portal', 'app'
                 ]
             }),
 
