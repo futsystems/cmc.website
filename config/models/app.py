@@ -51,7 +51,7 @@ class AppH5(models.Model):
         }
 
         if deploy.env == 'Development':
-            dict['branch'] = 'development'
+            dict['branch'] = 'develop'
         elif deploy.env == 'Staging':
             dict['branch'] = 'master'
         else:
