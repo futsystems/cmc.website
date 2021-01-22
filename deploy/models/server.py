@@ -133,13 +133,6 @@ class Server(models.Model):
 
         if self.app is not None:
             data['app'] = self.app.get_pillar(self.deploy)
-            if self.deploy.env == 'Development':
-                data['app']['branch'] = 'development'
-            elif self.deploy.env == 'Staging':
-                data['app']['branch'] = 'master'
-            elif:
-                pass
-
 
         # Service Node
         if self.installed_services.all().count() > 0:

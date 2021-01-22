@@ -50,6 +50,14 @@ class AppH5(models.Model):
             'api_gw_domain': deploy.gateway_domain_name
         }
 
+        if deploy.env == 'Development':
+            dict['branch'] = 'development'
+        elif deploy.env == 'Staging':
+            dict['branch'] = 'master'
+        else:
+            pass
+
+
         #if self.env == 'Production':
         #    dict['admin_tag'] = deploy.get_version('Portal', 'Admin')
         #    dict['console_tag'] = deploy.get_version('Portal', 'Console')
