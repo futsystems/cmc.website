@@ -24,6 +24,8 @@ class Deploy(models.Model):
 
     portal_domain_name = models.CharField('Portal DomainName', max_length=100, default='portal.marvelsystem.net')
 
+    app_domain_name = models.CharField('App DomainName', max_length=100, default='app.marvelsystem.net')
+
     website_domain_name = models.CharField('Website DomainName', max_length=100, default='portal.marvelsystem.net')
 
     service_provider = models.ForeignKey(Consul, verbose_name='Consul', on_delete=models.SET_NULL, default=None,

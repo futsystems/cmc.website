@@ -3,7 +3,7 @@
 
 
 from django.db import models
-from config.models import Service, ApiGateway, Portal
+from config.models import Service, ApiGateway, Portal, AppH5
 from choices import LOCATION, NODETYPE
 from config.models.choices import ENV_STAGE
 from ip_white_list import IP
@@ -41,6 +41,9 @@ class Server(models.Model):
     # 服务器部署 portal
     portal = models.ForeignKey(Portal, verbose_name='Portal', on_delete=models.SET_NULL, default=None,
                                          blank=True, null=True)
+
+    app = models.ForeignKey(AppH5, verbose_name='App', on_delete=models.SET_NULL, default=None,
+                               blank=True, null=True)
 
 
     install_mysql = models.BooleanField('Install MySQL', default=False)
@@ -126,6 +129,8 @@ class Server(models.Model):
         # Portal
         if self.portal is not None:
             data['portal'] = self.portal.get_pillar(self.deploy)
+            #当前安装app在portal服务器 后期迁移到不同的服务器
+            data['app'] = self.app.get_pillar(self.deploy)
 
         # Service Node
         if self.installed_services.all().count() > 0:

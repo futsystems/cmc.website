@@ -27,6 +27,6 @@ from setting import SettingItem
 from portal import Portal
 from wx_bound_server import WXBoundServer
 from wx_miniprogram_template import WeiXinMiniprogramTemplate
-
+from app import AppH5
 
 from choices import ENV_STAGE
