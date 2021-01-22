@@ -81,7 +81,7 @@ class DeployAdmin(admin.ModelAdmin):
 
             ("Config", {
                 'fields': [
-                    'website_domain_name', 'portal_domain_name', 'gateway_domain_name', 'log_level',
+                    'website_domain_name', 'portal_domain_name', 'app_domain_name' 'gateway_domain_name', 'log_level',
                 ]
             }),
 

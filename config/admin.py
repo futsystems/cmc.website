@@ -574,6 +574,10 @@ class PortalAdmin(admin.ModelAdmin):
     list_filter = ('env',)
     actions = [merge_portal_project]
 
+class AppH5Admin(admin.ModelAdmin):
+    list_display = ('name', 'env', 'merge_success', 'merge_message')
+    list_filter = ('env',)
+
 class WXBoundServerAdmin(admin.ModelAdmin):
     list_display = ('name', 'env', 'ip')
     list_filter = ('env',)
@@ -648,6 +652,7 @@ admin.site.register(models.LogItemGroup, LogItemGroupAdmin)
 admin.site.register(models.SettingGroup, SettingGroupAdmin)
 admin.site.register(models.SettingItem, SettingItemAdmin)
 admin.site.register(models.Portal, PortalAdmin)
+admin.site.register(models.AppH5, AppH5Admin)
 
 admin.site.register(models.WXBoundServer, WXBoundServerAdmin)
 admin.site.register(models.GitLabProject, GitLabProjectAdmin)
