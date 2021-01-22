@@ -130,7 +130,16 @@ class Server(models.Model):
         if self.portal is not None:
             data['portal'] = self.portal.get_pillar(self.deploy)
             #当前安装app在portal服务器 后期迁移到不同的服务器
+
+        if self.app is not None:
             data['app'] = self.app.get_pillar(self.deploy)
+            if self.deploy.env == 'Development':
+                data['app']['branch'] = 'development'
+            elif self.deploy.env == 'Staging':
+                data['app']['branch'] = 'master'
+            elif:
+                pass
+
 
         # Service Node
         if self.installed_services.all().count() > 0:
