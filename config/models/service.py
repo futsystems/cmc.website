@@ -108,7 +108,7 @@ class Service(models.Model):
             apm['RequestSample'] = self.apm_sample
             # 生产环境采样开关从单独的配置信息中获得
             if server.deploy.env == 'Production':
-                apm['RequestSample'] = server.deploy.get_version('Service', self.name)
+                apm['RequestSample'] = False #server.deploy.get_version('Service', self.name)
             config['ElasticAPM'] = apm
 
         if server.deploy.service_provider is not None:
