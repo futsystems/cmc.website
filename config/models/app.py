@@ -55,7 +55,7 @@ class AppH5(models.Model):
         elif deploy.env == 'Staging':
             dict['branch'] = 'master'
         else:
-            pass
+            dict['branch'] = 'master'
 
 
         #if self.env == 'Production':
